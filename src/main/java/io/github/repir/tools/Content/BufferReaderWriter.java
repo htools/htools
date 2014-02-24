@@ -8,27 +8,16 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import io.github.repir.tools.Lib.ArrayTools;
 import io.github.repir.tools.Lib.ByteTools;
 
 /**
- * This class is intended to remove all the Java fuzz regarding files. There is
- * just one class RFile that provides methods to read a line, read the entire
- * thing, write stuff to it, without having bother about which stream to use.
- * However, Java objects like properly opened FileInputStream and FileChannel.
- * <br><br> Some methods are provided that will more easily allow to get
- * information on the file, such as the parent Dir object, the filename,
- * extension, etc. <br><br> Some static methods are provided to do big file
- * operations, such as copying, moving, running and converting a File to a
- * primitive.
+ * This is a general class to read and write binary data to an in memory buffer
+ * that can optionally be connected to an input stream.
  * <p/>
  * @author jbpvuurens
  */
