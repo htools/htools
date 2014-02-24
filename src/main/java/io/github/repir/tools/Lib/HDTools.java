@@ -96,16 +96,16 @@ public class HDTools {
    }
    
    public static Configuration readConfigNoMR(String filename) {
-      String irefdir = System.getenv("irefdir");
-      String irefversion = System.getenv("irefversion");
+      String repirdir = System.getenv("repirdir");
+      String repirversion = System.getenv("repirversion");
       Datafile in = configfile(filename);
       ConfTool confreader = new ConfTool(in);
       Configuration conf = confreader.toConf();
-      conf.set("iref.irefdir", irefdir + "/");
-      conf.set("iref.ireflibdir", irefdir + "/lib/");
-      conf.set("iref.configdir", irefdir + "/settings/");
-      conf.set("iref.conf", filename);
-      conf.set("iref.version", irefversion);
+      conf.set("repir.repirdir", repirdir + "/");
+      conf.set("repir.repirlibdir", repirdir + "/lib/");
+      conf.set("repir.configdir", repirdir + "/settings/");
+      conf.set("repir.conf", filename);
+      conf.set("repir.version", repirversion);
       return conf;
    }
 
@@ -117,7 +117,7 @@ public class HDTools {
 
    public static Datafile configfile(String filename) {
       if (filename.charAt(0) != '/') {
-         String irefdir = System.getenv("irefdir");
+         String irefdir = System.getenv("repirdir");
          filename = irefdir + "/settings/" + filename;
       }
       Datafile in = new Datafile(filename);
@@ -125,8 +125,8 @@ public class HDTools {
    }
 
    public static Datafile configfile( Configuration conf ) {
-      String irefdir = System.getenv("irefdir");
-      Datafile in = new Datafile(irefdir + "/settings/" + conf.get("iref.conf"));
+      String irefdir = System.getenv("repirdir");
+      Datafile in = new Datafile(irefdir + "/settings/" + conf.get("repir.conf"));
       return in;
    }
    
@@ -189,7 +189,7 @@ public class HDTools {
    public static Configuration readConfigNoMR(String args[], String template) {
       ConfTool ct = new ConfTool();
       Configuration conf = readConfigNoMR(args[0]);
-      conf.setStrings("iref.args", args);
+      conf.setStrings("repir.args", args);
       args = argsToConf(args, conf);
       ArgsParser parsedargs = new ArgsParser(args, "configfile " + template);
       for (Map.Entry<String, String> entry : parsedargs.parsedargs.entrySet()) {
@@ -300,9 +300,9 @@ public class HDTools {
    }
    public static String libToArgs(Configuration conf) {
       StringBuilder sb = new StringBuilder();
-      for (String lib : conf.getSubStrings("iref.lib")) {
+      for (String lib : conf.getSubStrings("repir.lib")) {
          if (!FSFile.exists(lib)) {
-            lib = conf.get("iref.ireflibdir") + lib;
+            lib = conf.get("repir.repirlibdir") + lib;
          }
          sb.append(",").append(lib);
       }

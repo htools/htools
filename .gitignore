@@ -1,3 +1,6 @@
 /src/test/java/
 /nbactions.xml
 /target/
+/build/
+/dist/
+/nbproject/private/
