@@ -13,14 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeSet;
 import org.apache.hadoop.fs.BlockLocation;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobPriority;
-import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -99,8 +97,7 @@ public class HDTools {
       String repirdir = System.getenv("repirdir");
       String repirversion = System.getenv("repirversion");
       Datafile in = configfile(filename);
-      ConfTool confreader = new ConfTool(in);
-      Configuration conf = confreader.toConf();
+      Configuration conf = new Configuration(in);
       conf.set("repir.repirdir", repirdir + "/");
       conf.set("repir.repirlibdir", repirdir + "/lib/");
       conf.set("repir.configdir", repirdir + "/settings/");
@@ -128,16 +125,6 @@ public class HDTools {
       String irefdir = System.getenv("repirdir");
       Datafile in = new Datafile(irefdir + "/settings/" + conf.get("repir.conf"));
       return in;
-   }
-   
-   public static void addToConfiguration(Configuration configuration, String list) {
-      if (list != null && list.length() > 0) {
-      ConfTool conf = new ConfTool();
-      for (String p : StrTools.split(list, ",")) {
-         conf.read(p);
-      }
-      conf.toConf(configuration);
-      }
    }
 
    public static void writeParametersToFile( Configuration conf, Map<String, String> parameters ) {
@@ -187,18 +174,16 @@ public class HDTools {
    }
    
    public static Configuration readConfigNoMR(String args[], String template) {
-      ConfTool ct = new ConfTool();
       Configuration conf = readConfigNoMR(args[0]);
       conf.setStrings("repir.args", args);
       args = argsToConf(args, conf);
       ArgsParser parsedargs = new ArgsParser(args, "configfile " + template);
       for (Map.Entry<String, String> entry : parsedargs.parsedargs.entrySet()) {
-         ct.store(entry.getKey(), entry.getValue() + "\n");
+         conf.set(entry.getKey(), entry.getValue());
       }
       if (parsedargs.repeatedgroup != null) {
          conf.setStrings(parsedargs.repeatedgroupname, parsedargs.getRepeatedGroup());
       }
-      ct.toConf(conf);
       return conf;
    }
    
@@ -310,38 +295,34 @@ public class HDTools {
    }
 
    public static String[] argsToConf(String args[], Configuration conf) {
-      ConfTool c = new ConfTool();
       ArrayList<String> ar = new ArrayList<String>();
       for (int i = 0; i < args.length; i++) {
          if (configuration.matchFirst(args[i])) {
-            c.read(args[i]);
+            conf.read(args[i]);
          } else {
             ar.add(args[i]);
          }
       }
-      c.toConf(conf);
       args = ar.toArray(new String[ar.size()]);
       return args;
    }
 
    public static String[] processArgSettings(Configuration conf, String args[]) {
-      ConfTool c = new ConfTool();
       ArrayList<String> ar = new ArrayList<String>();
       for (int i = 0; i < args.length; i++) {
          int pos = args[i].indexOf("=");
          if (checkArg(args[i])) {
-            c.read(args[i]);
+            conf.read(args[i]);
          } else {
             ar.add(args[i]);
          }
       }
-      c.toConf(conf);
       args = ar.toArray(new String[ar.size()]);
       return args;
    }
 
    public static void softSetConfiguration(Configuration conf, String key, String value) {
-      if (conf.get(key) == null) {
+      if (!conf.containsKey(key)) {
          conf.set(key, value);
       }
    }
