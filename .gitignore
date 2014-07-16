@@ -3,3 +3,6 @@ target/
 build/
 dist/
 nbproject/private/
+pom.xml
+LICENSE
+README.md
