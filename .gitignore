@@ -1,6 +1,5 @@
-/src/test/java/
-/nbactions.xml
-/target/
-/build/
-/dist/
-/nbproject/private/
+nbactions.xml
+target/
+build/
+dist/
+nbproject/private/
