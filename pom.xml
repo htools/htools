@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.github.repir</groupId>
         <artifactId>RepIRProx</artifactId>
-        <version>0.23-SNAPSHOT</version>
+        <version>0.24-SNAPSHOT</version>
         <relativePath>../RepIRProx/pom.xml</relativePath>
     </parent>
     <artifactId>RepIRTools</artifactId>
@@ -32,7 +32,7 @@
                         <artifactId>antlr4-maven-plugin</artifactId>
                         <version>4.2.2</version>
                         <configuration>
-                            <sourceDirectory>${basedir}/src/main/java/io/github/repir/tools/ByteSearch</sourceDirectory>
+                            <sourceDirectory>${basedir}/src/grammar</sourceDirectory>
                             <outputDirectory>${basedir}/src/main/java/io/github/repir/tools/ByteSearch</outputDirectory>
                         </configuration>
                         <executions>
@@ -45,39 +45,6 @@
                     </plugin>
                 </plugins>
             </build> 
-        </profile>
-        <profile> <!-- create javadoc and source JAR's for release -->
-            <id>createrelease</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.2</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
     </profiles>
   
