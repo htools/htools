@@ -1,8 +1,6 @@
-nbactions.xml
-target/
-build/
-dist/
-nbproject/private/
-pom.xml
-LICENSE
-README.md
+nbactions*
+target
+build
+dist
+nbproject
+.DS_Store
