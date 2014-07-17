@@ -1,7 +1,0 @@
-nbactions*
-target
-build
-dist
-nbproject
-.DS_Store
-.gitignore
