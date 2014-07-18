@@ -40,8 +40,8 @@ public class XMLReaderTest {
     
     @Before
     public void setUp() throws FileNotFoundException, XMLStreamException {
-        xmlin = new FileInputStream("/Users/jeroen/Downloads/queryhistory.xml");
-        xmlreader = new XMLReader(xmlin, "hit");
+//        xmlin = new FileInputStream("/Users/jeroen/Downloads/queryhistory.xml");
+//        xmlreader = new XMLReader(xmlin, "hit");
     }
 
     @Test
