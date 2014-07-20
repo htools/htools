@@ -3,9 +3,9 @@ package io.github.repir.tools.Lib;
 import io.github.repir.tools.ByteSearch.ByteRegex;
 import io.github.repir.tools.ByteSearch.ByteSearchPosition;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.Iterator;
 
 /**
  * Parses the argument array args[] that was passed to a main() method against a
@@ -43,83 +43,68 @@ public class ArgsParser {
     static final ByteRegex optional = new ByteRegex("\\[\\s?\\c\\w*\\s?\\]");
     static final ByteRegex repeat = new ByteRegex("\\{\\s?\\c\\w*\\s?\\}");
     static final ByteRegex term = new ByteRegex("\\c\\S*");
+    private final String argumentstring;
     static final ByteRegex combi = ByteRegex.combine(optional, repeat, term, flag);
-    final String argumentstring;
-    public final HashMap<String, ArrayList<String>> parsedargstemp = new HashMap();
-    public final HashMap<String, Object> parsedargs = new HashMap();
 
     public ArgsParser(String args[], String message) {
-        String argumentname;
-        this.argumentstring = message;
-        byte bmessage[] = message.getBytes();
-        //args = getFlags(args);
-        //log.info("remaining args %s", ArrayTools.concat(args));
-        ArrayList<ByteSearchPosition> argumentpositions = combi.findAllPos(bmessage, 0, bmessage.length);
-        ArrayList<String> names = this.getArgumentNames(bmessage, argumentpositions);
-
-        int argspos = 0;
-        for (int argumentnumber = 0; argumentnumber < argumentpositions.size(); argumentnumber++) {
-            ByteSearchPosition argument = argumentpositions.get(argumentnumber);
-            //log.info("argument %d pattern %d start %d", argumentnumber, argument.pattern, argument.start);
-            switch (argument.pattern) {
-                case 2: // normal argument
-                    if (argspos >= args.length) {
-                        log.fatal("run with parameters: %s", message);
-                    }
-                    if (parsedargstemp.containsKey(names.get(argumentnumber))) {
-                        log.fatal("duplicate use of non-repeating parameters: %s in %s", names.get(argumentnumber), message);
-                    }
-                    put(names.get(argumentnumber), args[argspos++]);
-                    break;
-                case 0: // optional argument
-                    if (parsedargstemp.containsKey(names.get(argumentnumber))) {
-                        log.fatal("duplicate use of non-repeating parameters: %s in %s", names.get(argumentnumber), message);
-                    }
-                    if (argspos < args.length) {
-                        put(names.get(argumentnumber), args[argspos++]);
-                    }
-                    break;
-                case 3: // flag - switch flag for description name
-                    if (argumentnumber < names.size() - 1) {
-                        int nexttype = argumentpositions.get(argumentnumber + 1).pattern;
-                        if (nexttype != 3) {
-                            argumentname = names.get(++argumentnumber);
-                            if (nexttype == 1) {
-                                for (; argspos < args.length && !flag.match(args[argspos]); argspos++) {
-                                    put(argumentname, args[argspos]);
-                                }
-                            } else {
-                                if (parsedargstemp.containsKey(names.get(argumentnumber))) {
-                                    log.fatal("duplicate use of non-repeating parameters: %s in %s", names.get(argumentnumber + 1), message);
-                                }
-                                put(argumentname, args[argspos++]);
-                            }
-                        } else {
-                            if (parsedargstemp.containsKey(names.get(argumentnumber))) {
-                                log.fatal("duplicate use of non-repeating parameters: %s in %s", names.get(argumentnumber), message);
-                            }
-                            put(names.get(argumentnumber), TRUEBOOLEAN);
+        argumentstring = message;
+        setFlags(message);
+        Iterator<Parameter> iterpos = positional.iterator();
+        for (int i = 0; i < args.length; i++) {
+            if (flag.match(args[i])) {
+                String flagtag = args[i].substring(1);
+                Parameter f = flags.get(flagtag);
+                switch (f.type) {
+                    case 4:
+                        f.values.add(TRUEBOOLEAN);
+                        break;
+                    case 1:
+                        for (; i < args.length - 1 && !flag.match(args[i + 1]); i++) {
+                            f.values.add(args[i + 1]);
                         }
+                        break;
+                    case 0:
+                        if (i == args.length - 1 || flag.match(args[i + 1])) {
+                            break;
+                        }
+                    case 2:
+                        if (i < args.length - 1) {
+                            f.values.add(args[++i]);
+                            break;
+                        } else {
+                            log.exit("Non boolean flag %s with value", f.tag);
+                        }
+                }
+            } else {
+                boolean success = false;
+                while (iterpos.hasNext()) {
+                    Parameter f = iterpos.next();
+                    if (f.values.size() > 0) {
+                        continue;
+                    }
+                    success = true;
+                    switch (f.type) {
+                        case 0:
+                        case 2:
+                            f.values.add(args[i]);
+                            break;
+                        case 1:
+                            do {
+                                f.values.add(args[i]);
+                            } while (i < args.length - 1 && !flag.match(args[i + 1]) && ++i > 0);
                     }
                     break;
-                case 1: // repeated group, can only be last in list (or use flags)
-                    for (; argspos < args.length && !flag.match(args[argspos]); argspos++) {
-                        put(names.get(argumentnumber), args[argspos]);
-                    }
+                }
+                if (!success) {
+                    log.exit("too many arguments for %s", message);
+                }
             }
         }
-        if (argspos < args.length) {
-            log.exit("run with parameters: %s", message);
+        for (Parameter f : positional) {
+            if (f.type == 2 && f.values.size() < 1) {
+                log.exit("run with parameters: %s", message);
+            }
         }
-    }
-
-    public void put(String key, String value) {
-        ArrayList<String> list = parsedargstemp.get(key);
-        if (list == null) {
-            list = new ArrayList();
-            parsedargstemp.put(key, list);
-        }
-        list.add(value);
     }
 
     private ArrayList<String> getArgumentNames(byte bmessage[], ArrayList<ByteSearchPosition> findAll) {
@@ -144,13 +129,72 @@ public class ArgsParser {
     }
 
     public boolean exists(String name) {
-        return (parsedargstemp.containsKey(name) && parsedargstemp.get(name).size() > 0);
+        return (getflags.containsKey(name) && getflags.get(name).values.size() > 0);
     }
 
     public ArrayList<String> get(String name) {
-        if (!parsedargstemp.containsKey(name)) {
+        if (!getflags.containsKey(name)) {
             log.fatal("argument %s not in argument list: %s", name, argumentstring);
         }
-        return parsedargstemp.get(name);
+        return getflags.get(name).values;
+    }
+
+    private HashMap<String, Parameter> flags = new HashMap();
+    private HashMap<String, Parameter> getflags = new HashMap();
+    private ArrayList<Parameter> positional = new ArrayList();
+
+    public Collection<Parameter> getParameters() {
+        return getflags.values();
+    }
+
+    private void setFlags(String message) {
+        byte bmessage[] = message.getBytes();
+        ArrayList<ByteSearchPosition> argumentpositions = combi.findAllPos(bmessage, 0, bmessage.length);
+        ArrayList<String> names = this.getArgumentNames(bmessage, argumentpositions);
+        for (int argumentnumber = 0; argumentnumber < argumentpositions.size(); argumentnumber++) {
+            ByteSearchPosition argument = argumentpositions.get(argumentnumber);
+            if (argument.pattern == 3) {
+                if (argumentnumber == argumentpositions.size() - 1 || argumentpositions.get(argumentnumber + 1).pattern == 3) {
+                    Parameter f = new Parameter(4, names.get(argumentnumber), names.get(argumentnumber));
+                    flags.put(names.get(argumentnumber), f);
+                    getflags.put(f.tag, f);
+                } else {
+                    Parameter f = new Parameter(argumentpositions.get(argumentnumber + 1).pattern, names.get(argumentnumber), names.get(argumentnumber + 1));
+                    flags.put(f.tag, f);
+                    getflags.put(f.name, f);
+                    positional.add(f);
+                    argumentnumber++;
+                }
+            } else {
+                if (argument.pattern < 2 && argumentnumber != argumentpositions.size() - 1) {
+                    log.fatal("unflagged optional or repeated group can only be in last position");
+                }
+                Parameter f = new Parameter(argument.pattern, names.get(argumentnumber), names.get(argumentnumber));
+                positional.add(f);
+                getflags.put(f.name, f);
+            }
+        }
+    }
+
+    public class Parameter {
+
+        int type;
+        String tag;
+        String name;
+        ArrayList<String> values = new ArrayList();
+
+        protected Parameter(int type, String tag, String name) {
+            this.type = type;
+            this.tag = tag;
+            this.name = name;
+        }
+
+        public ArrayList<String> getValues() {
+            return values;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 }

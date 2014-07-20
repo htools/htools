@@ -5,12 +5,14 @@ import io.github.repir.tools.ByteSearch.ByteSearchPosition;
 import io.github.repir.tools.Content.Datafile;
 import io.github.repir.tools.Content.FSFileInBuffer;
 import io.github.repir.tools.Lib.ArgsParser;
+import io.github.repir.tools.Lib.ArgsParser.Parameter;
 import io.github.repir.tools.Lib.ArrayTools;
 import io.github.repir.tools.Lib.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.hadoop.fs.FileSystem;
@@ -102,12 +104,12 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
         }
         args = argsToConf(args);
         ArgsParser parsedargs = new ArgsParser(args, template);
-        for (Map.Entry<String, ArrayList<String>> entry : parsedargs.parsedargstemp.entrySet()) {
-            if (entry.getValue() != null)
-                if (entry.getValue().size() > 1) {
-                    this.setStringList(entry.getKey(), entry.getValue());
-                } else if (entry.getValue().size() == 1)
-                    set(entry.getKey(), entry.getValue().get(0));
+        for (Parameter entry : parsedargs.getParameters()) {
+            if (entry != null)
+                if (entry.getValues().size() > 1) {
+                    this.setStringList(entry.getName(), entry.getValues());
+                } else if (entry.getValues().size() == 1)
+                    set(entry.getName(), entry.getValues().get(0));
         }
     }
 

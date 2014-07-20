@@ -1,7 +1,8 @@
 package io.github.repir.tools.Lib;
 
-import org.junit.Test;
+import io.github.repir.tools.Lib.ArgsParser.Parameter;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class ArgsParserTest {
     public static Log log = new Log(ArgsParserTest.class);
@@ -11,11 +12,11 @@ public class ArgsParserTest {
 
     @Test
     public void testFatal() {
-        ArgsParser.log.setLevel(Log.NONE);
-        System.out.println("dont worry, checking fatal exception, should return: run with parameter: param");
-        parsedargs = new ArgsParser(new String[0], "param");
-        assertEquals(parsedargs.parsedargstemp.size(), 0);
-        parsedargs = new ArgsParser(new String[0], "[param]");
+//        ArgsParser.log.setLevel(Log.NONE);
+//        System.out.println("dont worry, checking fatal exception, should return: run with parameter: param");
+//        parsedargs = new ArgsParser(new String[0], "param");
+//        assertEquals(parsedargs.getParameters().size(), 1);
+//        parsedargs = new ArgsParser(new String[0], "[param]");
     }
 
     @Test
@@ -25,29 +26,31 @@ public class ArgsParserTest {
         assertFalse(parsedargs.exists("param"));
         assertTrue(!parsedargs.exists("other"));
         parsedargs = new ArgsParser(new String[0], "{param}");
-        assertNull(parsedargs.get("param"));
+        assertEquals(0, parsedargs.get("param").size());
         parsedargs = new ArgsParser(new String[]{"aap"}, "param [opt]");
+        for (Parameter p : parsedargs.getParameters())
+            log.info("param %s=%s", p.getName(), p.getValues());
         assertTrue(parsedargs.exists("param"));
         assertFalse(parsedargs.exists("opt"));
         parsedargs = new ArgsParser(new String[]{"aap", "noot"}, "param [opt]");
-        assertEquals(parsedargs.get("param"), "aap");
-        assertEquals(parsedargs.get("opt"), "noot");
+        assertEquals(parsedargs.get("param").get(0), "aap");
+        assertEquals(parsedargs.get("opt").get(0), "noot");
     }
 
     @Test
     public void flags1() {
         log.info("flags1");
         parsedargs = new ArgsParser("aap -c noot mies".split(" "), "-a first -b second -c third");
-        assertEquals("aap", parsedargs.get("first"));
-        assertEquals("noot", parsedargs.get("third"));
-        assertEquals("mies", parsedargs.get("second"));
+        assertEquals("aap", parsedargs.get("first").get(0));
+        assertEquals("noot", parsedargs.get("third").get(0));
+        assertEquals("mies", parsedargs.get("second").get(0));
     }
     
     @Test
     public void flags2() {
         log.info("flags2");
         parsedargs = new ArgsParser("-a aap -c noot -c mies".split(" "), "-a first -b [second] -c third");
-        assertEquals("aap", parsedargs.get("first"));
+        assertEquals("aap", parsedargs.get("first").get(0));
         assertFalse(parsedargs.exists("second"));
         assertEquals(2, parsedargs.get("third").size());
     }
@@ -56,7 +59,6 @@ public class ArgsParserTest {
     public void optional1() {
         log.info("optional1");
         parsedargs = new ArgsParser("-a aap -b noot -b mies".split(" "), "-a first -b second -c [third]");
-        assertEquals("aap", parsedargs.get("first"));
         assertFalse(parsedargs.exists("third"));
         assertEquals(2, parsedargs.get("second").size());
     }
@@ -65,9 +67,8 @@ public class ArgsParserTest {
     public void optional2() {
         log.info("optional2");
         parsedargs = new ArgsParser("-a aap -b noot -c mies".split(" "), "-a first -b second -f -c [third]");
-        assertEquals("aap", parsedargs.get("first"));
-        assertEquals("noot", parsedargs.get("second"));
-        assertEquals("mies", parsedargs.get("third"));
+        assertEquals("noot", parsedargs.get("second").get(0));
+        assertEquals("mies", parsedargs.get("third").get(0));
     }
     
     @Test
@@ -91,11 +92,11 @@ public class ArgsParserTest {
     @Test
     public void booleanFlag() {
         log.info("booleanflag");
-        //parsedargs = new ArgsParser("-a aap -b noot -c mies".split(" "), "-a first -b second -f -c [third]");
-        //assertNull(parsedargs.get("f"));
+        parsedargs = new ArgsParser("-a aap -b noot -c mies".split(" "), "-a first -b second -f -c [third]");
+        assertEquals(0, parsedargs.get("f").size());
         parsedargs = new ArgsParser("-a aap -b noot -c mies -f".split(" "), "-a first -b second -f -c [third]");
-        assertEquals("true", parsedargs.get("f"));
-        assertEquals("noot", parsedargs.get("second"));
-        assertEquals("mies", parsedargs.get("third"));
+        assertEquals("true", parsedargs.get("f").get(0));
+        assertEquals("noot", parsedargs.get("second").get(0));
+        assertEquals("mies", parsedargs.get("third").get(0));
     }
 }
