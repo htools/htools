@@ -14,7 +14,7 @@ public class ArgsParserTest {
         ArgsParser.log.setLevel(Log.NONE);
         System.out.println("dont worry, checking fatal exception, should return: run with parameter: param");
         parsedargs = new ArgsParser(new String[0], "param");
-        assertEquals(parsedargs.parsedargs.size(), 0);
+        assertEquals(parsedargs.parsedargstemp.size(), 0);
         parsedargs = new ArgsParser(new String[0], "[param]");
     }
 
@@ -25,16 +25,13 @@ public class ArgsParserTest {
         assertFalse(parsedargs.exists("param"));
         assertTrue(!parsedargs.exists("other"));
         parsedargs = new ArgsParser(new String[0], "{param}");
-        assertNotNull(parsedargs.getRepeatedGroup("param"));
+        assertNull(parsedargs.get("param"));
         parsedargs = new ArgsParser(new String[]{"aap"}, "param [opt]");
         assertTrue(parsedargs.exists("param"));
         assertFalse(parsedargs.exists("opt"));
         parsedargs = new ArgsParser(new String[]{"aap", "noot"}, "param [opt]");
         assertEquals(parsedargs.get("param"), "aap");
         assertEquals(parsedargs.get("opt"), "noot");
-        parsedargs = new ArgsParser(new String[]{"aap", "1", "2.5"}, "param int double [opt]");
-        assertEquals(parsedargs.getInt("int"), 1);
-        assertEquals(parsedargs.getDouble("double"), 2.5, 0.001);
     }
 
     @Test
@@ -52,7 +49,7 @@ public class ArgsParserTest {
         parsedargs = new ArgsParser("-a aap -c noot -c mies".split(" "), "-a first -b [second] -c third");
         assertEquals("aap", parsedargs.get("first"));
         assertFalse(parsedargs.exists("second"));
-        assertEquals(2, parsedargs.getRepeatedGroup("third").length);
+        assertEquals(2, parsedargs.get("third").size());
     }
     
     @Test
@@ -61,7 +58,7 @@ public class ArgsParserTest {
         parsedargs = new ArgsParser("-a aap -b noot -b mies".split(" "), "-a first -b second -c [third]");
         assertEquals("aap", parsedargs.get("first"));
         assertFalse(parsedargs.exists("third"));
-        assertEquals(2, parsedargs.getRepeatedGroup("second").length);
+        assertEquals(2, parsedargs.get("second").size());
     }
     
     @Test
@@ -71,6 +68,24 @@ public class ArgsParserTest {
         assertEquals("aap", parsedargs.get("first"));
         assertEquals("noot", parsedargs.get("second"));
         assertEquals("mies", parsedargs.get("third"));
+    }
+    
+    @Test
+    public void repeated() {
+        log.info("repeated");
+        parsedargs = new ArgsParser("-a aap noot -b".split(" "), "-a {first} -b {second}");
+        assertEquals("aap", parsedargs.get("first").get(0));
+        assertEquals("noot", parsedargs.get("first").get(1));
+        assertEquals(0, parsedargs.get("second").size());
+    }
+    
+    @Test
+    public void repeated2() {
+        log.info("repeated");
+        parsedargs = new ArgsParser("-a -b aap noot ".split(" "), "-a {first} -b {second}");
+        assertEquals("aap", parsedargs.get("second").get(0));
+        assertEquals("noot", parsedargs.get("second").get(1));
+        assertEquals(0, parsedargs.get("first").size());
     }
     
     @Test

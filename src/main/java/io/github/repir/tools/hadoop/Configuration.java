@@ -102,12 +102,12 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
         }
         args = argsToConf(args);
         ArgsParser parsedargs = new ArgsParser(args, template);
-        for (Map.Entry<String, String> entry : parsedargs.parsedargs.entrySet()) {
+        for (Map.Entry<String, ArrayList<String>> entry : parsedargs.parsedargstemp.entrySet()) {
             if (entry.getValue() != null)
-               set(entry.getKey(), entry.getValue());
-        }
-        for (String group : parsedargs.getRepeatedGroupNames()) {
-            setStrings(group, parsedargs.getRepeatedGroup(group));
+                if (entry.getValue().size() > 1) {
+                    this.setStringList(entry.getKey(), entry.getValue());
+                } else if (entry.getValue().size() == 1)
+                    set(entry.getKey(), entry.getValue().get(0));
         }
     }
 
