@@ -22,7 +22,7 @@ import java.util.Iterator;
  * repeatedly, e.g. "-i a -i b". "first {last}" will take 1 or more arguments,
  * first contains the first, last contains the others.
  * <p/>
- * The parsed arguments can be accessed as a String using {@link #get(java.lang.String)
+ * The parsed arguments can be accessed as a String using {@link #getParameter(java.lang.String)
  * }, as an int using {@link #getInt(java.lang.String) } as a Double using
  * {@link #getDouble(java.lang.String) } or as a repeating group using {@link #getRepeatedGroup()
  * } which is always an array of String, and will return an empty array if none
@@ -132,11 +132,35 @@ public class ArgsParser {
         return (getflags.containsKey(name) && getflags.get(name).values.size() > 0);
     }
 
-    public ArrayList<String> get(String name) {
+    public ArrayList<String> getParameter(String name) {
         if (!getflags.containsKey(name)) {
             log.fatal("argument %s not in argument list: %s", name, argumentstring);
         }
         return getflags.get(name).values;
+    }
+
+    public String get(String name) {
+        ArrayList<String> list = getParameter(name);
+        return list.size() == 0?null:list.get(0);
+    }
+
+    public int getInt(String name, int def) {
+        String v = get(name);
+        return v == null?def:Integer.parseInt(v);
+    }
+
+    public long getLong(String name, long def) {
+        String v = get(name);
+        return v == null?def:Long.parseLong(v);
+    }
+
+    public double getDouble(String name, double def) {
+        String v = get(name);
+        return v == null?def:Double.parseDouble(v);
+    }
+
+    public String[] getStrings(String name) {
+        return getParameter(name).toArray(new String[0]);
     }
 
     private HashMap<String, Parameter> flags = new HashMap();
