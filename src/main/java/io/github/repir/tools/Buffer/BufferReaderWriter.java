@@ -1,5 +1,7 @@
 package io.github.repir.tools.Buffer;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.github.repir.tools.ByteSearch.ByteSearch;
 import io.github.repir.tools.ByteSearch.ByteSearchPosition;
 import io.github.repir.tools.ByteSearch.ByteSearchSection;
@@ -11,7 +13,7 @@ import io.github.repir.tools.Content.HDFSIn;
 import io.github.repir.tools.Content.IllegalShiftException;
 import io.github.repir.tools.Structure.StructureData;
 import io.github.repir.tools.Structure.StructureWriter;
-import io.github.repir.tools.DataTypes.ArrayMap;
+import io.github.repir.tools.Collection.ArrayMap2;
 import io.github.repir.tools.Lib.ByteTools;
 import io.github.repir.tools.Lib.Log;
 import io.github.repir.tools.Lib.PrintTools;
@@ -33,9 +35,11 @@ import java.util.TreeSet;
 public class BufferReaderWriter implements StructureData {
 
    public static Log log = new Log(BufferReaderWriter.class);
+   private static Gson gson = new Gson();
    public EOCException eof;
    public byte[] buffer;
-   public int requestedbuffersize = 4096;
+   public final int DEFAULTBUFFERSIZE = 4096;
+   private int requestedbuffersize = -1;
    public boolean[] whitespace = io.github.repir.tools.Lib.ByteTools.whitespace;
    public byte[] sametext = io.github.repir.tools.Lib.ByteTools.sametext;
    public long offset = 0;
@@ -47,7 +51,7 @@ public class BufferReaderWriter implements StructureData {
    public DataOut dataout = null;
 
    public BufferReaderWriter() {
-      buffer = new byte[requestedbuffersize];
+      buffer = new byte[getRequestedBufferSize()];
    }
 
    public BufferReaderWriter(byte buffer[]) {
@@ -62,6 +66,10 @@ public class BufferReaderWriter implements StructureData {
       return PrintTools.sprintf("Buffer( offset %d ceiling %d pos %d end %d hasmore %b)", offset, ceiling, bufferpos, end, hasmore);
    }
 
+   public final int getRequestedBufferSize() {
+       return requestedbuffersize > -1?requestedbuffersize:DEFAULTBUFFERSIZE;
+   }
+   
    @Override
    public void writeBuffer(DataOutput out) {
       try {
@@ -218,7 +226,7 @@ public class BufferReaderWriter implements StructureData {
    }
 
    @Override
-   public void reset() {
+   public void reuseBuffer() {
       setOffset(offset);
       hasmore = true;
    }
@@ -270,7 +278,7 @@ public class BufferReaderWriter implements StructureData {
       //log.info("setBufferSize( %d ) currentlength %d dataout %s", buffersize, buffer.length, dataout);
       if (buffersize != requestedbuffersize) {
          requestedbuffersize = buffersize;
-         if (buffer != null && buffersize != buffer.length && bufferpos > 0 && dataout != null) {
+         if (buffer != null && getRequestedBufferSize() != buffer.length && bufferpos > 0 && dataout != null) {
             flushBuffer();
          }
          resize();
@@ -357,10 +365,10 @@ public class BufferReaderWriter implements StructureData {
 
    public int resize() {
       if (buffer == null) {
-         buffer = new byte[requestedbuffersize];
+         buffer = new byte[getRequestedBufferSize()];
       } else {
          int shift = bufferpos;
-         int usedbuffersize = (requestedbuffersize >= end - bufferpos) ? requestedbuffersize : end - bufferpos;
+         int usedbuffersize = (getRequestedBufferSize() >= end - bufferpos) ? getRequestedBufferSize() : end - bufferpos;
          byte newbuffer[] = new byte[usedbuffersize];
          for (int i = bufferpos; i < end; i++) {
             newbuffer[ i - bufferpos] = buffer[i];
@@ -377,12 +385,12 @@ public class BufferReaderWriter implements StructureData {
 
    public int shift() {
       if (bufferpos == 0) {
-         if (requestedbuffersize != buffer.length) {
+         if (getRequestedBufferSize() != buffer.length) {
             return resize();
          }
          return 0;
       }
-      if (requestedbuffersize != buffer.length) {
+      if (getRequestedBufferSize() != buffer.length) {
          return resize();
       } else {
          int shift = bufferpos;
@@ -515,6 +523,16 @@ public class BufferReaderWriter implements StructureData {
       return readString(length);
    }
 
+   public JsonObject readJson() throws EOCException {
+      String s = readString();
+      return s == null?null:gson.fromJson(s, JsonObject.class);
+   }
+
+   public JsonObject readJson0() throws EOCException {
+      String s = readString0();
+      return s == null?null:gson.fromJson(s, JsonObject.class);
+   }
+
    public StringBuilder readStringBuilder() throws EOCException {
       int length = readInt();
       if (length == -1) {
@@ -526,6 +544,14 @@ public class BufferReaderWriter implements StructureData {
    public void skipString() throws EOCException {
       int length = readInt();
       skip(length);
+   }
+
+   public void skipJson() throws EOCException {
+      skipString();
+   }
+
+   public void skipJson0() throws EOCException {
+      skipString0();
    }
 
    public void skipStringBuilder() throws EOCException {
@@ -1259,6 +1285,14 @@ public class BufferReaderWriter implements StructureData {
       }
    }
 
+   public void write(JsonObject s) {
+      write(s == null?null:s.getAsString());
+   }
+
+   public void write0(JsonObject s) {
+      write0(s == null?null:s.getAsString());
+   }
+
    public void write(StringBuilder s) {
       if (s == null) {
          write(-1);
@@ -1970,7 +2004,7 @@ public class BufferReaderWriter implements StructureData {
 
    public Map<String, String> readStringPairMap() throws EOCException {
       int size = readInt();
-      ArrayMap<String, String> map = new ArrayMap<String, String>();
+      ArrayMap2<String, String> map = new ArrayMap2<String, String>();
       for (int i = 0; i < size; i++) {
          String key = readString();
          String value = readString();

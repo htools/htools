@@ -80,7 +80,7 @@ public abstract class StructuredFileSortHashRecord extends StructuredFileSortRec
       ((StructuredFileSortHash) file).resetNextField();
       //log.info("file %d %b %d", getBucketIndex(), ((StructuredFileSortHash) file).gotoBucket(getBucketIndex()), file.getOffset());
       if (((StructuredFileSortHash) file).gotoBucket(getBucketIndex())) {
-         while (((StructuredFileSortHash) file).next()) {
+         while (((StructuredFileSortHash) file).nextRecord()) {
             StructuredFileSortHashRecord r = (StructuredFileSortHashRecord) file.createRecord();
             equals(r);
             if (r.getBucketIndex() != getBucketIndex()) {

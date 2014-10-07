@@ -1,5 +1,6 @@
 package io.github.repir.tools.Structure;
 
+import com.google.gson.JsonObject;
 import java.io.DataOutput;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +49,10 @@ public interface StructureWriter {
    public void writeC(double d);
 
    public void write(String s);
+
+   public void write(JsonObject s);
+
+   public void write0(JsonObject s);
 
    public void write(StringBuilder s);
 

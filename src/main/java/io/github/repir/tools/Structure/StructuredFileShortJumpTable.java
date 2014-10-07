@@ -62,7 +62,7 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    public void read(int id) {
       find(id);
       //log.info("read offset %d", this.datafile.getOffset());
-      next();
+      nextRecord();
    }
 
    @Override
@@ -74,7 +74,7 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
       super.openRead();
       int skip = jumparray.getSkip(id);
       for (int s = 0; s < skip; s++) {
-         skip();
+         skipRecord();
       }
    }
    
@@ -113,6 +113,6 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    }
    
    @Override
-   public void reset() {
+   public void reuseBuffer() {
    }
 }

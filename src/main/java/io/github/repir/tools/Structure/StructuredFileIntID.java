@@ -23,9 +23,9 @@ public interface StructuredFileIntID {
 
    public boolean hasNext();
 
-   public boolean next();
+   public boolean nextRecord();
 
-   public boolean skip();
+   public boolean skipRecord();
    
    public long getOffset();
    
@@ -37,5 +37,5 @@ public interface StructuredFileIntID {
    
    public boolean isReadResident();
    
-   public void reset();
+   public void reuseBuffer();
 }

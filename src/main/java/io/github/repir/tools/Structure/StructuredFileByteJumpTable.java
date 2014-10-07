@@ -95,7 +95,7 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
    public void read(int id) {
       find(id);
       //log.info("read offset %d", this.datafile.getOffset());
-      next();
+      nextRecord();
    }
 
    public void find(int id) {
@@ -106,7 +106,7 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
       super.openRead();
       int skip = jumparray.getSkip(id);
       for (int s = 0; s < skip; s++) {
-         skip();
+         skipRecord();
       }
    }
    
@@ -125,6 +125,6 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
    }
    
    @Override
-   public void reset() {  
+   public void reuseBuffer() {  
    }
 }

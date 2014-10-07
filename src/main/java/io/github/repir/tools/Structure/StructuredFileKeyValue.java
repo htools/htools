@@ -41,7 +41,7 @@ public abstract class StructuredFileKeyValue<R extends StructuredFileKeyValueRec
                super.openRead();
                if (isReadOpen()) {
                   setOffset(0);
-                  while (next()) {
+                  while (nextRecord()) {
                      R r = newRecord();
                      r.read(this);
                      if (r.equals(closingrecord)) {

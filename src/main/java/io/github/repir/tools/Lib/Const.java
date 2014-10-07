@@ -4,7 +4,7 @@ package io.github.repir.tools.Lib;
  *
  * @author jbpvuurens
  */
-public interface Const {
+public enum Const {;
 
    /**
     *

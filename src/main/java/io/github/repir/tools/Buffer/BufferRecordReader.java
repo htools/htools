@@ -30,7 +30,7 @@ public class BufferRecordReader extends BufferReaderWriter {
    public BufferRecordReader(ByteRecordReader reader) {
       super();
       this.reader = reader;
-      reader.setMaxSize(this.requestedbuffersize);
+      reader.setMaxSize(getRequestedBufferSize());
    }
 
    @Override
@@ -135,7 +135,7 @@ public class BufferRecordReader extends BufferReaderWriter {
 
    @Override
    public int shift() {
-      if (requestedbuffersize != buffer.length) {
+      if (getRequestedBufferSize() != buffer.length) {
          return resize();
       } else {
          int shift = bufferpos;
@@ -152,10 +152,10 @@ public class BufferRecordReader extends BufferReaderWriter {
    @Override
    public int resize() {
       if (buffer == null) {
-         buffer = new byte[requestedbuffersize];
+         buffer = new byte[getRequestedBufferSize()];
       } else {
          int pos = bufferpos;
-         int usedbuffersize = (requestedbuffersize >= end - pos) ? requestedbuffersize : end - pos;
+         int usedbuffersize = (getRequestedBufferSize() >= end - pos) ? getRequestedBufferSize() : end - pos;
          byte newbuffer[] = new byte[usedbuffersize];
          for (int i = pos; i < end; i++) {
             newbuffer[ i - pos] = buffer[i];

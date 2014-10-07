@@ -20,10 +20,11 @@ public abstract class ByteSearch {
     public static Log log = new Log(ByteSearch.class);
     public boolean quotesafe;
     public static ByteSearch WHITESPACE = ByteSearch.create("\\s+");
+    public static ByteSearch EMPTY = new ByteSearchEmpty();
 
     public static ByteSearch create(String pattern) {
         if (pattern.length() == 0) {
-            return new ByteSearchEmpty();
+            return EMPTY;
         } else if (pattern.length() == 1 && isSingle(pattern.charAt(0))) {
             return new ByteSearchSingle(pattern.getBytes()[0]);
         } else {

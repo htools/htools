@@ -1,5 +1,7 @@
 package io.github.repir.tools.Structure;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.github.repir.tools.Buffer.BufferReaderWriter;
 import io.github.repir.tools.ByteSearch.ByteSearch;
 import io.github.repir.tools.ByteSearch.ByteSearchPosition;
@@ -43,16 +45,17 @@ public abstract class StructuredTextFile {
         this(writer.rwbuffer);
         this.datafile = writer;
     }
-    
+
     public Datafile getDatafile() {
         return datafile;
     }
 
     /**
-     * StructuredTextFile needs a root FolderNode that symbolizes a record. 
+     * StructuredTextFile needs a root FolderNode that symbolizes a record.
      * Implementations of StructuredTextFile supply this by overriding this
-     * method. The root node should be the only one that has no parent. 
-     * @return 
+     * method. The root node should be the only one that has no parent.
+     *
+     * @return
      */
     public abstract FolderNode createRoot();
 
@@ -81,21 +84,28 @@ public abstract class StructuredTextFile {
             datafile.closeWrite();
         }
     }
-    
+
+    public void resetStart() {
+        if (datafile != null) {
+            datafile.resetStart();
+        }
+    }
+
     public void checkFirstUse() {
         if (firstUse) {
             rebuildBeforeFirstUse();
-            firstUse=false;
+            firstUse = false;
         }
     }
 
     /**
-     * Override this to change the structure before the first use, e.g. for
-     * TSV, normal fields are terminated with a \t but after the last field
-     * this may be omitted.
-    */
-    public void rebuildBeforeFirstUse() {}
-    
+     * Override this to change the structure before the first use, e.g. for TSV,
+     * normal fields are terminated with a \t but after the last field this may
+     * be omitted.
+     */
+    public void rebuildBeforeFirstUse() {
+    }
+
     public boolean exists() {
         return datafile.exists();
     }
@@ -119,7 +129,43 @@ public abstract class StructuredTextFile {
         datafile.openAppend();
     }
 
-    public boolean next() {
+    public long getOffset() {
+        return datafile.getOffset();
+    }
+
+    public long getCeiling() {
+        return datafile.getCeiling();
+    }
+
+    public void setCeiling(long ceiling) {
+        datafile.setCeiling(ceiling);
+    }
+
+    public void setOffset(long offset) {
+        datafile.setOffset(offset);
+    }
+
+    public void setBufferSize(int buffersize) {
+        datafile.setBufferSize(buffersize);
+    }
+
+    public boolean hasMore() {
+        return datafile.hasMore();
+    }
+
+    public boolean findFirstRecord() {
+        if (getOffset() == 0 && getOffset() < getCeiling()) {
+            return true;
+        }
+        ByteSearchPosition matchPos = datafile.matchPos(root.section);
+        if (matchPos.found()) {
+            datafile.movePast(matchPos);
+            return getOffset() < getCeiling();
+        }
+        return false;
+    }
+
+    public boolean nextRecord() {
         try {
             while (true) {
                 ByteSearchSection section = reader.findSectionStart(root.section);
@@ -130,8 +176,9 @@ public abstract class StructuredTextFile {
                     return true;
                 }
                 reader.movePast(section);
-                if (!reader.hasMore())
+                if (!reader.hasMore()) {
                     break;
+                }
             }
         } catch (EOCException ex) {
         }
@@ -295,11 +342,11 @@ public abstract class StructuredTextFile {
             return (v != null) ? (T) v : null;
         }
 
-        public ArrayList<T> getList(NodeValue parentvalue) {
+        private ArrayList<T> getList(NodeValue parentvalue) {
             return parentvalue.getListData(this);
         }
 
-        public ArrayList<T> getList() {
+        private ArrayList<T> getList() {
             return parent.get(this);
         }
 
@@ -323,8 +370,9 @@ public abstract class StructuredTextFile {
         }
 
         protected void addField(Node f) {
-            if (nestedfields.containsKey(f.label))
+            if (nestedfields.containsKey(f.label)) {
                 log.fatal("cannot use the same label %s in the same FolderNode %s twice", f.label, this.label);
+            }
             nestedfields.put(f.label, f);
             orderedfields.add(f);
         }
@@ -490,7 +538,64 @@ public abstract class StructuredTextFile {
 
         @Override
         public String toString(String value) {
-            return value;
+            return value != null ? value : "";
+        }
+    }
+
+    private static Gson gson = new Gson();
+
+    public class JsonField extends DataNode<JsonObject> {
+
+        private ByteSearch open;
+        private ByteSearch close;
+        private boolean checked = false;
+
+        protected JsonField(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
+            super(parent, label, open, close, openlabel, closelabel);
+            if (open != ByteSearch.EMPTY) {
+                this.open = open;
+            }
+            if (close != ByteSearch.EMPTY) {
+                this.close = close;
+            }
+        }
+
+        @Override
+        public JsonObject value(ByteSearchSection section) {
+            return gson.fromJson(this.stringValue(section), JsonObject.class);
+        }
+
+        @Override
+        public String toString(JsonObject value) {
+            if (value != null) {
+                String v = gson.toJson(value);
+                check(v);
+                return v;
+            }
+            return "";
+        }
+        
+        private void check(String content) {
+            if (!checked) {
+            if (open != null && open.exists(content)) {
+                log.fatalexception(new RuntimeException(), "StructuredTextFile.JsonField value matches open tag: [%s]\n%s", open.toString(), content);
+            }
+            if (close != null && close.exists(content)) {
+                log.fatalexception(new RuntimeException(), "StructuredTextFile.JsonField value matches close tag: [%s]\n%s", close.toString(), content);
+            }
+            checked = true;
+            }
+        }
+
+        @Override
+        public void set(JsonObject o) {
+            checked = false;
+            super.set(o);
+        }
+        
+        public void set(String s) {
+            check(s);
+            set(gson.fromJson(s, JsonObject.class));
         }
     }
 
@@ -522,7 +627,7 @@ public abstract class StructuredTextFile {
     public IntField addInt(FolderNode parent, String label, String open, String close, String openlabel, String closelabel) {
         return addInt(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
     }
-    
+
     public BoolField addBoolean(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
         return new BoolField(parent, label, open, close, openlabel, closelabel);
     }
@@ -534,7 +639,7 @@ public abstract class StructuredTextFile {
     public BoolField addBoolean(FolderNode parent, String label, String open, String close, String openlabel, String closelabel) {
         return addBoolean(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
     }
-    
+
     public LongField addLong(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
         return new LongField(parent, label, open, close, openlabel, closelabel);
     }
@@ -546,7 +651,7 @@ public abstract class StructuredTextFile {
     public LongField addLong(FolderNode parent, String label, String open, String close, String openlabel, String closelabel) {
         return addLong(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
     }
-    
+
     public DoubleField addDouble(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
         return new DoubleField(parent, label, open, close, openlabel, closelabel);
     }
@@ -570,7 +675,19 @@ public abstract class StructuredTextFile {
     public StringField addString(FolderNode parent, String label, String open, String close, String openlabel, String closelabel) {
         return addString(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
     }
-    
+
+    public JsonField addJson(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
+        return new JsonField(parent, label, open, close, openlabel, closelabel);
+    }
+
+    public JsonField addJson(String label, String open, String close, String openlabel, String closelabel) {
+        return addJson(getRoot(), label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
+    }
+
+    public JsonField addJson(FolderNode parent, String label, String open, String close, String openlabel, String closelabel) {
+        return addJson(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
+    }
+
     public FolderNode addNode(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
         return new FolderNode(parent, label, open, close, openlabel, closelabel);
     }

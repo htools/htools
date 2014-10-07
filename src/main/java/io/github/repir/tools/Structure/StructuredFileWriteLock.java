@@ -33,7 +33,7 @@ public abstract class StructuredFileWriteLock extends StructuredFile {
          super.openRead();
          if (isReadOpen()) {
             setOffset(0);
-            if (next()) {
+            if (nextRecord()) {
                otherlock = datetime.value;
             }
          }
@@ -53,7 +53,7 @@ public abstract class StructuredFileWriteLock extends StructuredFile {
       if (mylock > 0) {
          setOffset(0);
          openRead();
-         if (next() && datetime.value == mylock) {
+         if (nextRecord() && datetime.value == mylock) {
             valid=true;
          }
          closeRead();

@@ -1,5 +1,7 @@
 package io.github.repir.tools.Buffer;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.github.repir.tools.Structure.StructureWriter;
 import io.github.repir.tools.Lib.Log;
 import java.io.DataOutput;
@@ -25,6 +27,7 @@ import java.util.TreeSet;
 public class BufferDelayedWriter implements StructureWriter {
 
    private static Log log = new Log(BufferDelayedWriter.class);
+   private static Gson gson = new Gson();
    protected BufferReaderWriter writer = new BufferReaderWriter();
    public ArrayList<Object> list = new ArrayList<Object>();
    public boolean[] whitespace = io.github.repir.tools.Lib.ByteTools.getByteArray(" \n\t\r");
@@ -215,6 +218,14 @@ public class BufferDelayedWriter implements StructureWriter {
          write(b.length);
          write(b);
       }
+   }
+
+   public void write(JsonObject s) {
+      write(s == null?null:s.toString());
+   }
+
+   public void write0(JsonObject s) {
+      write0(s == null?null:s.toString());
    }
 
    /**

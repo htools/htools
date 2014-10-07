@@ -123,6 +123,10 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
       return addString(getRoot(), label, regex_open, regex_close, open, close);
    }
 
+   public JsonField addJson(String label) {
+      return addJson(getRoot(), label, regex_open, regex_close, open, close);
+   }
+
    public BoolField addBoolean(String label) {
       return addBoolean(getRoot(), label, regex_open, regex_close, open, close);
    }

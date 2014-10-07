@@ -5,15 +5,12 @@ import io.github.repir.tools.ByteSearch.ByteSearchPosition;
 import io.github.repir.tools.Content.Datafile;
 import io.github.repir.tools.Content.FSFileInBuffer;
 import io.github.repir.tools.Lib.ArgsParser;
-import io.github.repir.tools.Lib.ArgsParser.Parameter;
 import io.github.repir.tools.Lib.ArrayTools;
 import io.github.repir.tools.Lib.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.mapred.JobPriority;
@@ -66,7 +63,7 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
     }
 
     public Configuration(Datafile df) {
-        read(df);
+        processScript(readConfigFile(df));
     }
 
     public Configuration(String filename) {
@@ -79,7 +76,7 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
         FSFileInBuffer fi = new FSFileInBuffer(input);
         byte[] readBytes = fi.readBytes();
         Configuration conf = new Configuration();
-        conf.read(new String(readBytes, 0, readBytes.length));
+        conf.processScript(new String(readBytes, 0, readBytes.length));
         return conf;
     }
 
@@ -103,8 +100,28 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
             log.fatalexception(ex, "Configuration(%s, %s)", ArrayTools.concat(args), template);
         }
         args = argsToConf(args);
-        ArgsParser parsedargs = new ArgsParser(args, template);
-        for (Parameter entry : parsedargs.getParameters()) {
+        ArgsParser argsparser = new ArgsParser(args, template);
+        for (ArgsParser.Parameter entry : argsparser.getParameters()) {
+            if (entry != null)
+                if (entry.getValues().size() > 1) {
+                    this.setStringList(entry.getName(), entry.getValues());
+                } else if (entry.getValues().size() == 1)
+                    set(entry.getName(), entry.getValues().get(0));
+        }
+    }
+
+    public void parseArgsConfFile(String args[], String template) {
+        try {
+            GenericOptionsParser p = new GenericOptionsParser(this, args);
+            args = p.getRemainingArgs();
+            log.info("ramaining args %s", ArrayTools.concat(args));
+        } catch (IOException ex) {
+            log.fatalexception(ex, "Configuration(%s, %s)", ArrayTools.concat(args), template);
+        }
+        processConfigFile(configDatafile(args[0]));
+        args = argsToConf(args);
+        ArgsParser argsparser = new ArgsParser(args, "configurationfilename " + template);
+        for (ArgsParser.Parameter entry : argsparser.getParameters()) {
             if (entry != null)
                 if (entry.getValues().size() > 1) {
                     this.setStringList(entry.getName(), entry.getValues());
@@ -123,7 +140,8 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
         ArrayList<String> ar = new ArrayList<String>();
         for (int i = 0; i < args.length; i++) {
             if (configurationkey.startsWith(args[i])) {
-                read(args[i]);
+                log.info("argstoconf %s", args[i]);
+                processScript(args[i]);
             } else {
                 ar.add(args[i]);
             }
@@ -132,10 +150,18 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
         return args;
     }
 
-    public void read(Datafile df) {
-        read(readConfigFile(df));
+    public void processConfigFile(String file) {
+        readConfigFile(configDatafile(file));
     }
 
+    public void processConfigFile(Datafile file) {
+        processScript(readConfigFile(file));
+    }
+
+   public Datafile configDatafile(String filename) {
+      return new Datafile(filename);
+   }
+   
     private static String readConfigFile(Datafile df) {
         StringBuilder sb = new StringBuilder();
         byte content[] = df.readFully();
@@ -172,7 +198,7 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
         return sb.toString();
     }
 
-    public void read(String contentstring) {
+    public void processScript(String contentstring) {
         byte content[] = contentstring.getBytes();
         int pos = 0;
         while (pos < content.length) {

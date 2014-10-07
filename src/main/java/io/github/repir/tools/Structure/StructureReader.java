@@ -1,5 +1,6 @@
 package io.github.repir.tools.Structure;
 
+import com.google.gson.JsonObject;
 import io.github.repir.tools.Content.ByteSearchReader;
 import io.github.repir.tools.Content.DataIn;
 import io.github.repir.tools.Content.EOCException;
@@ -25,10 +26,29 @@ public interface StructureReader extends ByteSearchReader {
 
    public void setBufferSize(int size);
    
+   /**
+    * requests the buffer to be replenished by reading more data from file. This
+    * is typically done when the end of the buffer is encountered while reading.
+    * When using the read methods in StructureReader, this is triggered automatically.
+    * Throws an EOCException when the StructureReader is not connected to an input
+    * source, or when an attempt is made to fillBuffer when hasMore() already 
+    * returned false.
+    * @throws EOCException 
+    */
    public void fillBuffer() throws EOCException;
    
-   public void reset();
+   /**
+    * reuses the buffered part, by setting back the read pointer top the offset
+    * of the buffer, and resets hasMore() to true. This is useful when (part of) a file is being
+    * read several times, and typically needs the buffer size to be set to
+    * at least the amount of data being reread.
+    */
+   public void reuseBuffer();
 
+   /**
+    * @return The allocated number of bytes for the buffer (can be greater than
+    * the number of bytes read or the file size).
+    */
    public int getBufferSize();
 
    public int readInt() throws EOCException;
@@ -81,7 +101,15 @@ public interface StructureReader extends ByteSearchReader {
 
    public String readString0() throws EOCException;
 
+   public JsonObject readJson0() throws EOCException;
+
+   public JsonObject readJson() throws EOCException;
+
    public void skipString0() throws EOCException;
+
+   public void skipJson0() throws EOCException;
+
+   public void skipJson() throws EOCException;
 
    public int[] readIntArray() throws EOCException;
 

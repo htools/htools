@@ -143,7 +143,7 @@ public class HDFSIn implements DataIn {
    }
 
    public void setBufferSize(int buffersize) {
-      buffer.requestedbuffersize = buffersize;
+      buffer.setBufferSize(buffersize);
    }
 
    public void readFully(byte[] b) throws EOCException {

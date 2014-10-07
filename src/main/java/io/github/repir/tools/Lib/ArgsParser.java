@@ -45,6 +45,9 @@ public class ArgsParser {
     static final ByteRegex term = new ByteRegex("\\c\\S*");
     private final String argumentstring;
     static final ByteRegex combi = ByteRegex.combine(optional, repeat, term, flag);
+    private HashMap<String, Parameter> flags = new HashMap();
+    private HashMap<String, Parameter> getflags = new HashMap();
+    private ArrayList<Parameter> positional = new ArrayList();
 
     public ArgsParser(String args[], String message) {
         argumentstring = message;
@@ -54,6 +57,8 @@ public class ArgsParser {
             if (flag.match(args[i])) {
                 String flagtag = args[i].substring(1);
                 Parameter f = flags.get(flagtag);
+                if (f == null)
+                    log.exit("undefined flag '%s'", args[i]);
                 switch (f.type) {
                     case 4:
                         f.values.add(TRUEBOOLEAN);
@@ -96,7 +101,7 @@ public class ArgsParser {
                     break;
                 }
                 if (!success) {
-                    log.exit("too many arguments for %s", message);
+                    log.exit("too many arguments for [%s] %s", message, ArrayTools.concat(args));
                 }
             }
         }
@@ -159,13 +164,14 @@ public class ArgsParser {
         return v == null?def:Double.parseDouble(v);
     }
 
+    public boolean getBoolean(String name) {
+        String v = get(name);
+        return v == null?false:v.equals(TRUEBOOLEAN);
+    }
+
     public String[] getStrings(String name) {
         return getParameter(name).toArray(new String[0]);
     }
-
-    private HashMap<String, Parameter> flags = new HashMap();
-    private HashMap<String, Parameter> getflags = new HashMap();
-    private ArrayList<Parameter> positional = new ArrayList();
 
     public Collection<Parameter> getParameters() {
         return getflags.values();

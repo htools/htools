@@ -1,10 +1,10 @@
 package io.github.repir.tools.Lib;
 
-import io.github.repir.tools.DataTypes.Tuple2Comparable;
+import io.github.repir.tools.Type.Tuple2Comparable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ByteTools {
+public enum ByteTools {;
 
    public static Log log = new Log(ByteTools.class);
    public static final boolean quotes[] = getQuotes();
@@ -150,8 +150,8 @@ public class ByteTools {
    }
 
    private static byte[] getLC() {
-      byte array[] = new byte[128];
-      for (int i = 0; i < 128; i++) {
+      byte array[] = new byte[256];
+      for (int i = 0; i < 256; i++) {
          if (i >= 'A' || i <= 'Z') {
             array[i] = (byte) (i + 32);
          } else if (i < 33 && i > 0) {

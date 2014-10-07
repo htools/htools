@@ -82,7 +82,7 @@ public class ConfigurationTest {
         conf = new Configuration("-a aap -b noot -c mies".split(" "), "-a first -b second -f -c [third]");
         assertFalse(conf.getBoolean("f", false));
         conf = new Configuration("-a aap -b noot -c mies -f".split(" "), "-a first -b second -f -c [third]");
-        assertTrue("true", conf.getBoolean("f", false));
+        assertTrue("true", conf.getBoolean("f", false)); 
         assertEquals("noot", conf.get("second"));
         assertEquals("mies", conf.get("third"));
     }

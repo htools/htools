@@ -10,7 +10,7 @@ import io.github.repir.tools.Lib.Log;
 public class ByteSearchEmpty extends ByteSearch {
 
    public static Log log = new Log(ByteSearchEmpty.class);
-
+   
    protected ByteSearchEmpty() {
    }
 

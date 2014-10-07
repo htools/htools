@@ -344,7 +344,16 @@ public abstract class StructuredFile extends StructuredDataStream {
          this.writer = null;
       } else {
       }
+   }
+   
+   public void reuseBuffer() {
+       if (datafile != null)
+           datafile.reuseBuffer();
+   }
 
+   public void resetStart() {
+       if (datafile != null)
+           datafile.resetStart();
    }
 
    /**
@@ -391,11 +400,11 @@ public abstract class StructuredFile extends StructuredDataStream {
     * <p/>
     * @return true is a record was read, or false if EOF or ceiling was reached.
     */
-   public boolean next() {
+   public boolean nextRecord() {
       //log.info("next() %d", this.getOffset());
       if (reader != null && reader.hasMore()) {
          try {
-            Field first = start.next();
+            Field first = start.nextField();
             if (nextField == first) {
                this.recordoffset = getOffset();
                //log.info("read field %s offset %d", nextField.getLabel(), this.getOffset());
@@ -419,11 +428,11 @@ public abstract class StructuredFile extends StructuredDataStream {
     * <p/>
     * @return true is a record was read, or false if EOF or ceiling was reached.
     */
-   public boolean skip() {
+   public boolean skipRecord() {
       //log.info("next() %s", this.toString());
       if (reader.hasMore()) {
          try {
-            Field first = start.next();
+            Field first = start.nextField();
             if (nextField == first) {
                nextField.skip();
             }

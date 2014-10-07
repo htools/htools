@@ -34,7 +34,7 @@ public abstract class StructuredFileSortHash<R extends StructuredFileSortHashRec
          memorytable = new HashMap<StructuredFileSortHashRecord, StructuredFileSortHashRecord>(tablesize);
          setOffset(0);
          openRead();
-         while (next()) {
+         while (nextRecord()) {
             StructuredFileSortHashRecord record = (StructuredFileSortHashRecord) createRecord();
             memorytable.put(record, record);
          }
@@ -95,7 +95,7 @@ public abstract class StructuredFileSortHash<R extends StructuredFileSortHashRec
    public final ArrayList<R> listHashCode(R record) {
       ArrayList<R> list = new ArrayList<R>();
       if (gotoBucket(record.getBucketIndex())) {
-         while (next()) {
+         while (nextRecord()) {
             R r = (R) this.createRecord();
             if (r.getBucketIndex() != record.getBucketIndex()) {
                break;

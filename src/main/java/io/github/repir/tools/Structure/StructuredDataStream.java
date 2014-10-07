@@ -1936,7 +1936,7 @@ public abstract class StructuredDataStream extends StructuredStream {
       }
 
       @Override
-      public Field next() { // this class moves to next in read() and write()
+      public Field nextField() { // this class moves to next in read() and write()
          return this;
       }
 
@@ -1998,7 +1998,7 @@ public abstract class StructuredDataStream extends StructuredStream {
       }
 
       @Override
-      public Field next() { // this class moves to next in read() and write()
+      public Field nextField() { // this class moves to next in read() and write()
          return this;
       }
 
@@ -2030,7 +2030,7 @@ public abstract class StructuredDataStream extends StructuredStream {
          if (--loop.counter > 0) {
             return loop.next.arrivingAt();
          }
-         return next();
+         return nextField();
       }
 
       public void readNoReturn() {
@@ -2059,7 +2059,7 @@ public abstract class StructuredDataStream extends StructuredStream {
          if (--loop.counter > 0) {
             return loop.next.arrivingAt();
          }
-         return next();
+         return nextField();
       }
 
       public void readNoReturn() {

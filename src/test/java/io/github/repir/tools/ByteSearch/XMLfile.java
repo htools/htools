@@ -58,7 +58,7 @@ public class XMLfile extends StructuredTextXML {
       XMLfile f = new XMLfile(new Datafile("/home/jer/Desktop/st11.topics.txt"));
       f.datafile.setBufferSize((int) f.datafile.getLength());
       f.openRead();
-      while (f.next()) {
+      while (f.nextRecord()) {
          log.info("%s %s", f.title.get(), f.sessionstarttime.get());
          log.info("%d", f.click.size());
          for (NodeValue i : f.interaction) {

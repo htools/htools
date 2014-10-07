@@ -53,7 +53,7 @@ public class StructuredFileSequential extends StructuredFile implements Structur
    @Override
    public void read(int id) throws EOCException {
       find(id);
-      next();
+      nextRecord();
    }
 
    @Override
@@ -89,7 +89,7 @@ public class StructuredFileSequential extends StructuredFile implements Structur
    }
 
    @Override
-   public void reset() {
-      reader.reset();
+   public void reuseBuffer() {
+      reader.reuseBuffer();
    }
 }

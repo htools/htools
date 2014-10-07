@@ -1,7 +1,6 @@
 package io.github.repir.tools.Lib;
 
 import io.github.repir.tools.Content.Datafile;
-import io.github.repir.tools.DataTypes.DateExt;
 import static io.github.repir.tools.Lib.PrintTools.*;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -12,8 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import io.github.repir.tools.ByteSearch.ByteRegex;
-import io.github.repir.tools.ByteSearch.ByteSearchPosition;
+import java.util.Date;
 
 /**
  * Yeah, Yeah, I know, why build your own logger... I suppose I was mostly annoyed by
@@ -52,69 +50,16 @@ public class Log {
    private Integer level = GENERALLEVEL;
    private long time;
    private static int generallevel = INFO;
-   private boolean profile;
-   private HashMap<String, Profile> profiles;
-   private Profile currentprofile;
-   static boolean profileall = true;
 
    public Log(Class clazz) {
       this.clazz = clazz;
       this.messageprefix = clazz.getCanonicalName() + ".";
       checkSettings();
       logs.add(this);
-      if (profileall)
-         profileOn();
    }
    
    public Class getLoggedClass() {
        return clazz;
-   }
-
-   public static void profileAll() {
-      profileall = true;
-      for (Log log : logs) {
-         log.profileOn();
-      }
-   }
-
-   public static void profileNone() {
-      profileall = false;
-      for (Log log : logs) {
-         log.profileOff();
-      }
-   }
-
-   public void profileOn() {
-      profile = true;
-      profiles = new HashMap<String, Profile>();
-   }
-
-   public void profileOff() {
-      profile = false;
-   }
-
-   public void s(String name) {
-      if (profile) {
-         Profile p = profiles.get(name);
-         if (p == null) {
-            p = new Profile(name);
-            profiles.put(name, p);
-         }
-         p.startTime();
-         p.count++;
-         currentprofile = p;
-      }
-   }
-
-   public void e(String name) {
-      if (profile) {
-         if (currentprofile.name.equals(name)) {
-            currentprofile.addTime();
-         } else {
-            Profile p = profiles.get(name);
-            p.addTime();
-         }
-      }
    }
 
    public void sleepRnd(int max) {
@@ -151,40 +96,6 @@ public class Log {
             level = entry.getValue();
          }
       }
-   }
-
-   public final double getTimePassed() {
-      return System.currentTimeMillis() - time;
-   }
-
-   public final static void reportProfile() {
-      for (int i = 0; i < logs.size(); i++) {
-         Log log = logs.get(i);
-         if (log.profiles != null) {
-            for (Profile p : log.profiles.values()) {
-                log.printf("%s%s( count=%d sec=%f )", log.messageprefix, p.name, p.count, p.time / 1000.0);
-            }
-         }
-      }
-   }
-
-   static public long getMemoryUsage() {
-      Runtime runtime = Runtime.getRuntime();
-      return runtime.totalMemory() - runtime.freeMemory();
-   }
-
-   static public long getFreeMemory() {
-      Runtime runtime = Runtime.getRuntime();
-      return runtime.freeMemory();
-   }
-
-   static public long getTotalMemory() {
-      Runtime runtime = Runtime.getRuntime();
-      return runtime.totalMemory();
-   }
-
-   static public long getTime() {
-      return System.currentTimeMillis();
    }
 
    /**
@@ -235,20 +146,6 @@ public class Log {
       setLevel(this.clazz, level);
    }
 
-   public void startTime() {
-      time = System.currentTimeMillis();
-   }
-
-   public void reportTime(String message, Object... obj) {
-      printf("%.3f %s", (System.currentTimeMillis() - time) / 1000.0,
-              sprintf(message, obj));
-   }
-
-   public void errTime(String message, Object... obj) {
-      err("%.3f %s", (System.currentTimeMillis() - time) / 1000.0,
-              sprintf(message, obj));
-   }
-
    /**
     *
     */
@@ -257,9 +154,9 @@ public class Log {
          String m = "CompileDate of Class %s" + clazz.getSimpleName();
          URL res = clazz.getResource(clazz.getSimpleName() + ".class");
          URLConnection openConnection = res.openConnection();
-         DateExt d = new DateExt(openConnection.getLastModified());
+         Date d = new Date(openConnection.getLastModified());
          //Attributes atts = mf.getAttributes("Built-DateExt");
-         info(m, ConversionTools.toString(d));
+         info(m, DateTimeTools.toString(d));
       } catch (IOException ex) {
          Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
       }

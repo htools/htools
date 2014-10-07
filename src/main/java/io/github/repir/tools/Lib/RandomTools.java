@@ -8,7 +8,7 @@ import java.util.UUID;
  *
  * @author jeroen
  */
-public class RandomTools {
+public enum RandomTools {;
 
    private static java.util.Random rand = new java.util.Random(1);
    private static MT mt = new MT();

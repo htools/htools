@@ -1,6 +1,6 @@
 package io.github.repir.tools.Lib;
 
-public class BoolTools {
+public enum BoolTools {;
 
    public static Log log = new Log(BoolTools.class);
 
@@ -54,7 +54,7 @@ public class BoolTools {
       return createASCIIAccept( '\n' , ' ', '\t' , '\r' );
    }
 
-   public static boolean[] name() {
+   public static boolean[] word() {
       return combineRanges(
               createASCIIAcceptRange('A', 'Z'), 
               createASCIIAcceptRange('a', 'a'), 
@@ -62,9 +62,8 @@ public class BoolTools {
               createASCIIAccept('_'));
    }
    
-   public static boolean[] name0() {
-      return combineRanges(
-              name(),
+   public static boolean[] word0() {
+      return combineRanges(word(),
               createASCIIAccept((char)0));
    }
    
@@ -75,7 +74,7 @@ public class BoolTools {
    }
    
    public static boolean[] namedot() {
-      return combineRanges(name(), 
+      return combineRanges(word(), 
               createASCIIAccept('.'));
    }
 }

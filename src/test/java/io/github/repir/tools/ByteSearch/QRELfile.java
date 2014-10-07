@@ -40,7 +40,7 @@ public class QRELfile extends StructuredTextCSV {
   
    public static void main(String[] args) {
       QRELfile f = setup();
-     while (f.next()) {
+     while (f.nextRecord()) {
         log.info("%s, %d", f.docid.get(), f.relevance.get());
      }
      f = new QRELfile(new Datafile("/home/jer/Desktop/aap.txt"));

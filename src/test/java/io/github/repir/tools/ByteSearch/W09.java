@@ -84,7 +84,7 @@ public class W09 extends StructuredTextCSV {
       W09 f = setup();
       //log.info("%b %d", f.datafile.exists(), f.datafile.getLength());
       f.openRead();
-     while (f.next()) {
+     while (f.nextRecord()) {
         log.info("%d, %s", f.number.get(), f.title.get());
      }
   }

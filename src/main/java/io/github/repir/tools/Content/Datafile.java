@@ -1,5 +1,6 @@
 package io.github.repir.tools.Content;
 
+import com.google.gson.JsonObject;
 import io.github.repir.tools.Structure.StructureWriter;
 import io.github.repir.tools.Structure.StructureData;
 import io.github.repir.tools.Buffer.BufferReaderWriter;
@@ -293,10 +294,11 @@ public class Datafile implements StructureData, Comparable<Object>, ByteSearchRe
         setCeiling(ceiling);
     }
 
-    public void resetOffsetCeiling() {
+    public void resetStart() {
         rwbuffer.offset = rwbuffer.bufferpos = 0;
         rwbuffer.setEnd(0);
         rwbuffer.ceiling = Long.MAX_VALUE;
+        rwbuffer.hasmore = true;
     }
 
     public void openWrite() {
@@ -353,8 +355,8 @@ public class Datafile implements StructureData, Comparable<Object>, ByteSearchRe
     }
 
     @Override
-    public void reset() {
-        this.rwbuffer.reset();
+    public void reuseBuffer() {
+        this.rwbuffer.reuseBuffer();
     }
 
     protected void open(Status newstatus) {
@@ -500,12 +502,20 @@ public class Datafile implements StructureData, Comparable<Object>, ByteSearchRe
         rwbuffer.skipString();
     }
 
+    public void skipJson() throws EOCException {
+        rwbuffer.skipJson();
+    }
+
     public void skipStringBuilder() throws EOCException {
         rwbuffer.skipStringBuilder();
     }
 
     public void skipString0() throws EOCException {
         rwbuffer.skipString0();
+    }
+
+    public void skipJson0() throws EOCException {
+        rwbuffer.skipJson0();
     }
 
     public void skipIntArray() throws EOCException {
@@ -881,6 +891,14 @@ public class Datafile implements StructureData, Comparable<Object>, ByteSearchRe
         return rwbuffer.readString();
     }
 
+    public JsonObject readJson() throws EOCException {
+        return rwbuffer.readJson();
+    }
+
+    public JsonObject readJson0() throws EOCException {
+        return rwbuffer.readJson0();
+    }
+
     public StringBuilder readStringBuilder() throws EOCException {
         return rwbuffer.readStringBuilder();
     }
@@ -1096,6 +1114,22 @@ public class Datafile implements StructureData, Comparable<Object>, ByteSearchRe
     public void write(String s) {
         if (status == Status.WRITE) {
             rwbuffer.write(s);
+        } else {
+            log.fatal("DataFile %s has to be put in a specific write mode before writing", this.getFullPath());
+        }
+    }
+
+    public void write(JsonObject o) {
+       if (status == Status.WRITE) {
+            rwbuffer.write(o);
+        } else {
+            log.fatal("DataFile %s has to be put in a specific write mode before writing", this.getFullPath());
+        }
+    }
+
+    public void write0(JsonObject o) {
+       if (status == Status.WRITE) {
+            rwbuffer.write0(o);
         } else {
             log.fatal("DataFile %s has to be put in a specific write mode before writing", this.getFullPath());
         }

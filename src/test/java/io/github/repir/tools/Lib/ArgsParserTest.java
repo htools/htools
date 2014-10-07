@@ -96,7 +96,26 @@ public class ArgsParserTest {
         assertEquals(0, parsedargs.getParameter("f").size());
         parsedargs = new ArgsParser("-a aap -b noot -c mies -f".split(" "), "-a first -b second -f -c [third]");
         assertEquals("true", parsedargs.get("f"));
+        assertEquals(true, parsedargs.getBoolean("f"));
         assertEquals("noot", parsedargs.get("second"));
         assertEquals("mies", parsedargs.get("third"));
+    }
+    
+    @Test
+    public void booleanFlag2() {
+        log.info("booleanflag");
+        parsedargs = new ArgsParser("aap noot".split(" "), "-v -r -i input -o output");
+        assertEquals(false, parsedargs.getBoolean("v"));
+        assertEquals(false, parsedargs.getBoolean("r"));
+        assertEquals("aap", parsedargs.get("input"));
+        assertEquals("noot", parsedargs.get("output"));
+    }
+    
+    @Test
+    public void testSpace() {
+        log.info("booleanflag");
+        parsedargs = new ArgsParser(new String[]{"-a", "aap noot", "-b", "noot"}, "-a first -b second");
+        assertEquals("aap noot", parsedargs.get("first"));
+        assertEquals("noot", parsedargs.get("second"));
     }
 }

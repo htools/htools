@@ -48,7 +48,7 @@ public abstract class StructuredFileKey<R extends StructuredFileKeyRecord, D ext
                super.openRead();
                if (isReadOpen()) {
                   setOffset(0);
-                  while (next()) {
+                  while (nextRecord()) {
                      containsdata = true;
                      R r = newRecord();
                      r.read(this);

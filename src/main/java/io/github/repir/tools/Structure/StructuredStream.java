@@ -185,7 +185,7 @@ public abstract class StructuredStream {
    }
 
    protected void advancePos() {
-      nextField = nextField.next();
+      nextField = nextField.nextField();
       if (nextField == null) {
          resetNextField();
       }
@@ -317,7 +317,7 @@ public abstract class StructuredStream {
        * @return the field that comes after this in the structure sequence, or
        * null if no such field exists.
        */
-      public Field next() {
+      public Field nextField() {
          if (next != null) {
             return next.arrivingAt();
          }

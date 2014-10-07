@@ -15,6 +15,9 @@
  */
 package io.github.repir.tools.Lib;
 
+import io.github.repir.tools.Type.Matrix;
+import io.github.repir.tools.Type.SparseDoubleArray;
+import io.github.repir.tools.Type.SparseDoubleMatrix;
 import org.junit.Assert;
 import org.junit.Test;
 

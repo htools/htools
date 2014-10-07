@@ -99,7 +99,7 @@ class HDFSOut implements DataOut {
          fsout.write(buffer.buffer, 0, buffer.bufferpos);
          buffer.offset += buffer.bufferpos;
          buffer.bufferpos = 0;
-         if (buffer.requestedbuffersize != buffer.getBufferSize()) {
+         if (buffer.getRequestedBufferSize() != buffer.getBufferSize()) {
             buffer.resize();
          }
       } catch (IOException ex) {

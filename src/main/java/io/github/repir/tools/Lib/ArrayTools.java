@@ -2,17 +2,15 @@ package io.github.repir.tools.Lib;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import io.github.repir.tools.ByteSearch.ByteRegex;
 
 /**
  *
  * @author jeroen
  */
-public class ArrayTools {
+public enum ArrayTools {;
 
    public static Log log = new Log(ArrayTools.class);
 
@@ -434,7 +432,7 @@ public class ArrayTools {
    
    public static boolean contains(Object needle, Object... objects) {
       for (int i = 0; i < objects.length; i++) {
-         if (needle == objects[i]) {
+         if (needle.equals(objects[i])) {
             return true;
          }
       }

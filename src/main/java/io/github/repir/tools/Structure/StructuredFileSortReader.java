@@ -22,7 +22,7 @@ public class StructuredFileSortReader implements Comparable<Object> {
    }
 
    public boolean next() {
-      return index.hasNext() && index.next();
+      return index.hasNext() && index.nextRecord();
    }
 
    @Override

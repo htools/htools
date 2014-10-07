@@ -75,7 +75,7 @@ public abstract class StructuredFileOffsetLength extends StructuredFile {
          in.setDatafile(df);
          df.setBufferSize((int) Math.min(10000000, df.getLength()));
          in.openRead();
-         while (in.next()) {
+         while (in.nextRecord()) {
             offset.write(in.offset.value + offsets[ offsetpos]);
             length.write(in.length.value);
             //log.info("%d %d", offset.value, length.value);

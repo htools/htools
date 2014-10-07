@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import io.github.repir.tools.DataTypes.Tuple2Comparable;
+import io.github.repir.tools.Type.Tuple2Comparable;
 
 /**
  *

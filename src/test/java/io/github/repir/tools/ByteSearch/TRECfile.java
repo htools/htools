@@ -43,7 +43,7 @@ public class TRECfile extends StructuredTextFile {
   
    public static void main(String[] args) {
       TRECfile f = setup();
-      while (f.next()) {
+      while (f.nextRecord()) {
         log.info("%s %s", f.title.get(), f.description.get());
      }
       f = new TRECfile(new Datafile("/home/jer/Desktop/aap.txt"));

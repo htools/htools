@@ -51,7 +51,7 @@ public class FSFileInBuffer extends FSFile implements DataIn {
    public void setBufferSize(int size) {
       //log.info("setbuffersize( %s bufferoffset %d bufferpos %d read %d fileoffset %d requestedbuffersize %d )",
       //        this.getFilename(), bufferoffset, buffer.bufferpos, buffer.end, getOffset(), size);
-      buffer.requestedbuffersize = size;
+      buffer.setBufferSize(size);
    }
 
    public int getBufferSize() {

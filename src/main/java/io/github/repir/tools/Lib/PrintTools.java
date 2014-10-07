@@ -1,9 +1,8 @@
 package io.github.repir.tools.Lib;
 
 import static io.github.repir.tools.Lib.Const.*;
-import java.io.*;
+import java.io.PrintStream;
 import java.util.Formatter;
-import java.text.SimpleDateFormat;
 
 /**
  * Abstract class for making lazy C-like printf() statements. Put <i>import
@@ -12,7 +11,7 @@ import java.text.SimpleDateFormat;
  * <p/>
  * @author jbpvuurens
  */
-public abstract class PrintTools {
+public enum PrintTools {;
 
    static Log log = new Log(PrintTools.class);
    public static PrintStream out = System.out;

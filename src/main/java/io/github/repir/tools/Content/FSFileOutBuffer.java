@@ -51,10 +51,7 @@ public class FSFileOutBuffer extends FSFile implements DataOut {
    }
 
    public void setBufferSize(int buffersize) {
-      buffer.requestedbuffersize = buffersize;
-      if (buffer.buffer != null && buffersize != buffer.buffer.length && buffer.bufferpos > 0) {
-         flushBuffer();
-      }
+      buffer.setBufferSize(buffersize);
    }
 
    @Override
@@ -69,7 +66,7 @@ public class FSFileOutBuffer extends FSFile implements DataOut {
          buffer.offset += buffer.bufferpos;
          //log.info("flushed %d", buffer.bufferpos);
          buffer.bufferpos = 0;
-         if (buffer.requestedbuffersize != buffer.getBufferSize()) {
+         if (buffer.getRequestedBufferSize() != buffer.getBufferSize()) {
             buffer.resize();
          }
       } catch (IOException ex) {

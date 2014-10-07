@@ -6,7 +6,7 @@ import io.github.repir.tools.Lib.Log;
  *
  * @author jbpvuurens
  */
-public class CompressTools {
+public enum CompressTools {;
 
    public static Log log = new Log(CompressTools.class);
 

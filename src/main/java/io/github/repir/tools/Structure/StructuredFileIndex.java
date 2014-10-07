@@ -82,7 +82,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
       for (Datafile df : sortedfiles) {
          in.setDatafile(df);
          in.openRead();
-         while (in.next()) {
+         while (in.nextRecord()) {
             this.writeKeys();
             if (bucketindex != null) {
                bucketindex.write(in.bucketindex.value);
@@ -187,7 +187,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
          if (!valuetuple.isAtStart()) {
             log.fatal("Have to make sure value is at start of tuple");
          } else {
-            valuetuple.next();
+            valuetuple.nextRecord();
             valuetuple.setTupleOffset();
          }
       }

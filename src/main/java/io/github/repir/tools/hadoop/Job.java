@@ -1,6 +1,7 @@
 package io.github.repir.tools.hadoop;
 
 import io.github.repir.tools.Lib.Log;
+import io.github.repir.tools.Lib.PrintTools;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -18,9 +19,9 @@ public class Job extends org.apache.hadoop.mapreduce.Job {
       super(configuration);
    }
 
-   public Job(Configuration configuration, String jobname) throws IOException {
+   public Job(Configuration configuration, String jobname, Object ... params) throws IOException {
       this(configuration);
-      setJobName(jobname);
+      setJobName(PrintTools.sprintf(jobname, params));
    }
 
   public void submit() throws IOException, InterruptedException, ClassNotFoundException {

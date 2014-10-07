@@ -1,27 +1,13 @@
 package io.github.repir.tools.Lib;
 
-import io.github.repir.tools.DataTypes.DateExt;
-import java.io.*;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author jeroen
  */
-public class ConversionTools {
-
-   /**
-    *
-    */
-   public static SimpleDateFormat dateformatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+public enum ConversionTools {;
 
    /**
     * @param s the string to parse for the double value
@@ -145,81 +131,6 @@ public class ConversionTools {
 
    /**
     *
-    * @param d
-    * @return
-    */
-   public static String toString(DateExt d) {
-      return (d == null) ? null : dateformatter.format(d);
-   }
-
-   /**
-    *
-    * @param c
-    * @return
-    */
-   public static String calendarToString(Calendar c) {
-      return (c == null) ? null : dateformatter.format(c.getTime());
-   }
-
-   /**
-    *
-    * @param c
-    * @return
-    */
-   public static Timestamp calendarToTimestamp(Calendar c) {
-      return new Timestamp(c.getTimeInMillis());
-   }
-
-   /**
-    *
-    * @param time
-    * @return
-    */
-   public static Timestamp stringToTimestamp(String time) {
-      return Timestamp.valueOf(time);
-   }
-
-   /**
-    *
-    * @param c
-    * @return
-    */
-   public static String timestampToString(Timestamp c) {
-      return (c == null) ? null : dateformatter.format(c.getTime());
-   }
-   
-   public static String dateToString(Date c) {
-      return (c == null) ? null : dateformatter.format(c.getTime());
-   }
-   
-   public static String unixTimeToString(long timestamp) {
-      return dateformatter.format(unixTimeStampToDate(timestamp));
-   }
-   
-   public static Date unixTimeStampToDate(long timeStamp) {
-       return new Date(timeStamp*1000);
-   }
-   /**
-    *
-    * @param t
-    * @return
-    */
-   public static Calendar timestampToCalendar(Timestamp t) {
-      try {
-         Calendar cal = Calendar.getInstance();
-         String ts = timestampToString(t);
-         if (ts != null) {
-            cal.setTime(dateformatter.parse(ts));
-            return cal;
-         }
-      } catch (ParseException ex) {
-         Logger.getLogger(ConversionTools.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      return null;
-   }
-
-   /**
-    *
     * @param c
     * @param o
     * @return
@@ -232,7 +143,7 @@ public class ConversionTools {
       } else if (c.getName() == "int" || c.getName() == "java.lang.Integer" || c.getName() == "java.lang.Long") {
          return o.toString();
       } else if (c.getName() == "java.sql.Timestamp") {
-         return timestampToString((Timestamp) o);
+         return DateTimeTools.toString((Timestamp) o);
       } else if (c.getCanonicalName().equals("byte[]")) {
          byte[] b = (byte[]) o;
          return new String(b);

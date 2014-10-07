@@ -44,7 +44,7 @@ public class StructuredTextTSVTest {
         file.closeWrite();
         file.openRead();
         int row = 0;
-        while (file.next()) {
+        while (file.nextRecord()) {
             assertEquals(names[row], file.name.get());
             assertEquals(numbers[row++], file.number.get(), 0.001);
         }

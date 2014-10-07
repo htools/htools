@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.github.repir</groupId>
         <artifactId>RepIRProx</artifactId>
-        <version>0.24-SNAPSHOT</version>
+        <version>0.25-SNAPSHOT</version>
         <relativePath>../RepIRProx/pom.xml</relativePath>
     </parent>
     <artifactId>RepIRTools</artifactId>
@@ -148,14 +148,23 @@
             <version>4.2.2</version>
             <classifier>complete-sources</classifier>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-core</artifactId>
-        </dependency>
+        </dependency-->
+        <!--dependency>
+            <groupId>yahoo.yinst.hadoop_mvn_client</groupId>
+            <artifactId>hadoop-client</artifactId>
+        </dependency-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>3.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3</version>
         </dependency>
     </dependencies>  
 </project>
