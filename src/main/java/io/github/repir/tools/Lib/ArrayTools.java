@@ -105,6 +105,12 @@ public enum ArrayTools {;
       return r;
    }
 
+   public static boolean[] clone(boolean[] a) {
+      boolean r[] = new boolean[a.length];
+      System.arraycopy(a, 0, r, 0, r.length);
+      return r;
+   }
+
    public static String[] clone(String[] a) {
       String r[] = new String[a.length];
       System.arraycopy(a, 0, r, 0, r.length);
@@ -257,6 +263,10 @@ public enum ArrayTools {;
       return ArrayTools.concat(b, 0, b.length, ", ");
    }
 
+   public static String concat(boolean[] b) {
+      return ArrayTools.concat(b, 0, b.length, ", ");
+   }
+
    public static String concat(byte[] b, int pos, int length, String separator) {
       StringBuilder sb = new StringBuilder();
       if (b.length > 0) {
@@ -317,6 +327,18 @@ public enum ArrayTools {;
    }
 
    public static String concat(long[] b, int pos, int length, String separator) {
+      StringBuilder sb = new StringBuilder();
+      if (b.length > 0) {
+         sb.append(b[pos]);
+      }
+      length = Math.min(length, b.length - pos);
+      for (int i = 1; i < length; i++) {
+         sb.append(separator).append(b[pos + i]);
+      }
+      return sb.toString();
+   }
+
+   public static String concat(boolean[] b, int pos, int length, String separator) {
       StringBuilder sb = new StringBuilder();
       if (b.length > 0) {
          sb.append(b[pos]);

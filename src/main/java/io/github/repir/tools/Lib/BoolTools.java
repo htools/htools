@@ -1,5 +1,13 @@
 package io.github.repir.tools.Lib;
 
+import io.github.repir.tools.ByteSearch.ByteSearch;
+import java.util.Arrays;
+
+/**
+ * Family of operations on 256 byte boolean decision arrays, used for fast processing
+ * on byte arrays.
+ * @author jeroen
+ */
 public enum BoolTools {;
 
    public static Log log = new Log(BoolTools.class);
@@ -50,14 +58,39 @@ public enum BoolTools {;
       return a;
    }
    
+   public static boolean[] allTrue() {
+      boolean a[] = new boolean[256];
+      Arrays.fill(a, true);
+      return a;
+   }
+   
    public static boolean[] whitespace() {
       return createASCIIAccept( '\n' , ' ', '\t' , '\r' );
    }
 
+   public static boolean[] invert(boolean array[]) {
+       boolean result[] = new boolean[256];
+       for (int i = 0; i < result.length; i++)
+           result[i] = !array[i];
+       return result;
+   }
+   
+   public static boolean[] firstAcceptedCharFromRegex(String regex) {
+       ByteSearch s = ByteSearch.create(regex);
+       return s.firstAcceptedChar();
+   }
+   
    public static boolean[] word() {
       return combineRanges(
               createASCIIAcceptRange('A', 'Z'), 
-              createASCIIAcceptRange('a', 'a'), 
+              createASCIIAcceptRange('a', 'z'), 
+              createASCIIAcceptRange('0', '9'));
+   }
+   
+   public static boolean[] label() {
+      return combineRanges(
+              createASCIIAcceptRange('A', 'Z'), 
+              createASCIIAcceptRange('a', 'z'), 
               createASCIIAcceptRange('0', '9'), 
               createASCIIAccept('_'));
    }
@@ -70,7 +103,11 @@ public enum BoolTools {;
    public static boolean[] letter() {
       return combineRanges(
               createASCIIAcceptRange('A', 'Z'), 
-              createASCIIAcceptRange('a', 'a'));
+              createASCIIAcceptRange('a', 'z'));
+   }
+   
+   public static boolean[] digit() {
+      return createASCIIAcceptRange('0', '9');
    }
    
    public static boolean[] namedot() {

@@ -148,7 +148,7 @@ public class BytePatternTest {
    @Test
    public void testConfiguration() {
       ByteRegex configuration = new ByteRegex("\\+?\\c\\w*(\\.\\c\\w*)+=\\S*$");
-      String command = "param1 2 mapred.job.priority=HIGH retriever.strategy=AAP";
+      String command = "param1 2 mapreduce.job.priority=HIGH retriever.strategy=AAP";
       String args[] = command.split(" ");
       assertEquals(true, configuration.startsWith(args[2]));
       assertEquals(true, configuration.startsWith(args[3]));

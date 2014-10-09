@@ -38,8 +38,8 @@ public abstract class StructuredOutputFormat<F extends StructuredRecordFile, V e
         FileSystem fs = HDFSDir.getFS(conf);
         String filename = conf.get(SINGLEFILE);
         if (filename == null || context.getNumReduceTasks() > 1) {
-           String name = conf.get("mapred.output.dir");
-           int partition = conf.getInt("mapred.task.partition", -1);
+           String name = conf.get("mapreduce.output.fileoutputformat.outputdir");
+           int partition = conf.getInt("mapreduce.task.partition", -1);
            filename = PrintTools.sprintf("%s/%s.%05d", name, "part", partition);
         }
         return new Datafile(fs, filename);

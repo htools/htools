@@ -165,4 +165,9 @@ public class ByteSearchString extends ByteSearch {
       }
       return p;
    }
+   
+    public static void main(String[] args) {
+        ByteSearchString a = (ByteSearchString)ByteSearch.create("Eintein");
+        log.info("%b", a.exists("this Albert einstein and this too"));
+    }
 }

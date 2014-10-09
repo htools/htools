@@ -210,7 +210,7 @@ public class Log {
       return level <= WARN || (level == GENERALLEVEL && generallevel <= WARN);
    }
 
-   protected static void out(String s, Object... args) {
+   public static void out(String s, Object... args) {
       if (out == null) {
          System.out.println(sprintf(s, args));
       } else {

@@ -1,5 +1,7 @@
 package io.github.repir.tools.ByteSearch;
 
+import io.github.repir.tools.Lib.ArrayTools;
+import io.github.repir.tools.Lib.BoolTools;
 import io.github.repir.tools.Lib.ByteTools;
 import io.github.repir.tools.Lib.Log;
 import java.util.ArrayList;
@@ -48,6 +50,18 @@ public abstract class ByteSearch {
                 return new ByteSearchString(pattern, list);
             }
         }
+    }
+    
+    public boolean[] firstAcceptedChar() {
+        if (this instanceof ByteRegex)
+            return ArrayTools.clone(((ByteRegex)this).root.allowed);
+        if (this instanceof ByteSearchSingleClass)
+            return ((ByteSearchSingleClass)this).getValid();
+        if (this instanceof ByteSearchSingle)
+            return BoolTools.createASCIIAccept((char)((ByteSearchSingle)this).b);
+        if (this instanceof ByteSearchString)
+            return ArrayTools.clone(((ByteSearchString)this).pattern[0]);
+        return new boolean[256];    
     }
 
     public ByteSearch QuoteSafe() {
@@ -141,7 +155,7 @@ public abstract class ByteSearch {
 
     public boolean exists(String s) {
         byte a[] = s.getBytes();
-        return find(a, 0, a.length) > -1;
+        return exists(a, 0, a.length);
     }
 
     public boolean startsWith(String s) {

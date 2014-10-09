@@ -114,7 +114,7 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
         try {
             GenericOptionsParser p = new GenericOptionsParser(this, args);
             args = p.getRemainingArgs();
-            log.info("ramaining args %s", ArrayTools.concat(args));
+            //log.info("ramaining args %s", ArrayTools.concat(args));
         } catch (IOException ex) {
             log.fatalexception(ex, "Configuration(%s, %s)", ArrayTools.concat(args), template);
         }
@@ -140,7 +140,7 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
         ArrayList<String> ar = new ArrayList<String>();
         for (int i = 0; i < args.length; i++) {
             if (configurationkey.startsWith(args[i])) {
-                log.info("argstoconf %s", args[i]);
+                //log.info("argstoconf %s", args[i]);
                 processScript(args[i]);
             } else {
                 ar.add(args[i]);
@@ -474,15 +474,15 @@ public class Configuration extends org.apache.hadoop.conf.Configuration {
     }
 
     public void setPriorityHigh() {
-        softSetConfiguration("mapred.job.priority", JobPriority.HIGH.toString());
+        softSetConfiguration("mapreduce.job.priority", JobPriority.HIGH.toString());
     }
 
     public void setPriorityVeryHigh() {
-        softSetConfiguration("mapred.job.priority", JobPriority.VERY_HIGH.toString());
+        softSetConfiguration("mapreduce.job.priority", JobPriority.VERY_HIGH.toString());
     }
 
     public void setPriorityLow() {
-        softSetConfiguration("mapred.job.priority", JobPriority.LOW.toString());
+        softSetConfiguration("mapreduce.job.priority", JobPriority.LOW.toString());
     }
 
 }
