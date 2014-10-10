@@ -6,6 +6,7 @@ import io.github.repir.tools.ByteSearch.ByteRegex;
 import io.github.repir.tools.ByteSearch.ByteSearch;
 import io.github.repir.tools.ByteSearch.ByteSearchPosition;
 import io.github.repir.tools.ByteSearch.ByteSection;
+import io.github.repir.tools.Extractor.Entity.Section;
 import io.github.repir.tools.Lib.Log;
 import java.util.ArrayList;
 
@@ -30,14 +31,15 @@ public class MarkTitle extends SectionMarker {
    }
 
    @Override
-   public void process(Entity entity, int sectionstart, int sectionend, ByteSearchPosition position) {
+   public Section process(Entity entity, int sectionstart, int sectionend, ByteSearchPosition position) {
       int tagclose = findQuoteSafeTagEnd(entity, position.end, sectionend);
       if (tagclose > -1) {
          position.end = tagclose;
          ByteSearchPosition end = endmarker.findPos(entity.content, tagclose, sectionend);
          if (end.found()) {
-            entity.addSectionPos(outputsection, position.start, tagclose, end.start, end.end);
+            return entity.addSectionPos(outputsection, position.start, tagclose, end.start, end.end);
          }
       }
+      return null;
    }
 }

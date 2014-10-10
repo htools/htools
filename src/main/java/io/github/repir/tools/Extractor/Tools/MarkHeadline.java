@@ -5,6 +5,7 @@ import io.github.repir.tools.ByteSearch.ByteSearchPosition;
 import io.github.repir.tools.Extractor.Entity;
 import io.github.repir.tools.Extractor.Extractor;
 import io.github.repir.tools.ByteSearch.ByteSearch;
+import io.github.repir.tools.Extractor.Entity.Section;
 import io.github.repir.tools.Lib.Log;
 import java.util.ArrayList;
 
@@ -15,23 +16,24 @@ import java.util.ArrayList;
  */
 public class MarkHeadline extends SectionMarker {
 
-   public static Log log = new Log(MarkHeadline.class);
-   public ByteSearch endmarker = ByteSearch.create("</headline>");
+    public static Log log = new Log(MarkHeadline.class);
+    public ByteSearch endmarker = ByteSearch.create("</headline>");
 
-   public MarkHeadline(Extractor extractor, String inputsection, String outputsection) {
-      super(extractor, inputsection, outputsection);
-   }
+    public MarkHeadline(Extractor extractor, String inputsection, String outputsection) {
+        super(extractor, inputsection, outputsection);
+    }
 
-   @Override
-   public ByteRegex getStartMarker() {
-      return new ByteRegex("<headline>");
-   }
+    @Override
+    public ByteRegex getStartMarker() {
+        return new ByteRegex("<headline>");
+    }
 
-   @Override
-   public void process(Entity entity, int sectionstart, int sectionend, ByteSearchPosition position) {
-         ByteSearchPosition end = endmarker.findPos(entity.content, position.end, sectionend);
-         if (end.found() && end.start > position.end) {
-            entity.addSectionPos(outputsection, position.start, position.end, end.start, end.end);
-         }
-      }
+    @Override
+    public Section process(Entity entity, int sectionstart, int sectionend, ByteSearchPosition position) {
+        ByteSearchPosition end = endmarker.findPos(entity.content, position.end, sectionend);
+        if (end.found() && end.start > position.end) {
+            return entity.addSectionPos(outputsection, position.start, position.end, end.start, end.end);
+        }
+        return null;
+    }
 }

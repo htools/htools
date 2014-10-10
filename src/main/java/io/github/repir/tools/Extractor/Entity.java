@@ -92,13 +92,15 @@ public class Entity extends HashMap<String, EntityChannel> implements io.github.
       }
    }
 
-   public void addSectionPos(String section, int openlead, int open, int close, int closetrail) {
+   public Section addSectionPos(String section, int openlead, int open, int close, int closetrail) {
       ArrayList<Section> list = sectionpositions.get(section);
       if (list == null) {
          list = new ArrayList<Section>();
          sectionpositions.put(section, list);
       }
-      list.add(new Section(openlead, open, close, closetrail));
+      Section s = new Section(openlead, open, close, closetrail);
+      list.add(s);
+      return s;
    }
 
    public ArrayList<Section> getSectionPos(String section) {

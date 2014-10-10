@@ -5,6 +5,7 @@ import io.github.repir.tools.ByteSearch.ByteSearchPosition;
 import io.github.repir.tools.Extractor.Entity;
 import io.github.repir.tools.Extractor.Extractor;
 import io.github.repir.tools.ByteSearch.ByteSearch;
+import io.github.repir.tools.Extractor.Entity.Section;
 import io.github.repir.tools.Lib.Log;
 import java.util.ArrayList;
 
@@ -28,10 +29,11 @@ public class MarkTTL extends SectionMarker {
    }
 
    @Override
-   public void process(Entity entity, int sectionstart, int sectionend, ByteSearchPosition start) {
+   public Section process(Entity entity, int sectionstart, int sectionend, ByteSearchPosition start) {
       ByteSearchPosition end = endmarker.findPos(entity.content, start.end, sectionend);
       if (end.found()) {
-         entity.addSectionPos(outputsection, start.start, start.end, end.start, end.end);
+         return entity.addSectionPos(outputsection, start.start, start.end, end.start, end.end);
       }
+      return null;
    }
 }

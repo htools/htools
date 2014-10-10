@@ -6,6 +6,7 @@ import io.github.repir.tools.Extractor.Entity;
 import io.github.repir.tools.Extractor.Extractor;
 import io.github.repir.tools.ByteSearch.ByteSearch;
 import io.github.repir.tools.ByteSearch.ByteSearchString;
+import io.github.repir.tools.Extractor.Entity.Section;
 import io.github.repir.tools.Lib.ByteTools;
 import java.util.ArrayList;
 
@@ -41,7 +42,7 @@ public abstract class SectionMarker {
     */
    public abstract ByteRegex getStartMarker();
 
-   public abstract void process(Entity entity, int sectionstart, int sectionend, ByteSearchPosition position);
+   public abstract Section process(Entity entity, int sectionstart, int sectionend, ByteSearchPosition position);
 
    public int findQuoteSafeTagEnd(Entity entity, int pos, int end) {
       return endtag.findEndQuoteSafe(entity.content, pos, end);

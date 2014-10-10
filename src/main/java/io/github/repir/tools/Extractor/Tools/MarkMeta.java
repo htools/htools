@@ -3,6 +3,7 @@ package io.github.repir.tools.Extractor.Tools;
 import io.github.repir.tools.ByteSearch.ByteRegex;
 import io.github.repir.tools.ByteSearch.ByteSearchPosition;
 import io.github.repir.tools.Extractor.Entity;
+import io.github.repir.tools.Extractor.Entity.Section;
 import io.github.repir.tools.Extractor.Extractor;
 import io.github.repir.tools.Lib.Log;
 import java.util.ArrayList;
@@ -26,10 +27,11 @@ public class MarkMeta extends SectionMarker {
    }
 
    @Override
-   public void process(Entity entity, int sectionstart, int sectionend, ByteSearchPosition position) {
+   public Section process(Entity entity, int sectionstart, int sectionend, ByteSearchPosition position) {
       int tagclose = findQuoteSafeTagEnd(entity, position.end, sectionend) + 1;
       if (tagclose > -1) {
-         entity.addSectionPos(outputsection, position.start, position.start, tagclose, tagclose);
+         return entity.addSectionPos(outputsection, position.start, position.start, tagclose, tagclose);
       }
+      return null;
    }
 }

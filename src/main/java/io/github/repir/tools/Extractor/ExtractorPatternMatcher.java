@@ -2,9 +2,11 @@ package io.github.repir.tools.Extractor;
 
 import io.github.repir.tools.ByteSearch.ByteRegex;
 import io.github.repir.tools.ByteSearch.ByteSearchPosition;
+import io.github.repir.tools.Extractor.Entity.Section;
 import io.github.repir.tools.Extractor.Tools.SectionMarker;
 import io.github.repir.tools.Lib.Log;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Helper class for {@link Extractor} to mark {@link Section}s in an
@@ -31,10 +33,18 @@ public class ExtractorPatternMatcher {
       patternmatcher = ByteRegex.combine(regex.toArray(new ByteRegex[regex.size()]));
    }
 
+   /**
+    * Marks all non-overlapping sections for all markers in the entities raw content. 
+    */
    void processSectionMarkers(Entity entity, int sectionstart, int sectionend) {
+      Section[] lastSection = new Section[markers.size()];
       ArrayList<ByteSearchPosition> positions = patternmatcher.findAllPos(entity.content, sectionstart, sectionend);
       for (ByteSearchPosition pos : positions) { // find all possible section starts
-         markers.get(pos.pattern).process(entity, sectionstart, sectionend, pos);
+          if (lastSection[pos.pattern] == null || lastSection[pos.pattern].closetrail < pos.start) {
+             Section section = markers.get(pos.pattern).process(entity, sectionstart, sectionend, pos);
+             if (section != null)
+                 lastSection[pos.pattern] = section;
+          }
       }
    }
 }
