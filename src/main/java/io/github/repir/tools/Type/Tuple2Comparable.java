@@ -24,4 +24,9 @@ public class Tuple2Comparable<R extends Comparable, S extends Comparable> implem
    public boolean equals(Object o) {
       return (o instanceof Tuple2Comparable && ((Tuple2Comparable) o).value1.equals(value1) && ((Tuple2Comparable) o).value2.equals(value2));
    }
+   
+   @Override
+   public String toString() {
+       return new StringBuilder().append("(").append(value1).append(",").append(value2).append(")").toString();
+   }
 }

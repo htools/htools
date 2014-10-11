@@ -47,8 +47,8 @@ public class MarkWikipediaMLMacro extends SectionMarker {
                 }
             }
         }
-        if (macroopen == 0 && entity.content[pos - 1] == '}' && newlines > 1) {
-            return entity.addSectionPos(outputsection, position.start, position.end, pos - 1, pos + 1);
+        if (macroopen == 0 && entity.content[pos - 2] == '}' && newlines > 1) {
+            return entity.addSectionPos(outputsection, position.start, position.end, pos - 2, pos);
         }
         return null;
     }

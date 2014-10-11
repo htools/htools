@@ -124,6 +124,11 @@ public class Entity extends HashMap<String, EntityChannel> implements io.github.
          this.close = close;
          this.closetrail = closetrail;
       }
+      
+      @Override
+      public Object clone() {
+          return new Section( openlead,  open,  close,  closetrail);
+      }
 
       @Override
       public void write(StructureWriter writer) {

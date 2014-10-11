@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.TreeSet;
 import org.apache.hadoop.conf.Configuration;
 
 /**
@@ -36,14 +37,15 @@ public class Extractor {
     public static Log log = new Log(Extractor.class);
     public Configuration conf;
     private boolean neverused = true;
-    protected ArrayList<ExtractorProcessor> preprocess = new ArrayList<ExtractorProcessor>();
-    protected HashMap<String, ArrayList<ExtractorProcessor>> processor = new HashMap<String, ArrayList<ExtractorProcessor>>();
-    protected HashSet<String> processes = new HashSet<String>();
-    protected ArrayList<String> sections = new ArrayList<String>();
-    protected HashMap<String, ArrayList<SectionMarker>> sectionmarkers = new HashMap<String, ArrayList<SectionMarker>>();
-    protected ArrayList<ExtractorPatternMatcher> patternmatchers = new ArrayList<ExtractorPatternMatcher>();
-    protected ArrayList<SectionMarker> markers = new ArrayList<SectionMarker>();
-    protected ArrayList<SectionProcess> processors = new ArrayList<SectionProcess>();
+    protected ArrayList<ExtractorProcessor> preprocess = new ArrayList();
+    protected HashMap<String, ArrayList<ExtractorProcessor>> processor = new HashMap();
+    protected HashSet<String> processes = new HashSet();
+    protected ArrayList<String> inputsections = new ArrayList();
+    protected ArrayList<String> allsections = new ArrayList();
+    protected HashMap<String, ArrayList<SectionMarker>> sectionmarkers = new HashMap();
+    protected ArrayList<ExtractorPatternMatcher> patternmatchers = new ArrayList();
+    protected ArrayList<SectionMarker> markers = new ArrayList();
+    protected ArrayList<SectionProcess> processors = new ArrayList();
     protected ByteRegex sectionstart;
 
     /**
@@ -53,6 +55,7 @@ public class Extractor {
      * provide a constructor that allows to set the required parameters.
      */
     public Extractor() {
+        conf = new Configuration();
     }
 
     /**
@@ -108,7 +111,7 @@ public class Extractor {
     }
 
     private void createPatternMatchers() {
-        for (String section : sections) {
+        for (String section : inputsections) {
             patternmatchers.add(new ExtractorPatternMatcher(this, section, sectionmarkers.get(section)));
         }
     }
@@ -165,8 +168,14 @@ public class Extractor {
             sectionmarkers.put(inputsection, list);
         }
         list.add(marker);
-        if (!sections.contains(inputsection)) {
-            sections.add(inputsection);
+        if (!inputsections.contains(inputsection)) {
+            inputsections.add(inputsection);
+        }
+        if (!allsections.contains(inputsection)) {
+            allsections.add(inputsection);
+        }
+        if (!allsections.contains(outputsection)) {
+            allsections.add(outputsection);
         }
     }
 
@@ -293,8 +302,8 @@ public class Extractor {
 
     void processSectionMarkers(Entity entity, int bufferpos, int bufferend) {
         //entity.addSectionPos( "all", bufferpos, bufferpos, bufferend, bufferend );
-        for (int section = 0; section < sections.size(); section++) {
-            String sectionname = sections.get(section);
+        for (int section = 0; section < inputsections.size(); section++) {
+            String sectionname = inputsections.get(section);
             //log.info("processSectionMarkers %s", sectionname);
             ExtractorPatternMatcher patternmatcher = patternmatchers.get(section);
             for (Section pos : entity.getSectionPos(sectionname)) {
@@ -303,6 +312,54 @@ public class Extractor {
         }
     }
 
+    /**
+     * Creates a new Array of Section based on an existing Section name, 
+     * from which all positions that are occupied by any instance of an array
+     * of other Section are removed. Typical usage is to use "all" as the
+     * container section, and Extractor.sections as the other sections, which
+     * results in a section that contains all positions except those marked
+     * in other sections. Note that "all" is automatically excluded from the
+     * list of other sections.
+     * @param entity
+     * @param containersection
+     * @param othersections
+     * @param resultsection 
+     */
+    protected void createUnmarkedSection(Entity entity, String containersection, ArrayList<String> othersections, String resultsection) {
+        TreeSet<Section> all = new TreeSet();
+        for (Section section : entity.getSectionPos(containersection)) {
+            all.add((Section)section.clone());
+        }
+        TreeSet<Section> other = new TreeSet();
+        for (String section : othersections) {
+            if (!section.equals(containersection)) {
+                other.addAll(entity.getSectionPos(section));
+            }
+        }
+        Section firstother = other.pollFirst();
+        while (all.size() > 0) {
+            Section s = all.pollFirst();
+            while (s.open < s.closetrail) {
+                log.info("section %d %d", s.open, s.closetrail);
+                for (; firstother != null && firstother.closetrail < s.open; firstother = other.pollFirst());
+                if (firstother == null || firstother.open >= s.closetrail) {
+                    log.info("add1 %d %d %d %d", s.openlead, s.open, s.close, s.closetrail);
+                    entity.addSectionPos(resultsection, s.openlead, s.open, s.close, s.closetrail);
+                    s.open = s.closetrail;
+                } else {
+                    if (firstother.openlead > s.open) {
+                        log.info("add2 %d %d", s.open, firstother.openlead);
+                        entity.addSectionPos(resultsection, s.openlead, s.open, firstother.openlead, firstother.openlead);
+                    }
+                    s.open = firstother.closetrail;
+                    s.openlead = firstother.closetrail;
+                    firstother = other.pollFirst();
+                }
+            }
+        }
+    }
+    
+    
     private class SectionProcess {
 
         String section;

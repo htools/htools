@@ -28,7 +28,7 @@ public class ExtractorPatternMatcher {
       ArrayList<ByteRegex> regex = new ArrayList<ByteRegex>();
       this.markers = markers;
       for (SectionMarker p : markers) {
-         regex.add(((SectionMarker) p).getStartMarker());
+         regex.add(p.getStartMarker());
       }
       patternmatcher = ByteRegex.combine(regex.toArray(new ByteRegex[regex.size()]));
    }

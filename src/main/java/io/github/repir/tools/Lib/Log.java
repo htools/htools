@@ -228,11 +228,11 @@ public class Log {
       }
    }
 
-   protected static void err(String s, Object... args) {
+   protected static void err(String s) {
       if (out == null) {
-         System.err.println(sprintf(s, args));
+         System.err.println(s);
       } else {
-         out.printf(s + "\n", args);
+         out.print(s + "\n");
          out.flush();
       }
    }
@@ -426,8 +426,8 @@ public class Log {
    }
 
    public void exception(Exception e, String why, Object... params) {
-      err(why, params);
-      err(prefix + "EXCEPTION %s", e.getMessage());
+      err(sprintf(why, params));
+      err(sprintf(prefix + "EXCEPTION %s", e.getMessage()));
       err(getCustomStackTrace(e.getStackTrace()));
    }
 

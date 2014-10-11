@@ -1250,6 +1250,11 @@ public class Datafile implements StructureData, Comparable<Object>, ByteSearchRe
         rwbuffer.print(s);
     }
 
+    public void print(String s) {
+        this.openWrite();
+        rwbuffer.print(s);
+    }
+
     public String readAsString() {
         this.openRead();
         byte b[] = new byte[(int) this.getLength()];

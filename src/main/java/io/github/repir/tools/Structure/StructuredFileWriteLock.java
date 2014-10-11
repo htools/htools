@@ -25,7 +25,7 @@ public abstract class StructuredFileWriteLock extends StructuredFile {
    public StructuredFileWriteLock(Datafile basefile, Configuration conf) {
       super(basefile.getSubFile(".lock"));
       this.configuration = conf;
-      jobid = conf.get("mapred.job.id");
+      jobid = conf.get("mapreduce.job.id");
    }
 
    public boolean obtainLock() throws FileIntegrityException {

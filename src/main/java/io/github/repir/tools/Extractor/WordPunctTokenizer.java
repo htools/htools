@@ -3,12 +3,7 @@ package io.github.repir.tools.Extractor;
 import io.github.repir.tools.Extractor.Tools.ConvertHtmlASCIICodes;
 import io.github.repir.tools.Extractor.Tools.ConvertHtmlAmpersand;
 import io.github.repir.tools.Extractor.Tools.ConvertHtmlSpecialCodes;
-import io.github.repir.tools.Extractor.Tools.ConvertUnicodeDiacritics;
-import io.github.repir.tools.Extractor.Tools.RemoveHtmlComment;
-import io.github.repir.tools.Extractor.Tools.RemoveHtmlSpecialCodes;
-import io.github.repir.tools.Extractor.Tools.RemoveHtmlTags;
-import io.github.repir.tools.Extractor.Tools.RemoveNonASCII;
-import io.github.repir.tools.Extractor.Tools.TokenProcessor;
+import io.github.repir.tools.Extractor.Tools.TokenInvertedWord;
 import io.github.repir.tools.Extractor.Tools.TokenWord;
 import io.github.repir.tools.Extractor.Tools.TokenizerRegex;
 import io.github.repir.tools.Lib.Log;
@@ -39,7 +34,7 @@ public class WordPunctTokenizer extends Extractor {
    private TokenizerRegex getTokenizer() {
        TokenizerRegex tokenizerRegex = new TokenizerRegex(this, "tokenize");
        tokenizerRegex.setupTokenProcessor("word", TokenWord.class);
-       tokenizerRegex.setupTokenProcessor("space", TokenWord.class);
+       tokenizerRegex.setupTokenProcessor("space", TokenInvertedWord.class);
        return tokenizerRegex;
    }
    
