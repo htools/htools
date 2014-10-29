@@ -20,10 +20,10 @@ public abstract class StructuredTextTSV extends StructuredTextCSV {
    public StructuredTextTSV(BufferReaderWriter reader) {
        // #2, #3 are regex to identify beginning and end of field for reading
        // #4, #5 are Strings added before and after field when writing
-      super( reader, "", "\t", "", "\t");
+      super( reader, "", "\t|$", "", "\t");
    }
 
    public StructuredTextTSV(Datafile writer) {
-      super( writer, "", "\t", "", "\t");
+      super( writer, "", "\t|$", "", "\t");
    }
 }

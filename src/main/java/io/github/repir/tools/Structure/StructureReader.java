@@ -5,6 +5,7 @@ import io.github.repir.tools.Content.ByteSearchReader;
 import io.github.repir.tools.Content.DataIn;
 import io.github.repir.tools.Content.EOCException;
 import java.io.DataInput;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -75,6 +76,8 @@ public interface StructureReader extends ByteSearchReader {
 
    public byte[] readByteBlock() throws EOCException;
 
+   public <T> T read(Type t)  throws EOCException;
+        
    public void skipByte() throws EOCException;
 
    public void skipByteBlock() throws EOCException;

@@ -1,6 +1,7 @@
 package io.github.repir.tools.Lib;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,20 +15,20 @@ public enum ArrayTools {;
 
    public static Log log = new Log(ArrayTools.class);
 
-   public static Object[] group(Object... obj) {
+   public static <K> K[] group(K... obj) {
       return obj;
    }
 
-   public static Object[] addArr(Object[] obj, Object... o) {
-      Object n[] = resize( obj, obj.length + o.length);
+   public static <K> K[] addArr(K[] obj, K... o) {
+      K n[] = (K[])resize( obj, obj.length + o.length);
       System.arraycopy(o, 0, n, obj.length, o.length);
       return n;
    }
 
-   public static Object[] resize(Object[] obj, int newsize) {
+   public static <K> K[] resize(K[] obj, int newsize) {
        if (newsize == obj.length)
            return obj;
-      Object n[] = createArray( obj, newsize);
+      K n[] = createArray( obj, newsize);
       if (newsize > obj.length)
          System.arraycopy(obj, 0, n, 0, obj.length);
       else 
@@ -35,8 +36,8 @@ public enum ArrayTools {;
       return n;
    }
 
-   public static Object[] addObjectToArr(Object[] obj, Object o) {
-      Object n[] = resize( obj, obj.length + 1);
+   public static <K> K[] addObjectToArr(K[] obj, K o) {
+      K n[] = resize( obj, obj.length + 1);
       n[obj.length] = o;
       return n;
    }
@@ -45,12 +46,12 @@ public enum ArrayTools {;
       System.arraycopy(obj, 0, dest, 0, Math.min(obj.length, dest.length));
    }
 
-   public static Object[] union(Object[] ... morearrays) {
+   public static <K> K[] union(K[] ... morearrays) {
       int length = 0;
       for (Object[] oo : morearrays) {
          length += oo.length;
       }
-      Object dest[] = createArray( morearrays[0], length );
+      K dest[] = createArray( morearrays[0], length );
       int pos = 0;
       for (Object[] oo : morearrays) {
          System.arraycopy(oo, 0, dest, pos, oo.length);
@@ -59,22 +60,25 @@ public enum ArrayTools {;
       return dest;
    }
    
-   public static Object[] union(Object[] a, Object [] b) {
-      Object c[] = resize( a, a.length + b.length );
+   public static <K> K[] union(K[] a, K [] b) {
+      K c[] = resize( a, a.length + b.length );
       System.arraycopy(b, 0, c, a.length, b.length);
       return c;
    }
    
-   public static Object[] createArray( Object other[], int size) {
-      Class stringArrayClass = other.getClass();
-      return createArray(stringArrayClass.getComponentType(), size);
+   public static <K> K[] createArray( K other[], int size) {
+       return createArray( other.getClass().getComponentType(), size );
+       //K[] a = Arrays.copyOf(other, 0);
+       //return (K[])Arrays.copyOf(a, size, other.getClass());
    }
 
-   public static Object[] createArray( Class datatype, int size) {
-      return (Object[]) java.lang.reflect.Array.newInstance(datatype, size);
+   private static Object[] nullarray = new Object[0];
+   public static <K> K[] createArray( Class datatype, int size) {
+      //return (K[])Arrays.copyOf(nullarray, size, datatype);
+      return (K[]) java.lang.reflect.Array.newInstance(datatype, size);
    }
 
-   public static int indexOf(Object array[], Object needle) {
+   public static <K> int indexOf(K array[], K needle) {
       for (int i = 0; i < array.length; i++) {
          if (array[i].equals(needle)) {
             return i;
@@ -89,14 +93,14 @@ public enum ArrayTools {;
     * excluded from the array returned;
     * @return array consisting of all objects in the collection except t
     */
-   public static Object[] arrayOfOthers( Collection c, Object t ) {
-      ArrayList<Object> list = new ArrayList<Object>();
-      for (Object o : c) {
+   public static <K> K[] arrayOfOthers( Collection<K> c, K t ) {
+      ArrayList<K> list = new ArrayList();
+      for (K o : c) {
          if (o != t) {
             list.add(o);
          }
       }
-      return list.toArray(createArray( t.getClass(), list.size()));
+      return list.toArray((K[])createArray( t.getClass(), list.size()));
    }
 
    public static int[] clone(int[] a) {
@@ -452,7 +456,7 @@ public enum ArrayTools {;
       a[p2] = p3;
    }
    
-   public static boolean contains(Object needle, Object... objects) {
+   public static <K> boolean contains(K needle, K... objects) {
       for (int i = 0; i < objects.length; i++) {
          if (needle.equals(objects[i])) {
             return true;

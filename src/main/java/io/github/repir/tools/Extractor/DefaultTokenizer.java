@@ -8,6 +8,10 @@ import io.github.repir.tools.Extractor.Tools.RemoveHtmlComment;
 import io.github.repir.tools.Extractor.Tools.RemoveHtmlSpecialCodes;
 import io.github.repir.tools.Extractor.Tools.RemoveHtmlTags;
 import io.github.repir.tools.Extractor.Tools.RemoveNonASCII;
+import io.github.repir.tools.Extractor.Tools.TokenInvertedWord;
+import io.github.repir.tools.Extractor.Tools.TokenProcessor;
+import io.github.repir.tools.Extractor.Tools.TokenWord;
+import io.github.repir.tools.Extractor.Tools.TokenizerRegex;
 import io.github.repir.tools.Lib.Log;
 import java.util.ArrayList;
 /**
@@ -16,6 +20,8 @@ import java.util.ArrayList;
  */
 public class DefaultTokenizer extends Extractor {
    public static final Log log = new Log( DefaultTokenizer.class );
+   private TokenizerRegex tokenizer;
+   private TokenWord wordprocessor;
 
    public DefaultTokenizer() {
        super();
@@ -30,20 +36,25 @@ public class DefaultTokenizer extends Extractor {
        this.addProcess("tokenize", ConvertHtmlAmpersand.class);
        this.addProcess("tokenize", RemoveHtmlTags.class);
        this.addProcess("tokenize", RemoveHtmlSpecialCodes.class);
-       this.addProcess("tokenize", getTokenizer());
+       createTokenizer();
+       this.addProcess("tokenize", tokenizer);
    }
    
-   private io.github.repir.tools.Extractor.Tools.Tokenizer getTokenizer() {
-       String splitbefore = "%[*^<{($#@,?-+&";
-       String splitafter = "\\~|\"'`]})>/_!:;=";
-       String leavefirst = "A-Z a-z 0-9";
-       String leavelast = "A-Z a-z 0-9";
-       boolean splitnumbers = false;
-       boolean lowercase = false;
-       int maxtokenlength = 25;
-       return new io.github.repir.tools.Extractor.Tools.Tokenizer(this, "tokenize",
-              splitbefore, splitafter, leavefirst, leavelast,
-              splitnumbers, lowercase, maxtokenlength);
+   public TokenizerRegex getTokenizer() {
+       return tokenizer;
+   }
+   
+   public TokenWord getTokenprocessor() {
+       return wordprocessor;
+   }
+   
+   public void addEndPipeline(Class clazz) {
+       this.addProcess("tokenize", clazz);
+   }
+   
+   private void createTokenizer() {
+       tokenizer = new TokenizerRegex(this, "tokenize");
+       wordprocessor = (TokenWord)tokenizer.setupTokenProcessor("word", TokenWord.class);
    }
    
    public ArrayList<String> tokenize(byte content[]) {

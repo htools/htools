@@ -11,6 +11,9 @@ import io.github.repir.tools.Extractor.Tools.RemoveHtmlSpecialCodes;
 import io.github.repir.tools.Extractor.Tools.RemoveHtmlTags;
 import io.github.repir.tools.Extractor.Tools.RemoveNonASCII;
 import io.github.repir.tools.Extractor.Tools.StoreLiteralSection;
+import io.github.repir.tools.Extractor.Tools.TokenInvertedWord;
+import io.github.repir.tools.Extractor.Tools.TokenWord;
+import io.github.repir.tools.Extractor.Tools.TokenizerRegex;
 import io.github.repir.tools.Lib.Log;
 import java.util.ArrayList;
 
@@ -39,17 +42,11 @@ public class HtmlTokenizedTitleExtractor extends Extractor {
        this.addProcess("tokenize", getTokenizer());
    }
    
-   private io.github.repir.tools.Extractor.Tools.Tokenizer getTokenizer() {
-       String splitbefore = "%[*^<{($#@,?-+&";
-       String splitafter = "\\~|\"'`]})>/_!:;=";
-       String leavefirst = "A-Z a-z 0-9";
-       String leavelast = "A-Z a-z 0-9";
-       boolean splitnumbers = false;
-       boolean lowercase = false;
-       int maxtokenlength = 25;
-       return new io.github.repir.tools.Extractor.Tools.Tokenizer(this, "tokenize",
-              splitbefore, splitafter, leavefirst, leavelast,
-              splitnumbers, lowercase, maxtokenlength);
+   private TokenizerRegex getTokenizer() {
+       TokenizerRegex tokenizerRegex = new TokenizerRegex(this, "");
+        tokenizerRegex.setupTokenProcessor("word", TokenWord.class);
+        //tokenizerRegex.setupTokenProcessor("space", TokenInvertedWord.class);
+        return tokenizerRegex;
    }
    
    public ArrayList<String> extract(byte content[]) {

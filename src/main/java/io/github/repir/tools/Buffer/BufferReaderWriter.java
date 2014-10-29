@@ -20,6 +20,7 @@ import io.github.repir.tools.Lib.PrintTools;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -136,9 +137,11 @@ public class BufferReaderWriter implements StructureData {
       this.buffer = buffer;
       bufferpos = 0;
       offset = 0;
-      setEnd(buffer.length);
-      if (buffer.length > 0)
-         requestedbuffersize = buffer.length;
+      if (buffer != null) {
+         setEnd(buffer.length);
+         if (buffer.length > 0)
+            requestedbuffersize = buffer.length;
+      }
    }
 
    public final void setBuffer(byte buffer[], int pos, int end) {
@@ -292,9 +295,10 @@ public class BufferReaderWriter implements StructureData {
    public void closeWrite() {
       if (dataout != null) {
          //log.info("close offset %d bufferpos %d bufferend %d", offset, bufferpos, end);
-         flushBuffer();
-         setBuffer(new byte[0]);
+         if (buffer != null)
+            flushBuffer();
          dataout.close();
+         setBuffer(null);
       }
    }
 
@@ -303,7 +307,7 @@ public class BufferReaderWriter implements StructureData {
       if (datain != null) {
          datain.close();
       }
-      setBuffer(new byte[0]);
+      setBuffer(null);
    }
 
    @Override
@@ -348,7 +352,7 @@ public class BufferReaderWriter implements StructureData {
       if (end > ceiling - offset && ceiling - offset >= 0) {
          setEnd((int) (ceiling - offset));
       }
-      if (end > buffer.length - bufferpos) {
+      if (buffer != null && end > buffer.length - bufferpos) {
          setEnd(buffer.length - bufferpos);
       }
       //log.info("end %d", end);
@@ -366,7 +370,7 @@ public class BufferReaderWriter implements StructureData {
    public int resize() {
       if (buffer == null) {
          buffer = new byte[getRequestedBufferSize()];
-      } else {
+      } else if (buffer.length != getRequestedBufferSize()) {
          int shift = bufferpos;
          int usedbuffersize = (getRequestedBufferSize() >= end - bufferpos) ? getRequestedBufferSize() : end - bufferpos;
          byte newbuffer[] = new byte[usedbuffersize];
@@ -1161,6 +1165,8 @@ public class BufferReaderWriter implements StructureData {
    }
 
    public void write(byte b[]) {
+      if (buffer.length == 0)
+          resize();
       for (byte i : b) {
          if (bufferpos >= buffer.length) {
             this.flushBuffer();
@@ -1283,6 +1289,19 @@ public class BufferReaderWriter implements StructureData {
          write(b.length);
          write(b);
       }
+   }
+
+   public void write(Object s, Type type) {
+       if (s == null)
+           write((String)null);
+       else {
+           write(gson.toJson(s, type));
+       }
+   }
+
+   public <T> T read(Type type) {
+       String s = this.readString();
+       return gson.fromJson(s, type);
    }
 
    public void write(JsonObject s) {
@@ -1986,12 +2005,14 @@ public class BufferReaderWriter implements StructureData {
 
    public void openRead() {
       datain.openRead();
+      resize();
       hasmore = true;
       eof = null;
    }
 
    public void openWrite() {
       dataout.openWrite();
+      resize();
    }
 
    public void write(Map<String, String> map) {

@@ -1,7 +1,8 @@
-package io.github.repir.tools.hadoop;
+package io.github.repir.tools.hadoop.HashJoin;
 
 import io.github.repir.tools.Lib.Log;
 import io.github.repir.tools.Lib.PrintTools;
+import io.github.repir.tools.hadoop.Job;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer.Context;

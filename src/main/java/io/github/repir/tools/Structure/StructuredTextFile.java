@@ -1,7 +1,9 @@
 package io.github.repir.tools.Structure;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import io.github.repir.tools.Buffer.BufferReaderWriter;
 import io.github.repir.tools.ByteSearch.ByteSearch;
 import io.github.repir.tools.ByteSearch.ByteSearchPosition;
@@ -11,9 +13,11 @@ import io.github.repir.tools.Content.Datafile;
 import io.github.repir.tools.Content.EOCException;
 import io.github.repir.tools.Lib.Log;
 import io.github.repir.tools.Lib.PrintTools;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Provides streamed nodevalue access by iterative read/write actions of
@@ -31,8 +35,8 @@ public abstract class StructuredTextFile {
 
     public static Log log = new Log(StructuredTextFile.class);
     private final ByteSearch NoReader = null;
-    public Datafile datafile;  // the output of the Stream
-    public BufferReaderWriter reader;  // the input of the Stream
+    protected Datafile datafile;  // the output of the Stream
+    protected BufferReaderWriter reader;  // the input of the Stream
     private final FolderNode root;
     private boolean firstUse = true;
 
@@ -42,14 +46,14 @@ public abstract class StructuredTextFile {
     }
 
     public StructuredTextFile(Datafile writer) {
-        this(writer.rwbuffer);
         this.datafile = writer;
+        root = createRoot();
     }
 
     public Datafile getDatafile() {
         return datafile;
     }
-
+    
     /**
      * StructuredTextFile needs a root FolderNode that symbolizes a record.
      * Implementations of StructuredTextFile supply this by overriding this
@@ -62,6 +66,8 @@ public abstract class StructuredTextFile {
     public void openRead() {
         checkFirstUse();
         if (datafile != null) {
+            if (reader == null)
+                reader = datafile.rwbuffer;
             datafile.openRead();
         }
     }
@@ -96,6 +102,14 @@ public abstract class StructuredTextFile {
             rebuildBeforeFirstUse();
             firstUse = false;
         }
+    }
+    
+    public long getLength() {
+        return datafile.getLength();
+    }
+
+    public void delete() {
+        datafile.delete();
     }
 
     /**
@@ -182,6 +196,7 @@ public abstract class StructuredTextFile {
             }
         } catch (EOCException ex) {
         }
+        root.emptyDataContainer();
         return false;
     }
 
@@ -321,7 +336,6 @@ public abstract class StructuredTextFile {
         @Override
         protected void readNode(ByteSearchSection outersection) {
             T value = value(outersection);
-            //log.info("%s %s", label, value);
             set(value);
         }
 
@@ -485,7 +499,10 @@ public abstract class StructuredTextFile {
 
         @Override
         public Double value(ByteSearchSection section) {
-            return Double.parseDouble(stringValue(section));
+            if (section.notEmpty())
+               return Double.parseDouble(stringValue(section));
+            else
+                return 0.0;
         }
 
         public String toString(Double value) {
@@ -501,7 +518,10 @@ public abstract class StructuredTextFile {
 
         @Override
         public Integer value(ByteSearchSection section) {
-            return Integer.parseInt(stringValue(section));
+            if (section.notEmpty())
+               return Integer.parseInt(stringValue(section));
+            else
+                return 0;
         }
 
         public String toString(Integer value) {
@@ -517,7 +537,10 @@ public abstract class StructuredTextFile {
 
         @Override
         public Long value(ByteSearchSection section) {
-            return Long.parseLong(stringValue(section));
+            if (section.notEmpty())
+               return Long.parseLong(stringValue(section));
+            else
+               return 0l;
         }
 
         public String toString(Long value) {
@@ -562,7 +585,10 @@ public abstract class StructuredTextFile {
 
         @Override
         public JsonObject value(ByteSearchSection section) {
-            return gson.fromJson(this.stringValue(section), JsonObject.class);
+            if (section.notEmpty())
+               return gson.fromJson(this.stringValue(section), JsonObject.class);
+            else
+               return new JsonObject();
         }
 
         @Override
@@ -576,12 +602,14 @@ public abstract class StructuredTextFile {
         }
         
         private void check(String content) {
-            if (!checked) {
-            if (open != null && open.exists(content)) {
+            if (!checked && open != null && open != ByteSearch.EMPTY) {
+            if (open.match(content)) {
                 log.fatalexception(new RuntimeException(), "StructuredTextFile.JsonField value matches open tag: [%s]\n%s", open.toString(), content);
             }
             if (close != null && close.exists(content)) {
-                log.fatalexception(new RuntimeException(), "StructuredTextFile.JsonField value matches close tag: [%s]\n%s", close.toString(), content);
+                ByteSearchPosition findPos = close.findPos(content);
+                if (findPos.notEmpty())
+                   log.fatalexception(new RuntimeException(), "StructuredTextFile.JsonField value matches close tag: [%s]\n%s", close.toString(), content);
             }
             checked = true;
             }
@@ -599,6 +627,64 @@ public abstract class StructuredTextFile {
         }
     }
 
+    public class JsonArrayField<T> extends DataNode<ArrayList<T>> {
+
+        private ByteSearch open;
+        private ByteSearch close;
+        private Type genericType;
+        private boolean checked = false;
+
+        protected JsonArrayField(FolderNode parent, String label, Type genericType, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
+            super(parent, label, open, close, openlabel, closelabel);
+            this.genericType = genericType;
+            if (open != ByteSearch.EMPTY) {
+                this.open = open;
+            }
+            if (close != ByteSearch.EMPTY) {
+                this.close = close;
+            }
+        }
+
+        @Override
+        public ArrayList<T> value(ByteSearchSection section) {
+            if (section.notEmpty()) {
+               String stringValue = this.stringValue(section);       
+               return (ArrayList<T>)gson.fromJson(stringValue, genericType);
+            } else
+               return new ArrayList<T>();
+        }
+
+        @Override
+        public String toString(ArrayList<T> values) {
+            if (value != null) {
+                String v = gson.toJson(values);
+                check(v);
+                return v;
+            }
+            return "";
+        }
+        
+        private void check(String content) {
+            if (!checked && open != null && open != ByteSearch.EMPTY) {
+            if (open.match(content)) {
+                log.fatalexception(new RuntimeException(), "StructuredTextFile.JsonArrayField value matches open tag: [%s]\n%s", open.toString(), content);
+            }
+            if (close != null && close.exists(content)) {
+                ByteSearchPosition findPos = close.findPos(content);
+                if (findPos.notEmpty())
+                   log.fatalexception(new RuntimeException(), "StructuredTextFile.JsonArrayField value matches close tag: [%s]\n%s", close.toString(), content);
+            }
+            checked = true;
+            }
+        }
+
+        @Override
+        public void set(ArrayList<T> o) {
+            checked = false;
+            super.set(o);
+        }
+    }
+
     public class BoolField extends DataNode<Boolean> {
 
         protected BoolField(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
@@ -607,7 +693,10 @@ public abstract class StructuredTextFile {
 
         @Override
         public Boolean value(ByteSearchSection section) {
-            return Boolean.parseBoolean(this.stringValue(section));
+            if (section.notEmpty())
+               return Boolean.parseBoolean(this.stringValue(section));
+            else
+               return false;
         }
 
         @Override
@@ -686,6 +775,18 @@ public abstract class StructuredTextFile {
 
     public JsonField addJson(FolderNode parent, String label, String open, String close, String openlabel, String closelabel) {
         return addJson(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
+    }
+
+    public JsonArrayField addJsonArray(FolderNode parent, String label, Type clazz, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
+        return new JsonArrayField(parent, label, clazz, open, close, openlabel, closelabel);
+    }
+
+    public JsonArrayField addJsonArray(String label, Type clazz, String open, String close, String openlabel, String closelabel) {
+        return addJsonArray(getRoot(), label, clazz, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
+    }
+
+    public JsonArrayField addJsonArray(FolderNode parent, String label, Type clazz, String open, String close, String openlabel, String closelabel) {
+        return addJsonArray(parent, label, clazz, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
     }
 
     public FolderNode addNode(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {

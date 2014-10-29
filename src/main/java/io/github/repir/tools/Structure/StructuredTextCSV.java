@@ -6,6 +6,7 @@ import io.github.repir.tools.ByteSearch.ByteSearchSection;
 import io.github.repir.tools.ByteSearch.ByteSection;
 import io.github.repir.tools.Content.Datafile;
 import io.github.repir.tools.Lib.Log;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -26,7 +27,7 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
    ByteSearch regex_close;
 
    public StructuredTextCSV(BufferReaderWriter reader) {
-      this( reader, "", "\t", "", "\t");
+      this( reader, "", "\t|$", "", "\t");
    }
 
    public StructuredTextCSV(BufferReaderWriter reader, String regexopen, String regexclose, String open, String close) {
@@ -38,7 +39,7 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
    }
 
    public StructuredTextCSV(Datafile writer) {
-      this( writer, "", "\t", "", "\t");
+      this( writer, "", "\t|$", "", "\t");
    }
 
    public StructuredTextCSV(Datafile datafile, String regexopen, String regexclose, String open, String close) {
@@ -77,6 +78,7 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
          nodevalue = new NodeValue();
          for (Node f : orderedfields) {
             ByteSearchSection pos = findSection(section, f.section);
+            //log.info("%s %b %s", f.label, pos.found(), f.section.toString());
             if (pos.found()) {
                f.readNode(pos);
                section.movePast(pos);
@@ -125,6 +127,10 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
 
    public JsonField addJson(String label) {
       return addJson(getRoot(), label, regex_open, regex_close, open, close);
+   }
+
+   public JsonArrayField addJsonArray(String label, Type clazz) {
+      return addJsonArray(getRoot(), label, clazz, regex_open, regex_close, open, close);
    }
 
    public BoolField addBoolean(String label) {

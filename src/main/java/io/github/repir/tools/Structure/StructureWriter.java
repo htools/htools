@@ -2,6 +2,7 @@ package io.github.repir.tools.Structure;
 
 import com.google.gson.JsonObject;
 import java.io.DataOutput;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -51,6 +52,8 @@ public interface StructureWriter {
    public void write(String s);
 
    public void write(JsonObject s);
+
+   public void write(Object s, Type type);
 
    public void write0(JsonObject s);
 

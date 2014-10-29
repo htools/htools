@@ -91,6 +91,12 @@ public class HDFSDir extends Path implements Dir {
       return null;
    }
 
+   public static Path getDir(Path path) {
+      String dir = path.toString();
+      dir = dir.substring(0, dir.lastIndexOf('/'));
+      return new Path(dir);
+   }
+
    public static FileSystem getFS() {
       return getFS(new Configuration());
    }

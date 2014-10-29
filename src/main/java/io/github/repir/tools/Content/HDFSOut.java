@@ -31,174 +31,178 @@ import org.apache.hadoop.io.IOUtils;
  */
 class HDFSOut implements DataOut {
 
-   private static Log log = new Log(HDFSOut.class);
-   public final FileSystem fs;
-   public final Path path;
-   public int buffersize;
-   public FSDataOutputStream fsout;
-   public BufferReaderWriter buffer;
-   public int lc = 0;
+    private static Log log = new Log(HDFSOut.class);
+    public final FileSystem fs;
+    public final Path path;
+    public int buffersize;
+    public FSDataOutputStream fsout;
+    public BufferReaderWriter buffer;
+    public int lc = 0;
 
-   public HDFSOut(FileSystem fs, String filename, int buffersize) {
-      this(fs, new Path(filename), buffersize);
-   }
+    public HDFSOut(FileSystem fs, String filename, int buffersize) {
+        this(fs, new Path(filename), buffersize);
+    }
 
-   public HDFSOut(FileSystem fs, Path path, int buffersize) {
-      this.fs = fs;
-      this.path = path;
-      this.buffersize = buffersize;
-   }
+    public HDFSOut(FileSystem fs, Path path, int buffersize) {
+        this.fs = fs;
+        this.path = path;
+        this.buffersize = buffersize;
+    }
 
-   public void setBuffer(BufferReaderWriter buffer) {
-      this.buffer = buffer;
-   }
+    public void setBuffer(BufferReaderWriter buffer) {
+        this.buffer = buffer;
+    }
 
-   public static void delete(FileSystem fs, Path path) {
-      try {
-         fs.delete(path, false);
-      } catch (IOException ex) {
-         log.exception(ex, "delete( %s, %s )", fs, path);
-      }
-   }
+    public static void delete(FileSystem fs, Path path) {
+        try {
+            fs.delete(path, false);
+        } catch (IOException ex) {
+            log.exception(ex, "delete( %s, %s )", fs, path);
+        }
+    }
 
-   public static void setReplication(FileSystem fs, Path path, short replication) {
-      try {
-         fs.setReplication(path, replication);
-      } catch (IOException ex) {
-         log.exception(ex, "delete( %s, %s )", fs, path);
-      }
-   }
+    public static void setReplication(FileSystem fs, Path path, short replication) {
+        try {
+            fs.setReplication(path, replication);
+        } catch (IOException ex) {
+            log.exception(ex, "delete( %s, %s )", fs, path);
+        }
+    }
 
-   public static void delete(FileSystem fs, String filename) {
-      delete(fs, new Path(filename));
-   }
+    public static void delete(FileSystem fs, String filename) {
+        delete(fs, new Path(filename));
+    }
 
-   public static void delete(HDFSOut out) {
-      delete(out.fs, out.path);
-   }
+    public static void delete(HDFSOut out) {
+        delete(out.fs, out.path);
+    }
 
-   public static void delete(HDFSIn in) {
-      delete(in.fs, in.path);
-   }
+    public static void delete(HDFSIn in) {
+        delete(in.fs, in.path);
+    }
 
-   @Override
-   public void close() {
-      flushBuffer(buffer);
-      try {
-         fsout.close();
-      } catch (IOException ex) {
-         log.exception(ex, "close() buffer %s fsout %s", buffer, fsout);
-      }
-      fsout = null;
-   }
+    @Override
+    public void close() {
+        flushBuffer(buffer);
+        try {
+            fsout.close();
+        } catch (IOException ex) {
+            log.exception(ex, "close() buffer %s fsout %s", buffer, fsout);
+        }
+        fsout = null;
+    }
 
-   @Override
-   public void flushBuffer(BufferReaderWriter buffer) {
-      try {
-         //log.info("flushBuffer %d %d", buffer.getOffset() - buffer.bufferpos, buffer.getOffset());
-         fsout.write(buffer.buffer, 0, buffer.bufferpos);
-         buffer.offset += buffer.bufferpos;
-         buffer.bufferpos = 0;
-         if (buffer.getRequestedBufferSize() != buffer.getBufferSize()) {
-            buffer.resize();
-         }
-      } catch (IOException ex) {
-         log.fatal(ex);
-      }
-   }
+    @Override
+    public void flushBuffer(BufferReaderWriter buffer) {
+        try {
+            if (buffer.buffer != null) {
+                //log.info("flushBuffer %d %d", buffer.getOffset() - buffer.bufferpos, buffer.getOffset());
 
-   public void flushFile() {
-      try {
-         flushBuffer(buffer);
-         fsout.sync();
-      } catch (IOException ex) {
-         log.fatal(ex);
-      }
-   }
-
-   public long getOffset() {
-      return buffer.offset + buffer.bufferpos;
-   }
-
-   @Override
-   public void openWrite() {
-      buffer.offset = 0;
-      try {
-         fsout = fs.create(path, true, buffersize);
-         return;
-      } catch (IOException ex) {
-         log.exception(ex, "openWrite( %s %d )", path.toString(), buffersize);
-      }
-   }
-
-   public static boolean lock(FileSystem fs, String file, String lockfile) {
-      Path filepath = new Path(file);
-      Path lockfilepath = new Path(lockfile);
-      long filesize = 0;
-      int attempt = 0;
-      try {
-         if (!fs.exists(filepath) && !fs.exists(lockfilepath)) {
-            if (fs.mkdirs(lockfilepath)) {
-               return true;
+                fsout.write(buffer.buffer, 0, buffer.bufferpos);
+                buffer.offset += buffer.bufferpos;
+                buffer.bufferpos = 0;
+                if (buffer.getRequestedBufferSize() != buffer.getBufferSize()) {
+                    buffer.resize();
+                }
             }
-         }
-         do {
-            if (!fs.exists(lockfilepath)) {
-               if (fs.mkdirs(lockfilepath))
-                  return true;
-            }
+        } catch (IOException ex) {
+            log.fatal(ex);
+        }
+    }
 
-            long currentsize = 0;
-            try {
-               currentsize = HDFSIn.getLength(fs, filepath);
-            } catch (IOException ex) {
-            }
+    public void flushFile() {
+        try {
+            flushBuffer(buffer);
+            fsout.sync();
+        } catch (IOException ex) {
+            log.fatal(ex);
+        }
+    }
 
-            if (currentsize != filesize) {
-               filesize = currentsize;
-               attempt = 0;
-            }
-            log.sleep(500);
-         } while (attempt++ < 40);
-      } catch (IOException ex) {
-      }
-      return false;
-   }
+    public long getOffset() {
+        return buffer.offset + buffer.bufferpos;
+    }
 
-   public static void unlock(FileSystem fs, String lockfile) {
-      Path lockfilepath = new Path(lockfile);
-      try {
-         if (fs.exists(lockfilepath)) {
-            fs.delete(lockfilepath, true);
-         }
-      } catch (IOException ex) {
-      }
-   }
+    @Override
+    public void openWrite() {
+        buffer.offset = 0;
+        try {
+            fsout = fs.create(path, true, buffersize);
+            return;
+        } catch (IOException ex) {
+            log.exception(ex, "openWrite( %s %d )", path.toString(), buffersize);
+        }
+    }
 
-   public static boolean waitForUnlock(FileSystem fs, String file, String lockfile) {
-      Path lockfilepath = new Path(lockfile);
-      Path filepath = new Path(file);
-      long newsize = 0, filesize = 0;
-      int attempt = 0;
-      try {
-         do {
-            if (!fs.exists(lockfilepath)) {
-               return true;
+    public static boolean lock(FileSystem fs, String file, String lockfile) {
+        Path filepath = new Path(file);
+        Path lockfilepath = new Path(lockfile);
+        long filesize = 0;
+        int attempt = 0;
+        try {
+            if (!fs.exists(filepath) && !fs.exists(lockfilepath)) {
+                if (fs.mkdirs(lockfilepath)) {
+                    return true;
+                }
             }
-            long currentsize = fs.exists(lockfilepath) ? HDFSIn.getLength(fs, filepath) : 0;
-            if (currentsize != filesize) {
-               filesize = currentsize;
-               attempt = 0;
-            }
-            log.sleep(1000);
-         } while (attempt++ < 20);
-      } catch (IOException ex) {
-      }
-      return false;
-   }
+            do {
+                if (!fs.exists(lockfilepath)) {
+                    if (fs.mkdirs(lockfilepath)) {
+                        return true;
+                    }
+                }
 
-   @Override
-   public OutputStream getOutputStream() {
-      return fsout;
-   }
+                long currentsize = 0;
+                try {
+                    currentsize = HDFSIn.getLength(fs, filepath);
+                } catch (IOException ex) {
+                }
+
+                if (currentsize != filesize) {
+                    filesize = currentsize;
+                    attempt = 0;
+                }
+                log.sleep(500);
+            } while (attempt++ < 40);
+        } catch (IOException ex) {
+        }
+        return false;
+    }
+
+    public static void unlock(FileSystem fs, String lockfile) {
+        Path lockfilepath = new Path(lockfile);
+        try {
+            if (fs.exists(lockfilepath)) {
+                fs.delete(lockfilepath, true);
+            }
+        } catch (IOException ex) {
+        }
+    }
+
+    public static boolean waitForUnlock(FileSystem fs, String file, String lockfile) {
+        Path lockfilepath = new Path(lockfile);
+        Path filepath = new Path(file);
+        long newsize = 0, filesize = 0;
+        int attempt = 0;
+        try {
+            do {
+                if (!fs.exists(lockfilepath)) {
+                    return true;
+                }
+                long currentsize = fs.exists(lockfilepath) ? HDFSIn.getLength(fs, filepath) : 0;
+                if (currentsize != filesize) {
+                    filesize = currentsize;
+                    attempt = 0;
+                }
+                log.sleep(1000);
+            } while (attempt++ < 20);
+        } catch (IOException ex) {
+        }
+        return false;
+    }
+
+    @Override
+    public OutputStream getOutputStream() {
+        return fsout;
+    }
 }

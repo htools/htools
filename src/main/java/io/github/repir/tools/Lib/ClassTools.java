@@ -336,7 +336,7 @@ public enum ClassTools {
         }
         return null;
     }
-
+    
     /**
      * @return A URL that points to the .jar file containing clazz
      */

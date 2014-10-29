@@ -86,7 +86,7 @@ public class TokenizerRegex extends ExtractorProcessor {
 
     @Override
     public void process(Entity entity, Entity.Section section, String attribute) {
-        log.info("process %d %d", section.open, section.close);
+        //log.info("process %d %d", section.open, section.close);
         current = entity;
         this.bufferpos = section.open;
         this.bufferend = section.close;

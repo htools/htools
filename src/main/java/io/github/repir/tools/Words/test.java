@@ -1,4 +1,4 @@
-package io.github.repir.tools.Stemmer;
+package io.github.repir.tools.Words;
 import io.github.repir.tools.Lib.Log; 
 
 /**

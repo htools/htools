@@ -1,7 +1,7 @@
 package io.github.repir.tools.Extractor.Tools;
 
 import io.github.repir.tools.Lib.Log;
-import io.github.repir.tools.Stemmer.englishStemmer;
+import io.github.repir.tools.Words.englishStemmer;
 import io.github.repir.tools.Extractor.Entity;
 import io.github.repir.tools.Extractor.EntityChannel;
 import io.github.repir.tools.Extractor.Extractor;

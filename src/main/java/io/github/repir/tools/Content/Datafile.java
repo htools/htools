@@ -15,10 +15,12 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -72,9 +74,19 @@ public class Datafile implements StructureData, Comparable<Object>, ByteSearchRe
         this.fs = fs;
     }
 
+    public Datafile(Configuration conf, String filename) {
+        this(filename);
+        this.fs = HDFSDir.getFS(conf);
+    }
+
     public Datafile(FileSystem fs, Path path) {
         this(path.toString());
         this.fs = fs;
+    }
+
+    public Datafile(Configuration conf, Path path) {
+        this(path.toString());
+        this.fs = HDFSDir.getFS(conf);
     }
 
     public Datafile(Datafile df) {
@@ -889,6 +901,14 @@ public class Datafile implements StructureData, Comparable<Object>, ByteSearchRe
      */
     public String readString() throws EOCException {
         return rwbuffer.readString();
+    }
+
+    public <T> T read(Type type) throws EOCException {
+        return rwbuffer.read(type);
+    }
+
+    public void write(Object o, Type type) throws EOCException {
+        rwbuffer.write(o, type);
     }
 
     public JsonObject readJson() throws EOCException {

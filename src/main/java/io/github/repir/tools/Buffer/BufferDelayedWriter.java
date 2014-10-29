@@ -6,6 +6,7 @@ import io.github.repir.tools.Structure.StructureWriter;
 import io.github.repir.tools.Lib.Log;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -222,6 +223,14 @@ public class BufferDelayedWriter implements StructureWriter {
 
    public void write(JsonObject s) {
       write(s == null?null:s.toString());
+   }
+
+   public void write(Object s, Type type) {
+       if (s == null)
+           write((String)null);
+       else {
+           write(gson.toJson(s, type));
+       }
    }
 
    public void write0(JsonObject s) {

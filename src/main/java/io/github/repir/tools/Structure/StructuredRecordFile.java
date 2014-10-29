@@ -18,6 +18,10 @@ public interface StructuredRecordFile<R extends StructuredFileRecord> extends It
    
    public abstract void closeWrite();
    
+   public abstract long getLength();
+   
+   public abstract void delete();
+   
    public abstract void write(R record);
    
    public abstract boolean nextRecord();

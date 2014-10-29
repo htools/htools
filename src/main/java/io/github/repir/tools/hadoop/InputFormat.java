@@ -21,13 +21,13 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 /**
  * @author jeroen
  */
-public abstract class StructuredInputFormat<F extends StructuredRecordFile, V extends StructuredRecordWritable> extends FileInputFormat<LongWritable, V> {
+public abstract class InputFormat<F extends StructuredRecordFile, V extends Writable> extends FileInputFormat<LongWritable, V> {
 
-    public static Log log = new Log(StructuredInputFormat.class);
+    public static Log log = new Log(InputFormat.class);
     private static final String SPLITABLE = "structuredinputformat.issplitable";
     private final Class fileclass;
 
-    public StructuredInputFormat(Class fileclass) {
+    public InputFormat(Class fileclass) {
         this.fileclass = fileclass;
     }
     
@@ -52,6 +52,11 @@ public abstract class StructuredInputFormat<F extends StructuredRecordFile, V ex
                 }
             }
         }
+    }
+
+    public static void addDirs(Job job, ArrayList<String> dirs) {
+        for (String dir : dirs)
+            addDirs(job, dir);
     }
 
     public static void addFile(Job job, Path path) {

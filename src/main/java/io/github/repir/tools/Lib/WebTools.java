@@ -17,8 +17,8 @@ public enum WebTools {;
     private static SystemProps systemPropsSingleton;
     
     private static enum SystemProps {
-        CONNECT("sun.net.client.defaultConnectTimeout", 2000),
-        READ("sun.net.client.defaultReadTimeout", 2000);
+        CONNECT("sun.net.client.defaultConnectTimeout", 20000),
+        READ("sun.net.client.defaultReadTimeout", 20000);
         
         SystemProps(String prop, int value) {
             System.setProperty(prop, Integer.toString(value));
@@ -26,12 +26,16 @@ public enum WebTools {;
     }
     
     public static byte[] getUrlByteArray(String urlpage) throws Exception {
+        return getUrlByteArray(urlpage, 2000);
+    }
+    
+    public static byte[] getUrlByteArray(String urlpage, int timeout) throws Exception {
         Exception exc = new Exception();
         if (urlpage.contains("://"))
-            return getUrlByteArray(new URL(urlpage));
+            return getUrlByteArray(new URL(urlpage), timeout);
         for (String method : new String[]{ "http://", "https://"} ) {
             try {
-                return getUrlByteArray(new URL(method + urlpage));
+                return getUrlByteArray(new URL(method + urlpage), timeout);
             } catch ( MalformedURLException ex ) {
                 exc = ex;
             }
@@ -39,9 +43,9 @@ public enum WebTools {;
         throw exc;
     }
     
-    private static byte[] getUrlByteArray(URL url) throws Exception {
-        System.setProperty("sun.net.client.defaultConnectTimeout", "2000");
-        System.setProperty("sun.net.client.defaultReadTimeout", "2000");
+    private static byte[] getUrlByteArray(URL url, int timeout) throws Exception {
+        System.setProperty("sun.net.client.defaultConnectTimeout", Integer.toString(timeout));
+        System.setProperty("sun.net.client.defaultReadTimeout", Integer.toString(timeout));
         InputStream is = null;
         ByteArrayOutputStream bais = new ByteArrayOutputStream();
         try {
@@ -60,5 +64,9 @@ public enum WebTools {;
             }
         }
         return bais.toByteArray();
+    }
+    
+    private static byte[] getUrlByteArray(URL url) throws Exception {
+        return getUrlByteArray(url, 2000);
     }
 }

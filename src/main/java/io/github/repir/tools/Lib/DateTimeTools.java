@@ -35,6 +35,7 @@ public enum DateTimeTools {
        DATETIME("yyyy-MM-dd HH:mm:ss"),
        DATETIMET("yyyy-MM-dd'T'HH:mm:ss'Z'"),
        DATETIMETSZ("yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
+       DATETIMEWIKIPEDIA("HH:mm, dd MMMM yyyy"),
        YMD("yyyyMMdd"),
        Y_M_D("yyyy-MM-dd");
        
@@ -87,6 +88,12 @@ public enum DateTimeTools {
 
     public static Date toDate(long timeStamp) {
         return new Date(1000 * timeStamp);
+    }
+
+    public static Calendar toCalendar(long unixTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(1000 * unixTime);
+        return calendar;
     }
 
     public static Calendar toCalendar(Timestamp t) {
