@@ -1,6 +1,6 @@
 package io.github.repir.tools.Words;
 
-import io.github.repir.tools.Lib.Log;
+import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.Words.englishStemmer;
 import java.util.HashSet;
 

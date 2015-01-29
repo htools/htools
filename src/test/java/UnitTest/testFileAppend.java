@@ -1,6 +1,6 @@
 package UnitTest;
-import io.github.repir.tools.Lib.Log; 
-import io.github.repir.tools.Lib.MathTools;
+import io.github.repir.tools.lib.Log; 
+import io.github.repir.tools.lib.MathTools;
 
 /**
  *

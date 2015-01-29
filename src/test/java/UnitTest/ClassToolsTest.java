@@ -1,8 +1,8 @@
 package UnitTest;
 
-import io.github.repir.tools.Lib.ArrayTools;
-import io.github.repir.tools.Lib.ClassTools;
-import io.github.repir.tools.Lib.Log;
+import io.github.repir.tools.lib.ArrayTools;
+import io.github.repir.tools.lib.ClassTools;
+import io.github.repir.tools.lib.Log;
 import java.util.HashMap;
 
 /**
@@ -19,7 +19,7 @@ public class ClassToolsTest {
     
     public static void main(String[] args) {
         Class[] findTypeParameters = ClassTools.findTypeParameters(A.class, HashMap.class);
-        ClassTools.log.info("%s", ArrayTools.concat(findTypeParameters));
+        ClassTools.log.info("%s", ArrayTools.toString(findTypeParameters));
     }
     
 }

@@ -1,7 +1,7 @@
 package io.github.repir.tools.Excel;
 
 import org.apache.poi.ss.usermodel.Cell;
-import io.github.repir.tools.Lib.PrintTools;
+import io.github.repir.tools.lib.PrintTools;
 
 public class ExcelRange {
 

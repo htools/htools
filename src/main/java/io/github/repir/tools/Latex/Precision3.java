@@ -1,8 +1,8 @@
 package io.github.repir.tools.Latex;
 import java.text.DecimalFormat;
 import io.github.repir.tools.Latex.Tabular.Cell;
-import static io.github.repir.tools.Lib.PrintTools.sprintf;
-import io.github.repir.tools.Lib.StrTools;
+import static io.github.repir.tools.lib.PrintTools.sprintf;
+import io.github.repir.tools.lib.StrTools;
 
 /**
  *

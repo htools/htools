@@ -4,8 +4,8 @@
  */
 package io.github.repir.tools.Excel;
 
-import io.github.repir.tools.Content.Datafile;
-import io.github.repir.tools.Lib.Log;
+import io.github.repir.tools.io.Datafile;
+import io.github.repir.tools.lib.Log;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;

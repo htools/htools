@@ -1,6 +1,6 @@
 package io.github.repir.tools.Words;
 
-import io.github.repir.tools.Lib.Log;
+import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.Words.englishStemmer;
 import java.util.HashSet;
 
@@ -18,7 +18,7 @@ public class StopWordsInquery {
     + "anyhow anyone anything anyway anywhere apart are around as at av "
     + "be became because become becomes becoming been before beforehand behind being "
     + "below beside besides between beyond both but by can cannot canst certain cf " 
-    + "choose contrariwise cos could cu day do does doesn't doing dost double down "
+    + "choose contrariwise cos could cu day do does doesnt doing dost double down "
     + "dual during each either else elsewhere enough et etc even ever every everybody "
     + "everyone everything everywhere except excepted excepting exception exclude "
     + "excluding exclusive far farther farthest few ff first for former formerly forth "

@@ -15,16 +15,16 @@
  */
 package UnitTest;
 
-import io.github.repir.tools.Buffer.BufferReaderWriter;
-import io.github.repir.tools.Content.Datafile;
-import io.github.repir.tools.Content.EOCException;
-import io.github.repir.tools.Structure.StructuredFile;
-import io.github.repir.tools.Structure.StructuredFileSort;
-import io.github.repir.tools.Structure.StructuredFileCollision;
-import io.github.repir.tools.Structure.StructuredFileCollisionRecord;
-import io.github.repir.tools.Structure.StructuredFileSortRecord;
-import io.github.repir.tools.Lib.ByteTools;
-import io.github.repir.tools.Lib.RandomTools;
+import io.github.repir.tools.io.buffer.BufferReaderWriter;
+import io.github.repir.tools.io.Datafile;
+import io.github.repir.tools.io.EOCException;
+import io.github.repir.tools.io.struct.StructuredFile;
+import io.github.repir.tools.io.struct.StructuredFileSort;
+import io.github.repir.tools.io.struct.StructuredFileCollision;
+import io.github.repir.tools.io.struct.StructuredFileCollisionRecord;
+import io.github.repir.tools.io.struct.StructuredFileSortRecord;
+import io.github.repir.tools.lib.ByteTools;
+import io.github.repir.tools.lib.RandomTools;
 
 /**
  *
@@ -64,7 +64,7 @@ public class StructuredFileCollisionTest extends StructuredFileCollision {
 
    @Override
    public StructuredFile clone() {
-         StructuredFileCollisionTest f = new StructuredFileCollisionTest(new Datafile(datafile));
+         StructuredFileCollisionTest f = new StructuredFileCollisionTest(new Datafile(getDatafile()));
          f.setTableSize(this.getTableSize());
          return f;
    }

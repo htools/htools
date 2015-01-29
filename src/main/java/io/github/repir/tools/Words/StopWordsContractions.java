@@ -1,6 +1,6 @@
 package io.github.repir.tools.Words;
 
-import io.github.repir.tools.Lib.Log;
+import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.Words.englishStemmer;
 import java.util.HashSet;
 
@@ -38,6 +38,17 @@ public class StopWordsContractions {
       HashSet<String> set = new HashSet<String>();
       for (String s : filterarray) {
          set.add(s);
+      }
+      return set;
+   }
+   
+   public static HashSet<String> getUnstemmedBrokenFilterSet() {
+      HashSet<String> set = new HashSet<String>();
+      for (String s : filterarray) {
+          set.add(s);
+          String part[] = s.split("'");
+          for (String p : part)
+              set.add(p);
       }
       return set;
    }

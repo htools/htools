@@ -2,11 +2,11 @@ package io.github.repir.tools.Latex;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import io.github.repir.tools.ByteSearch.ByteRegex;
-import io.github.repir.tools.ByteSearch.ByteSearchPosition;
-import io.github.repir.tools.Lib.ClassTools;
-import io.github.repir.tools.Lib.Log;
-import io.github.repir.tools.Lib.PrintTools;
+import io.github.repir.tools.search.ByteRegex;
+import io.github.repir.tools.search.ByteSearchPosition;
+import io.github.repir.tools.lib.ClassTools;
+import io.github.repir.tools.lib.Log;
+import io.github.repir.tools.lib.PrintTools;
 
 /**
  *
@@ -57,7 +57,7 @@ public class Tabular {
       columns.add(c);
       if (p[3].length() > 0) {
          Class clazz = ClassTools.toClass(p[3], ColumnFormatter.class.getPackage().getName());
-         Constructor cons = ClassTools.getAssignableConstructor(clazz, ColumnFormatter.class, Tabular.class, Integer.TYPE);
+         Constructor cons = ClassTools.tryGetAssignableConstructor(clazz, ColumnFormatter.class, Tabular.class, Integer.TYPE);
          ColumnFormatter cf = (ColumnFormatter) ClassTools.construct(cons, this, columns.size()-1);
          c.setFormatter(cf);
       }

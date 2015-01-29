@@ -1,7 +1,7 @@
 package io.github.repir.tools.Latex;
 import java.text.DecimalFormat;
 import io.github.repir.tools.Latex.Tabular.Cell;
-import io.github.repir.tools.Lib.PrintTools;
+import io.github.repir.tools.lib.PrintTools;
 
 /**
  *

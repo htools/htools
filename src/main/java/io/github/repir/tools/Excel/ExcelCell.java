@@ -1,7 +1,7 @@
 package io.github.repir.tools.Excel;
 
 import org.apache.poi.ss.usermodel.Cell;
-import static io.github.repir.tools.Lib.PrintTools.*;
+import static io.github.repir.tools.lib.PrintTools.*;
 
 public class ExcelCell {
    ExcelSheet sheet;
@@ -110,7 +110,7 @@ public class ExcelCell {
    }
 
    public void setCellFormula(String value, Object... o) {
-      getCell().setCellFormula(io.github.repir.tools.Lib.PrintTools.sprintf(value, o));
+      getCell().setCellFormula(io.github.repir.tools.lib.PrintTools.sprintf(value, o));
    }
 
    public void setFormatDouble( double d ) {

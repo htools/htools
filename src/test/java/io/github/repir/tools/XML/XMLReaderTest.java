@@ -16,8 +16,8 @@
 
 package io.github.repir.tools.XML;
 
-import io.github.repir.tools.Structure.XMLReader;
-import io.github.repir.tools.Lib.Log;
+import io.github.repir.tools.io.struct.XMLReader;
+import io.github.repir.tools.lib.Log;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;

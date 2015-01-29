@@ -1,6 +1,6 @@
 package io.github.repir.tools.Words;
 
-import io.github.repir.tools.Lib.Log;
+import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.Words.englishStemmer;
 import java.util.HashSet;
 
@@ -35,7 +35,7 @@ public class StopWordsSmart {
       "least", "less", "let", "lets", "like", "likely", "long", "longer", "longest", "made", 
       "make", "making", "man", "many", "may", "me", "member", "members", "m", "men", "might", "more", 
       "most", "mostly", "mr", "mrs", "much", "must", "my", "myself", "necessary", "need", 
-      "needed", "needing", "needs", "never", "new", "new", "newer", "newest", "next", "no", 
+      "needed", "needing", "needs", "never", "new", "newer", "newest", "next", "no", 
       "nobody", "non", "noone", "not", "nothing", "now", "nowhere", "number", "numbers", 
       "of", "off", "often", "old", "older", "oldest", "on", "once", "one", "only", "open", 
       "opened", "opening", "opens", "or", "order", "ordered", "ordering", "orders", "other", 

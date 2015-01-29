@@ -4,12 +4,12 @@
  */
 package io.github.repir.tools.Excel;
 
-import static io.github.repir.tools.Lib.PrintTools.*;
+import static io.github.repir.tools.lib.PrintTools.*;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import io.github.repir.tools.Type.Tuple2Comparable;
+import io.github.repir.tools.type.Tuple2Comparable;
 
 /**
  *

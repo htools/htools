@@ -1,6 +1,6 @@
 package io.github.repir.tools.Diff;
 
-import io.github.repir.tools.Lib.Log;
+import io.github.repir.tools.lib.Log;
 import java.io.*;
 import java.util.*;
 
