@@ -1,0 +1,101 @@
+package io.github.repir.tools.hadoop.document;
+
+import io.github.repir.tools.extract.Content;
+import io.github.repir.tools.io.EOCException;
+import io.github.repir.tools.io.HDFSIn;
+import io.github.repir.tools.lib.Log;
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+/**
+ * An implementation of EntityReader that scans the input for TREC style
+ * documents, that are enclosed in <DOC></DOC> tags. The used tags may be
+ * overridden by setting different tags in entityreader.entitystart and
+ * entityreader.entityend.
+ * <p/>
+ * NOTE that the original TREC disks contain .z files, which cannot be
+ * decompressed by Java. The files must therefore be decompressed outside this
+ * framework.
+ * <p/>
+ * @author jeroen
+ */
+public class DocumentReader extends DocumentAbstractReader {
+
+   public static Log log = new Log(DocumentReader.class);
+   private byte[] startTag;
+   private byte[] endTag;
+
+   @Override
+   public void initialize(FileSplit fileSplit) {
+      startTag = this.getStartLabel().getBytes();
+      endTag = this.getEndLabel().getBytes();
+      Path file = fileSplit.getPath();
+   }
+   
+   @Override
+   public byte[] readDocument() {
+      if (getDatafileIn().getOffset() < getEnd()) {
+         if (readUntilStart()) {
+            getCurrentKey().set(getDatafileIn().getOffset());
+            return nextDocument();
+         }
+      }
+      return null;
+   }
+
+   private byte[] nextDocument() {
+       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+      int needleposition = 0;
+      while (true) {
+         try {
+            int b = getDatafileIn().readByte();
+            if (b != endTag[needleposition]) { // check if we match needle
+               if (needleposition > 0) {
+                  buffer.write(endTag, 0, needleposition);
+                  needleposition = 0;
+               }
+            }
+            if (b == endTag[needleposition]) {
+               needleposition++;
+               if (needleposition >= endTag.length) {
+                  return buffer.toByteArray();
+               }
+            } else {
+               buffer.write(b);
+
+//               if (needleposition == 0 && !fsin.hasMore()) {  // see if we've passed the stop point:
+//                  return false;
+//               }
+            }
+         } catch (EOCException ex) {
+            return null;
+         }
+      }
+   }
+
+   private boolean readUntilStart() {
+      int needleposition = 0;
+      while (true) {
+         try {
+            int b = getDatafileIn().readByte();
+            if (b != startTag[needleposition]) { // check if we match needle
+               needleposition = 0;
+            }
+            if (b == startTag[needleposition]) {
+               needleposition++;
+               if (needleposition >= startTag.length) {
+                  return true;
+               }
+            } else {
+               if (needleposition == 0 && getDatafileIn().getOffset() >= getEnd()) {  // see if we've passed the stop point:
+                  return false;
+               }
+            }
+         } catch (EOCException ex) {
+            return false;
+         }
+      }
+   }
+}
