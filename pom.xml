@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.github.repir</groupId>
         <artifactId>RepIRProx</artifactId>
-        <version>0.25a-SNAPSHOT</version>
+        <version>0.25</version>
         <relativePath>../RepIRProx/pom.xml</relativePath>
     </parent>
     <artifactId>RepIRTools</artifactId>
