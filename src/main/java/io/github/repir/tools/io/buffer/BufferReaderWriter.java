@@ -12,7 +12,7 @@ import io.github.repir.tools.io.EOCException;
 import io.github.repir.tools.io.HDFSIn;
 import io.github.repir.tools.io.struct.StructureData;
 import io.github.repir.tools.io.struct.StructureWriter;
-import io.github.repir.tools.collection.ArrayMap2;
+import io.github.repir.tools.collection.FastMap;
 import io.github.repir.tools.lib.ByteTools;
 import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.lib.PrintTools;
@@ -20,6 +20,7 @@ import static io.github.repir.tools.lib.PrintTools.memoryDump;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -668,6 +669,16 @@ public class BufferReaderWriter implements StructureData {
         return readBytes(length);
     }
 
+    @Override
+    public boolean[] readBoolArray() throws EOCException {
+        int length = readInt();
+        checkIn(length);
+        boolean[] b = new boolean[length];
+        for (int i = 0; i < length; i++)
+            b[i] = (buffer[bufferpos++] == 0) ? false : true;
+        return b;
+    }
+
     public void skipByteBlock() throws EOCException {
         int length = readInt();
         if (length > 0) {
@@ -849,6 +860,14 @@ public class BufferReaderWriter implements StructureData {
         skip(4 * length);
     }
 
+    public void skipBoolArray() throws EOCException {
+        int length = readInt();
+        if (length == -1) {
+            return;
+        }
+        skip(length);
+    }
+
     public int[][] readSquaredIntArray2() throws EOCException {
         int length = readCInt();
         if (length == -1) {
@@ -1015,6 +1034,7 @@ public class BufferReaderWriter implements StructureData {
         }
     }
 
+    @Override
     public void write(int i[]) {
         if (i == null) {
             write(-1);
@@ -1026,6 +1046,19 @@ public class BufferReaderWriter implements StructureData {
         }
     }
 
+    @Override
+    public void write(boolean b[]) {
+        if (b == null) {
+            write(-1);
+        } else {
+            write(b.length);
+            for (boolean l : b) {
+                write(l);
+            }
+        }
+    }
+
+    @Override
     public void write(Collection<Integer> i) {
         if (i == null) {
             write(-1);
@@ -1304,7 +1337,7 @@ public class BufferReaderWriter implements StructureData {
 //            return;
 //        }
 //        for (int i = 0; i < b.length; i++) {
-//            if (b[i] == escape || io.github.repir.tools.Lib.ByteTools.matchString(b, eof, i)) {
+//            if (b[i] == escape || io.github.repir.tools.lib.ByteTools.readMatchingString(b, eof, i)) {
 //                if (bufferpos >= buffer.length) {
 //                    this.flushBuffer();
 //                }
@@ -1324,7 +1357,7 @@ public class BufferReaderWriter implements StructureData {
 //            write(b, end2, escape);
 //        } else {
 //            for (int i = 0; i < b.length; i++) {
-//                if (b[i] == escape || io.github.repir.tools.Lib.ByteTools.matchString(b, end, i) || io.github.repir.tools.Lib.ByteTools.matchString(b, end2, i)) {
+//                if (b[i] == escape || io.github.repir.tools.lib.ByteTools.readMatchingString(b, end, i) || io.github.repir.tools.lib.ByteTools.readMatchingString(b, end2, i)) {
 //                    if (bufferpos >= buffer.length) {
 //                        this.flushBuffer();
 //                    }
@@ -1343,7 +1376,7 @@ public class BufferReaderWriter implements StructureData {
 //            if (bufferpos >= buffer.length) {
 //                this.flushBuffer();
 //            }
-//            if (io.github.repir.tools.Lib.ByteTools.matchStringWS(b, eof, i)) {
+//            if (io.github.repir.tools.lib.ByteTools.matchStringWS(b, eof, i)) {
 //                buffer[bufferpos++] = escape;
 //                if (bufferpos >= buffer.length) {
 //                    this.flushBuffer();
@@ -1387,9 +1420,11 @@ public class BufferReaderWriter implements StructureData {
         if (s == null) {
             write(-1);
         } else {
-            byte b[] = s.getBytes();
-            write(b.length);
-            writeRaw(b);
+            try {
+                byte b[] = s.getBytes("UTF-8");
+                write(b.length);
+                writeRaw(b);
+            } catch (UnsupportedEncodingException ex) { }
         }
     }
 
@@ -2101,7 +2136,7 @@ public class BufferReaderWriter implements StructureData {
 
     public Map<String, String> readStringPairMap() throws EOCException {
         int size = readInt();
-        ArrayMap2<String, String> map = new ArrayMap2<String, String>();
+        FastMap<String, String> map = new FastMap<String, String>();
         for (int i = 0; i < size; i++) {
             String key = readString();
             String value = readString();
@@ -2173,8 +2208,8 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public String findString(ByteSearch needle) throws EOCException {
-        ByteSearchPosition endpos = findPos(needle);
+    public String readString(ByteSearch needle) throws EOCException {
+        ByteSearchPosition endpos = readPos(needle);
         if (endpos.found()) {
             bufferpos = endpos.end;
             return ByteTools.toString(buffer, endpos.start, endpos.end);
@@ -2184,8 +2219,8 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public String findTrimmedString(ByteSearch needle) throws EOCException {
-        ByteSearchPosition endpos = findPos(needle);
+    public String readTrimmedString(ByteSearch needle) throws EOCException {
+        ByteSearchPosition endpos = readPos(needle);
         if (endpos.found()) {
             bufferpos = endpos.end;
             return ByteTools.toTrimmedString(buffer, endpos.start, endpos.end);
@@ -2196,8 +2231,8 @@ public class BufferReaderWriter implements StructureData {
 
 
     @Override
-    public String findFullTrimmedString(ByteSearch needle) throws EOCException {
-        ByteSearchPosition endpos = findPos(needle);
+    public String readFullTrimmedString(ByteSearch needle) throws EOCException {
+        ByteSearchPosition endpos = readPos(needle);
         if (endpos.found()) {
             bufferpos = endpos.end;
             return ByteTools.toFullTrimmedString(buffer, endpos.start, endpos.end);
@@ -2207,7 +2242,7 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public String matchString(ByteSearch needle) throws EOCException {
+    public String readMatchingString(ByteSearch needle) throws EOCException {
         ByteSearchPosition endpos = matchPos(needle);
         if (endpos.found()) {
             bufferpos = endpos.end;
@@ -2218,7 +2253,7 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public String matchTrimmedString(ByteSearch needle) throws EOCException {
+    public String readMatchingTrimmedString(ByteSearch needle) throws EOCException {
         ByteSearchPosition pos = matchPos(needle);
         if (pos.found()) {
             bufferpos = pos.end;
@@ -2228,7 +2263,7 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public String matchFullTrimmedString(ByteSearch needle) throws EOCException {
+    public String readMatchingFullTrimmedString(ByteSearch needle) throws EOCException {
         ByteSearchPosition pos = matchPos(needle);
         if (pos.found()) {
             bufferpos = pos.end;
@@ -2238,7 +2273,7 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public ByteSearchPosition findPos(ByteSearch needle) throws EOCException {
+    public ByteSearchPosition readPos(ByteSearch needle) throws EOCException {
         ByteSearchPosition pos = needle.findPos(buffer, bufferpos, end);
         while (pos.endreached && hasMore()) {
             bufferpos = pos.start;
@@ -2251,9 +2286,9 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public ByteSearchSection findSection(ByteSection needle) throws EOCException {
+    public ByteSearchSection readSection(ByteSection needle) throws EOCException {
         ByteSearchSection pos = needle.findPos(buffer, bufferpos, end);
-        //log.info("findSection %s end %b more %b", needle.toString(), pos.endreached, hasMore());
+        //log.info("readSection %s end %b more %b", needle.toString(), pos.endreached, hasMore());
         while (pos.endreached && hasMore()) {
             bufferpos = pos.start;
             softFillBuffer();
@@ -2265,15 +2300,15 @@ public class BufferReaderWriter implements StructureData {
         return pos;
     }
 
-    public ByteSearchSection findSectionStart(ByteSection needle) throws EOCException {
-        ByteSearchSection pos = findSection(needle);
+    public ByteSearchSection readSectionStart(ByteSection needle) throws EOCException {
+        ByteSearchSection pos = readSection(needle);
         bufferpos = (pos.start > -1) ? pos.start : end;
         return pos;
     }
 
     @Override
-    public boolean skipStart(ByteSearch needle) throws EOCException {
-        ByteSearchPosition pos = findPos(needle);
+    public boolean skipUntil(ByteSearch needle) throws EOCException {
+        ByteSearchPosition pos = readPos(needle);
         if (pos.found()) {
             bufferpos = pos.start;
             return true;
@@ -2283,8 +2318,8 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public boolean skipEnd(ByteSearch needle) throws EOCException {
-        ByteSearchPosition pos = findPos(needle);
+    public boolean skipPast(ByteSearch needle) throws EOCException {
+        ByteSearchPosition pos = readPos(needle);
         if (pos.found()) {
             bufferpos = pos.end;
             return true;

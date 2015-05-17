@@ -1,8 +1,6 @@
-// Generated from ByteRegex.g4 by ANTLR 4.1
+// Generated from ByteRegex.g4 by ANTLR 4.2.2
 
     package io.github.repir.tools.search;
-import io.github.repir.tools.search.Fragment;
-import io.github.repir.tools.search.Node;
     import io.github.repir.tools.search.Node.*; 
     import java.util.ArrayList;
     import io.github.repir.tools.lib.Log;
@@ -23,11 +21,12 @@ public class ByteRegexParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		OR=1, LITERAL=2, CASE=3, STAR=4, QUES=5, PLUS=6, DOT=7, END=8, CHAR=9, 
-		BRACKOPEN=10, BRACKCLOSE=11, BLOCKOPEN=12, BLOCKCLOSE=13, START=14, MINUS=15, 
-		LOOKAHEAD=16, LOOKBEHIND=17;
+		BRACKOPEN=10, BRACKCLOSE=11, BRACEOPEN=12, BRACECLOSE=13, BLOCKOPEN=14, 
+		BLOCKCLOSE=15, START=16, MINUS=17, LOOKAHEAD=18, LOOKBEHIND=19;
 	public static final String[] tokenNames = {
 		"<INVALID>", "'|'", "LITERAL", "CASE", "'*'", "'?'", "'+'", "'.'", "'$'", 
-		"CHAR", "'('", "')'", "'['", "']'", "'^'", "'-'", "LOOKAHEAD", "LOOKBEHIND"
+		"CHAR", "'('", "')'", "'{'", "'}'", "'['", "']'", "'^'", "'-'", "LOOKAHEAD", 
+		"LOOKBEHIND"
 	};
 	public static final int
 		RULE_startRule = 0, RULE_frag = 1, RULE_string = 2, RULE_operand = 3, 
@@ -44,6 +43,9 @@ public class ByteRegexParser extends Parser {
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
+
+	@Override
+	public String getSerializedATN() { return _serializedATN; }
 
 	@Override
 	public ATN getATN() { return _ATN; }
@@ -178,6 +180,7 @@ public class ByteRegexParser extends Parser {
 				        System.arraycopy( _localctx.fragout.start.next, 0, next, 0, _localctx.fragout.start.next.length );
 				        next[ _localctx.fragout.start.next.length ] = ((FragContext)_localctx).string.fragout.start;
 				        _localctx.fragout.start.next = next;
+				        _localctx.fragout.addEnd( ((FragContext)_localctx).string.fragout );
 				      } else {
 				        Node node = new Node( TYPE.CHOICE, casesensitive );
 				        node.next = new Node[2];
@@ -280,7 +283,10 @@ public class ByteRegexParser extends Parser {
 		public Fragment fragout;
 		public SetContext set;
 		public TerminalNode STAR() { return getToken(ByteRegexParser.STAR, 0); }
-		public TerminalNode QUES() { return getToken(ByteRegexParser.QUES, 0); }
+		public TerminalNode QUES(int i) {
+			return getToken(ByteRegexParser.QUES, i);
+		}
+		public List<TerminalNode> QUES() { return getTokens(ByteRegexParser.QUES); }
 		public TerminalNode PLUS() { return getToken(ByteRegexParser.PLUS, 0); }
 		public SetContext set() {
 			return getRuleContext(SetContext.class,0);
@@ -817,7 +823,7 @@ public class ByteRegexParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\23\u0083\4\2\t\2"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\25\u0083\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\5\2\22\n\2\3\2\3"+
 		"\2\5\2\26\n\2\3\2\3\2\3\2\5\2\33\n\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\7"+
 		"\3%\n\3\f\3\16\3(\13\3\3\4\3\4\3\4\6\4-\n\4\r\4\16\4.\3\5\3\5\3\5\3\5"+
@@ -825,34 +831,34 @@ public class ByteRegexParser extends Parser {
 		"\5E\n\5\3\5\5\5H\n\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3"+
 		"\6\3\6\3\6\5\6Y\n\6\3\6\3\6\5\6]\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3"+
 		"\7\3\7\3\7\3\7\3\7\3\7\3\7\7\7n\n\7\f\7\16\7q\13\7\3\7\3\7\5\7u\n\7\3"+
-		"\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\b\u0081\n\b\3\b\2\t\2\4\6\b\n"+
-		"\f\16\2\2\u0091\2\21\3\2\2\2\4\36\3\2\2\2\6,\3\2\2\2\b\60\3\2\2\2\n\\"+
-		"\3\2\2\2\ft\3\2\2\2\16\u0080\3\2\2\2\20\22\7\7\2\2\21\20\3\2\2\2\21\22"+
-		"\3\2\2\2\22\25\3\2\2\2\23\24\7\5\2\2\24\26\b\2\1\2\25\23\3\2\2\2\25\26"+
-		"\3\2\2\2\26\32\3\2\2\2\27\30\5\4\3\2\30\31\b\2\1\2\31\33\3\2\2\2\32\27"+
-		"\3\2\2\2\32\33\3\2\2\2\33\34\3\2\2\2\34\35\7\2\2\3\35\3\3\2\2\2\36\37"+
-		"\5\6\4\2\37&\b\3\1\2 !\7\3\2\2!\"\5\6\4\2\"#\b\3\1\2#%\3\2\2\2$ \3\2\2"+
-		"\2%(\3\2\2\2&$\3\2\2\2&\'\3\2\2\2\'\5\3\2\2\2(&\3\2\2\2)*\5\b\5\2*+\b"+
-		"\4\1\2+-\3\2\2\2,)\3\2\2\2-.\3\2\2\2.,\3\2\2\2./\3\2\2\2/\7\3\2\2\2\60"+
-		"\61\5\n\6\2\61G\b\5\1\2\62\63\7\7\2\2\63\66\b\5\1\2\64\65\7\7\2\2\65\67"+
-		"\b\5\1\2\66\64\3\2\2\2\66\67\3\2\2\2\678\3\2\2\28H\b\5\1\29:\7\6\2\2:"+
-		"=\b\5\1\2;<\7\7\2\2<>\b\5\1\2=;\3\2\2\2=>\3\2\2\2>?\3\2\2\2?H\b\5\1\2"+
-		"@A\7\b\2\2AD\b\5\1\2BC\7\7\2\2CE\b\5\1\2DB\3\2\2\2DE\3\2\2\2EF\3\2\2\2"+
-		"FH\b\5\1\2G\62\3\2\2\2G9\3\2\2\2G@\3\2\2\2GH\3\2\2\2H\t\3\2\2\2IJ\5\f"+
-		"\7\2JK\b\6\1\2K]\3\2\2\2LX\7\f\2\2MN\5\4\3\2NO\b\6\1\2OY\3\2\2\2PQ\7\22"+
-		"\2\2QR\5\4\3\2RS\b\6\1\2SY\3\2\2\2TU\7\23\2\2UV\5\4\3\2VW\b\6\1\2WY\3"+
-		"\2\2\2XM\3\2\2\2XP\3\2\2\2XT\3\2\2\2YZ\3\2\2\2Z[\7\r\2\2[]\3\2\2\2\\I"+
-		"\3\2\2\2\\L\3\2\2\2]\13\3\2\2\2^_\5\16\b\2_`\b\7\1\2`u\3\2\2\2ab\7\21"+
-		"\2\2bu\b\7\1\2cd\7\16\2\2de\5\16\b\2eo\b\7\1\2fg\7\21\2\2gh\5\16\b\2h"+
-		"i\b\7\1\2in\3\2\2\2jk\5\16\b\2kl\b\7\1\2ln\3\2\2\2mf\3\2\2\2mj\3\2\2\2"+
-		"nq\3\2\2\2om\3\2\2\2op\3\2\2\2pr\3\2\2\2qo\3\2\2\2rs\7\17\2\2su\3\2\2"+
-		"\2t^\3\2\2\2ta\3\2\2\2tc\3\2\2\2u\r\3\2\2\2vw\7\13\2\2w\u0081\b\b\1\2"+
-		"xy\7\20\2\2y\u0081\b\b\1\2z{\7\n\2\2{\u0081\b\b\1\2|}\7\t\2\2}\u0081\b"+
-		"\b\1\2~\177\7\4\2\2\177\u0081\b\b\1\2\u0080v\3\2\2\2\u0080x\3\2\2\2\u0080"+
-		"z\3\2\2\2\u0080|\3\2\2\2\u0080~\3\2\2\2\u0081\17\3\2\2\2\21\21\25\32&"+
-		".\66=DGX\\mot\u0080";
+		"\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\b\u0081\n\b\3\b\2\2\t\2\4\6\b"+
+		"\n\f\16\2\2\u0091\2\21\3\2\2\2\4\36\3\2\2\2\6,\3\2\2\2\b\60\3\2\2\2\n"+
+		"\\\3\2\2\2\ft\3\2\2\2\16\u0080\3\2\2\2\20\22\7\7\2\2\21\20\3\2\2\2\21"+
+		"\22\3\2\2\2\22\25\3\2\2\2\23\24\7\5\2\2\24\26\b\2\1\2\25\23\3\2\2\2\25"+
+		"\26\3\2\2\2\26\32\3\2\2\2\27\30\5\4\3\2\30\31\b\2\1\2\31\33\3\2\2\2\32"+
+		"\27\3\2\2\2\32\33\3\2\2\2\33\34\3\2\2\2\34\35\7\2\2\3\35\3\3\2\2\2\36"+
+		"\37\5\6\4\2\37&\b\3\1\2 !\7\3\2\2!\"\5\6\4\2\"#\b\3\1\2#%\3\2\2\2$ \3"+
+		"\2\2\2%(\3\2\2\2&$\3\2\2\2&\'\3\2\2\2\'\5\3\2\2\2(&\3\2\2\2)*\5\b\5\2"+
+		"*+\b\4\1\2+-\3\2\2\2,)\3\2\2\2-.\3\2\2\2.,\3\2\2\2./\3\2\2\2/\7\3\2\2"+
+		"\2\60\61\5\n\6\2\61G\b\5\1\2\62\63\7\7\2\2\63\66\b\5\1\2\64\65\7\7\2\2"+
+		"\65\67\b\5\1\2\66\64\3\2\2\2\66\67\3\2\2\2\678\3\2\2\28H\b\5\1\29:\7\6"+
+		"\2\2:=\b\5\1\2;<\7\7\2\2<>\b\5\1\2=;\3\2\2\2=>\3\2\2\2>?\3\2\2\2?H\b\5"+
+		"\1\2@A\7\b\2\2AD\b\5\1\2BC\7\7\2\2CE\b\5\1\2DB\3\2\2\2DE\3\2\2\2EF\3\2"+
+		"\2\2FH\b\5\1\2G\62\3\2\2\2G9\3\2\2\2G@\3\2\2\2GH\3\2\2\2H\t\3\2\2\2IJ"+
+		"\5\f\7\2JK\b\6\1\2K]\3\2\2\2LX\7\f\2\2MN\5\4\3\2NO\b\6\1\2OY\3\2\2\2P"+
+		"Q\7\24\2\2QR\5\4\3\2RS\b\6\1\2SY\3\2\2\2TU\7\25\2\2UV\5\4\3\2VW\b\6\1"+
+		"\2WY\3\2\2\2XM\3\2\2\2XP\3\2\2\2XT\3\2\2\2YZ\3\2\2\2Z[\7\r\2\2[]\3\2\2"+
+		"\2\\I\3\2\2\2\\L\3\2\2\2]\13\3\2\2\2^_\5\16\b\2_`\b\7\1\2`u\3\2\2\2ab"+
+		"\7\23\2\2bu\b\7\1\2cd\7\20\2\2de\5\16\b\2eo\b\7\1\2fg\7\23\2\2gh\5\16"+
+		"\b\2hi\b\7\1\2in\3\2\2\2jk\5\16\b\2kl\b\7\1\2ln\3\2\2\2mf\3\2\2\2mj\3"+
+		"\2\2\2nq\3\2\2\2om\3\2\2\2op\3\2\2\2pr\3\2\2\2qo\3\2\2\2rs\7\21\2\2su"+
+		"\3\2\2\2t^\3\2\2\2ta\3\2\2\2tc\3\2\2\2u\r\3\2\2\2vw\7\13\2\2w\u0081\b"+
+		"\b\1\2xy\7\22\2\2y\u0081\b\b\1\2z{\7\n\2\2{\u0081\b\b\1\2|}\7\t\2\2}\u0081"+
+		"\b\b\1\2~\177\7\4\2\2\177\u0081\b\b\1\2\u0080v\3\2\2\2\u0080x\3\2\2\2"+
+		"\u0080z\3\2\2\2\u0080|\3\2\2\2\u0080~\3\2\2\2\u0081\17\3\2\2\2\21\21\25"+
+		"\32&.\66=DGX\\mot\u0080";
 	public static final ATN _ATN =
-		ATNSimulator.deserialize(_serializedATN.toCharArray());
+		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
 		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
 		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {

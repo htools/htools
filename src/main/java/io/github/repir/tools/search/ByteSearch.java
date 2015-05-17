@@ -8,6 +8,7 @@ import io.github.repir.tools.lib.ArrayTools;
 import io.github.repir.tools.lib.BoolTools;
 import io.github.repir.tools.lib.ByteTools;
 import io.github.repir.tools.lib.Log;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 /**
@@ -55,7 +56,7 @@ public abstract class ByteSearch {
             }
         }
     }
-    
+
     public static ByteSearch createFilePattern(String pattern) {
         pattern = escape(pattern).replace("*", ".*");
         return create(pattern);
@@ -183,6 +184,53 @@ public abstract class ByteSearch {
         return s;
     }
 
+    public String replaceAll(String s, String replace) {
+        try {
+            byte[] haystack = s.getBytes("UTF-8");
+            ArrayList<ByteSearchPosition> allpos = this.findAllPos(haystack);
+            if (allpos.size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                int oldpos = 0;
+                for (ByteSearchPosition pos : allpos) {
+                    if (pos.start > oldpos) {
+                        sb.append(ByteTools.toString(haystack, oldpos, pos.start)).append(replace);
+                    }
+                    oldpos = pos.end;
+                }
+                if (oldpos < haystack.length) {
+                    sb.append(ByteTools.toString(haystack, oldpos, haystack.length));
+                }
+                return sb.toString();
+            }
+        } catch (UnsupportedEncodingException ex) {
+            log.fatalexception(ex, "replaceAll %s %s", s, replace);
+        }
+        return s;
+    }
+
+    public void replaceAll(byte[] haystack, int start, int end, String replace) {
+        try {
+            byte[] replacement = null;
+            for (ByteSearchPosition pos : findAllPos(haystack, start, end)) {
+                if (replacement == null) {
+                    replacement = replace.getBytes("UTF-8");
+                }
+                for (int i = 0; i < replacement.length && pos.start + i < pos.end; i++) {
+                    haystack[pos.start + i] = replacement[i];
+                }
+                for (int i = pos.start + replacement.length; i < pos.end; i++) {
+                    haystack[i] = 0;
+                }
+            }
+        } catch (UnsupportedEncodingException ex) {
+            log.fatalexception(ex, "replaceAll %s %s", ByteTools.toString(haystack), replace);
+        }
+    }
+
+    public void replaceAll(ByteSearchSection section, String replace) {
+        replaceAll(section.haystack, section.innerstart, section.innerend, replace);
+    }
+
     /**
      * @param haystack
      * @return ByteSearchPosition for ByteSearch pattern at pos 0 of haystack
@@ -211,6 +259,10 @@ public abstract class ByteSearch {
         return matchPos.found() ? matchPos.toString() : null;
     }
 
+    /**
+     * @param section
+     * @return first String that matches the ByteSearch pattern
+     */
     public String extract(ByteSearchSection section) {
         ByteSearchPosition findPos = findPos(section.haystack, section.innerstart, section.innerend);
         return findPos.found() ? findPos.toString() : null;
@@ -227,6 +279,11 @@ public abstract class ByteSearch {
         }
         byte b[] = s.getBytes();
         ByteSearchPosition findPos = findPos(b, 0, b.length);
+        return findPos.found() ? findPos.toString() : null;
+    }
+
+    public String extract(byte haystack[]) {
+        ByteSearchPosition findPos = findPos(haystack, 0, haystack.length);
         return findPos.found() ? findPos.toString() : null;
     }
 
@@ -277,6 +334,10 @@ public abstract class ByteSearch {
     }
 
     public ByteSearchPosition findPosQuoteSafe(byte haystack[], int start, int end) {
+        return findPos(haystack, start, end);
+    }
+
+    public ByteSearchPosition findPosDoubleQuoteSafe(byte haystack[], int start, int end) {
         return findPos(haystack, start, end);
     }
 
@@ -382,23 +443,6 @@ public abstract class ByteSearch {
 
     public ArrayList<ByteSearchPosition> findAllPos(ByteSearchSection s) {
         return findAllPos(s.haystack, s.innerstart, s.innerend);
-    }
-
-    public String replaceAll(String s, String replacement) {
-        byte b[] = s.getBytes();
-        StringBuilder sb = new StringBuilder();
-        int currentpos = 0;
-        for (ByteSearchPosition pos : findAllPos(b, 0, b.length)) {
-            if (currentpos < pos.start) {
-                sb.append(ByteTools.toString(b, currentpos, pos.start));
-            }
-            sb.append(replacement);
-            currentpos = pos.end;
-        }
-        if (currentpos < b.length) {
-            sb.append(ByteTools.toString(b, currentpos, b.length));
-        }
-        return sb.toString();
     }
 
     /**

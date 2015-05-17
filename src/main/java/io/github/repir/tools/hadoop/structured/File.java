@@ -27,6 +27,11 @@ public abstract class File<J extends Writable> extends StructuredFile implements
         return u;
     }
 
+   @Override
+    public void setDatafile(Datafile df) {
+        super.setDatafile(df);
+    }
+    
     @Override
     public StructuredRecordFileIterator<File, J> iterator() {
         return new StructuredRecordFileIterator(this);

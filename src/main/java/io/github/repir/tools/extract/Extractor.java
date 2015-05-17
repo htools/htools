@@ -34,7 +34,7 @@ import java.util.TreeSet;
 public class Extractor {
 
     public static Log log = new Log(Extractor.class);
-    private boolean neverused = true;
+    protected boolean neverused = true;
     protected ArrayList<ExtractorProcessor> preprocess = new ArrayList();
     protected HashMap<String, ArrayList<ExtractorProcessor>> processor = new HashMap();
     protected HashSet<String> processes = new HashSet();
@@ -163,12 +163,15 @@ public class Extractor {
      * @param process
      * @param processor
      */
-    public void addProcess(String process, Class processor) {
+    public ExtractorProcessor addProcess(String process, Class processor) {
+        ExtractorProcessor p = null;
         try {
-            addProcess(process, createUnboundProcessor(process, processor));
+            p = createUnboundProcessor(process, processor);
+            addProcess(process, p);
         } catch (ClassNotFoundException ex) {
             log.exception(ex, "addProcess(%s, %s)", process, processor.getCanonicalName());
         }
+        return p;
     }
 
     /**
@@ -219,28 +222,31 @@ public class Extractor {
         //ShowContent showcontent = new ShowContent(this, "tokenize");
         int bufferpos = 0;
         int bufferend = entity.content.length;
-        //log.info("extract() bufferpos %d bufferend %d", bufferpos, bufferend);
+        //log.info("process() bufferpos %d bufferend %d", bufferpos, bufferend);
         if (bufferpos >= bufferend) {
             return;
         }
         try {
+            getAll(entity);
             for (ExtractorProcessor proc : this.preprocess) {
+                //log.info("PreProcess %s", proc.getClass().getCanonicalName());
                 proc.process(entity, getAll(entity), null);
             }
-            //showcontent.process(entity, new Section(0, 0, bufferend, bufferend), "all");
             this.processSectionMarkers(entity, bufferpos, bufferend);
+            preProcess(entity);
             for (SectionProcess p : this.processors) {
                 for (ByteSearchSection section : entity.getSectionPos(p.section)) {
+                    //log.info("section %d %d", section.start, section.innerstart);
                     for (ExtractorProcessor proc : processor.get(p.process)) {
                         proc.process(entity, section, p.entityattribute);
-                        //if (p.process.equals("tokenize"))
-                        //   showcontent.process(entity, section, proc.getClass().getSimpleName());
                     }
                 }
             }
         } catch (RemovedException ex) {
         }
     }
+    
+    protected void preProcess(Content content) {}
 
     public Content process(byte content[]) {
         Content entity = new Content();
@@ -265,11 +271,12 @@ public class Extractor {
     }
 
     protected void processSectionMarkers(Content entity, int bufferpos, int bufferend) {
-        //entity.addSectionPos( "all", bufferpos, bufferpos, bufferend, bufferend );
+        //log.info("process sessionmarkers %d ", inputsections.size());
+        //log.info("sctions %s ", entity.getSectionPositions());
         for (int section = 0; section < inputsections.size(); section++) {
             String sectionname = inputsections.get(section);
-            //log.info("processSectionMarkers %s", sectionname);
             ExtractorPatternMatcher patternmatcher = patternmatchers.get(section);
+            //log.info("process sessionmarkers %s %d %s", sectionname, patternmatcher.markers.size(), entity.getSectionPos(sectionname));
             for (ByteSearchSection pos : entity.getSectionPos(sectionname)) {
                 patternmatcher.processSectionMarkers(entity, pos);
             }
@@ -305,15 +312,12 @@ public class Extractor {
         while (all.size() > 0) {
             ByteSearchSection s = all.pollFirst();
             while (s.innerstart < s.end) {
-                log.info("section %d %d", s.innerstart, s.end);
                 for (; firstother != null && firstother.end < s.innerstart; firstother = other.pollFirst());
                 if (firstother == null || firstother.innerstart >= s.end) {
-                    log.info("add1 %d %d %d %d", s.start, s.innerstart, s.innerend, s.end);
                     entity.addSectionPos(resultsection, s.haystack, s.start, s.innerstart, s.innerend, s.end);
                     s.innerstart = s.end;
                 } else {
                     if (firstother.start > s.innerstart) {
-                        log.info("add2 %d %d", s.innerstart, firstother.start);
                         entity.addSectionPos(resultsection, s.haystack, s.start, s.innerstart, firstother.start, firstother.start);
                     }
                     s.innerstart = firstother.end;

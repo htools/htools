@@ -22,7 +22,7 @@ public class DefaultHTMLTokenizer extends AbstractTokenizer {
    }
    
    @Override
-   protected void preProcess() {
+   protected void buildPreProcess() {
        this.addPreProcessor(RemoveHtmlComment.class);
        this.addPreProcessor(ConvertHtmlASCIICodes.class);
        this.addPreProcessor(ConvertHtmlSpecialCodes.class);
@@ -31,14 +31,9 @@ public class DefaultHTMLTokenizer extends AbstractTokenizer {
    }
    
    @Override
-   protected void process() {
+   protected void buildProcess() {
        this.addProcess(ConvertHtmlAmpersand.class);
        this.addProcess(RemoveHtmlTags.class);
        this.addProcess(RemoveHtmlSpecialCodes.class);
-   }
-   
-   @Override
-   protected void postProcess() {
-       this.addProcess("tokenize", tokenizer);
    }
 }

@@ -1,5 +1,6 @@
 package io.github.repir.tools.io;
 
+import io.github.repir.tools.hadoop.Conf;
 import io.github.repir.tools.lib.ArgsParser;
 import io.github.repir.tools.lib.Log;
 import java.io.IOException;
@@ -11,16 +12,16 @@ public class HDFSMove {
    public static boolean verbose = false;
 
    public static void main(String args[]) throws IOException {
-      ArgsParser ap = new ArgsParser(args, "-v -r -i input -o output");
+      Conf ap = new Conf(args, "--v --r -i input -o output");
       String input = ap.get("input");
       String output = ap.get("output");
-      if (ap.getBoolean("v")) {
+      if (ap.getBoolean("v", false)) {
          verbose = true;
       }
-      if (!ap.getBoolean("r") && !input.contains("*")) {
+      if (!ap.getBoolean("r", false) && !input.contains("*")) {
          if (!verbose)
             HDFSPath.rename(HDFSPath.getFS(), input, output);
-      } else if (ap.getBoolean("r")) {
+      } else if (ap.getBoolean("r", false)) {
          if (!verbose)
             HDFSMoveRec.main(input, output);
       } else {

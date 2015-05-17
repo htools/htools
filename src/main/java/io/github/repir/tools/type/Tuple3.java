@@ -1,14 +1,31 @@
 package io.github.repir.tools.type;
 
-public class Tuple3<R, S, T> {
+import io.github.repir.tools.lib.MathTools;
 
-   public R value1;
-   public S value2;
-   public T value3;
+public class Tuple3<K, V, V2> extends KV3<K, V, V2> {
 
-   public Tuple3(R r, S s, T t) {
-      value1 = r;
-      value2 = s;
-      value3 = t;
+   public Tuple3(K key, V value, V2 value2) {
+       super(key, value, value2);
    }
+
+    @Override
+    public int hashCode() {
+        return MathTools.hashCode(key.hashCode(), value.hashCode(), value2.hashCode());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof KV3) {
+            Tuple3<K, V, V2> oo = (Tuple3)o;
+            return oo.key.equals(key) && oo.value.equals(value) && oo.value2.equals(value2);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().append(key.toString())
+                .append(",").append(value.toString())
+                .append(",").append(value2.toString()).toString();
+    }
 }

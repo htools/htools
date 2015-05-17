@@ -11,6 +11,7 @@ import org.apache.hadoop.io.LongWritable;
  */
 public abstract class InputFormat<F extends StructuredRecordFile, V extends org.apache.hadoop.io.Writable>
         extends FileInputFormat<LongWritable, V> {
+    
 
     public InputFormat(Class fileclass) {
         super(fileclass);

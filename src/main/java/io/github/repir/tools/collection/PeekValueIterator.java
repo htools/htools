@@ -5,10 +5,10 @@ import java.util.Map;
 
 public class PeekValueIterator<K, V> implements PeekIterator<V> {
 
-   public Iterator<Map.Entry<K, V>> data;
+   public Iterator<? extends Map.Entry<K, V>> data;
    private V current, next;
 
-   public PeekValueIterator(Iterator<Map.Entry<K, V>> data) {
+   public PeekValueIterator(Iterator<? extends Map.Entry<K, V>> data) {
       this.data = data;
       next = null;
       next();

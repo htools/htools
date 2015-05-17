@@ -63,6 +63,8 @@ public interface StructureWriter {
 
    public void write(int i[]);
 
+   public void write(boolean b[]);
+
    public void write(Collection<Integer> al);
 
    public void writeStr(Collection<String> al);

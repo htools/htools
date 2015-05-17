@@ -31,7 +31,7 @@ public abstract class StructuredTextXML extends StructuredTextFile {
 
    @Override
    protected ArrayList<ByteSearchSection> findAllSections( ByteSearchSection section, ByteSection needle ) {
-      return section.findAllSectionsDontMove(needle);
+      return section.findAllSections(needle);
    }
    
    private static ByteSection xmlOpenNode(String label) {
@@ -90,7 +90,7 @@ public abstract class StructuredTextXML extends StructuredTextFile {
             }
          }
          //Node ff = orderedfields.get(2);
-         //ByteSearchSection pos1 = section.findSectionDontMove(ff.section);
+         //ByteSearchSection pos1 = section.findSection(ff.section);
          //log.info("scan %s regex %s found %s", ff.label, ff.section, pos1);
          if (isOpenClose(section)) {
             section.innerend = section.innerstart;

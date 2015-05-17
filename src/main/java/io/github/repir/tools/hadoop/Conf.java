@@ -637,9 +637,17 @@ public class Conf extends JobConf {
         this.set(ConfSetting.MAP_JAVA_OPTS, sprintf("-server -Xmx%dm", mem - 512));
     }
     
-    public void setreduceMemoryMB(int mem) {
+    public void setSortMB(int mem) {
+        this.setInt(ConfSetting.IO_SORT_MB, mem);
+    }
+    
+    public void setShufflePercent(double percentage) {
+        this.setDouble(ConfSetting.SHUFFLE_INPUT_BUFFER_PERCENT, percentage);
+    }
+    
+    public void setReduceMemoryMB(int mem) {
         this.setInt(ConfSetting.REDUCE_MEMORY_MB, mem);
-        this.set(ConfSetting.REDUCE_JAVA_OPTS, sprintf("-server -Xmx%dm", mem - 512));
+        this.set(ConfSetting.REDUCE_JAVA_OPTS, sprintf("-server -Xmx%dm -XX:NewRatio=8 -Djava.net.preferIPv4Stack=true", mem - 512));
     }
     
     public void setTaskTimeout(int timeout_ms) {

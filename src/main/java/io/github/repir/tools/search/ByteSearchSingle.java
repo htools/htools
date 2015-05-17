@@ -101,6 +101,33 @@ public class ByteSearchSingle extends ByteSearch {
    }
 
    @Override
+   public ByteSearchPosition findPosDoubleQuoteSafe(byte haystack[], int start, int end) {
+      ByteSearchPosition pos = new ByteSearchPosition(haystack);
+      LOOP:
+      for (; start < end; start++) {
+         switch (haystack[start]) {
+            case '"':
+               for (start++; start < end; start++) {
+                  if (haystack[start] == '\\') {
+                     start++;
+                  } else if (haystack[start] == '"') {
+                     continue LOOP;
+                  }
+               }
+               break LOOP;
+         }
+         if (b == haystack[start]) {
+            pos.end = start + 1;
+            break;
+         }
+      }
+      pos.start = start;
+      if (!pos.found())
+         pos.endreached = true;
+      return pos;
+   }
+
+   @Override
    public ByteSearchPosition findPosNoQuoteSafe(byte haystack[], int start, int end) {
       ByteSearchPosition pos = new ByteSearchPosition(haystack, start);
       for (; start < end; start++) {

@@ -18,7 +18,7 @@ public class MarkWikipediaTable extends SectionMarker {
     public static Log log = new Log(MarkWikipediaTable.class);
     ByteRegex tableEnd = new ByteRegex("\\|\\}");
     ByteRegex combi = ByteRegex.combine((ByteRegex) startmarker, tableEnd);
-    ByteRegex tableRow = new ByteRegex("\\n\\|-");
+    ByteRegex tableRow = new ByteRegex("\\n\\|\\-");
 
     public MarkWikipediaTable(Extractor extractor, String inputsection, String outputsection) {
         super(extractor, inputsection, outputsection);
@@ -31,6 +31,7 @@ public class MarkWikipediaTable extends SectionMarker {
 
     @Override
     public ByteSearchSection process(Content entity, ByteSearchSection section) {
+        log.info("MarkWikipediaTable");
         if (entity.content[section.innerstart - 1] != '{') {
             ByteSearchPosition end = new ByteSearchPosition(section.haystack, section.innerstart, section.innerend);
             int tableopen = 1;
@@ -52,9 +53,11 @@ public class MarkWikipediaTable extends SectionMarker {
                 }
             }
             if (tableopen == 0 && tableRow.exists(entity.content, section.end, end.start)) {
+                log.info("MarkWikipediaTable end");
                 return entity.addSectionPos(outputsection, entity.content, section.start, section.start, end.start, end.end);
             }
         }
+        log.info("MarkWikipediaTable end");
         return null;
     }
 }

@@ -2,9 +2,12 @@ package io.github.repir.tools.lib;
 
 import static io.github.repir.tools.lib.Const.*;
 import static io.github.repir.tools.lib.PrintTools.*;
+import io.github.repir.tools.search.ByteSearch;
+import io.github.repir.tools.search.ByteSearchPosition;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -37,7 +40,86 @@ public enum StrTools {
         }
         return ret;
     }
+    
+    private static boolean[] whitespace = BoolTools.combineRanges(BoolTools.zero(), BoolTools.whitespace());
+    public static byte[] innerTrim(byte[] content) {
+        return innerTrim(content, 0, content.length);
+    }
 
+    public static byte[] trim(byte[] content) {
+        return trim(content, 0, content.length);
+    }
+
+    public static String max (String a, String b) {
+        return a.compareTo(b) > 0?a:b;
+    }
+    
+    public static String min (String a, String b) {
+        return a.compareTo(b) < 0?a:b;
+    }
+    
+    /**
+     * Convert all whitespace in content to a single space. Changes content.
+     */
+    public static byte[] innerTrim(byte[] content, int start, int end) {
+        int lastpos = 0;
+        while (lastpos < end) {
+            int pos = ByteSearch.WHITESPACE.find(content, lastpos, end);
+            if (pos > lastpos) {
+               content[pos] = 32;
+               for (lastpos = pos + 1; lastpos < content.length && whitespace[content[lastpos] & 0xff]; lastpos++)
+                 content[lastpos] = 0;
+            } else 
+                break;
+        }
+        return content;
+    }
+
+    public static byte[] trim(byte[] content, int start, int end) {
+        for (; start < end && whitespace[content[start] & 0xff]; start++)
+            content[start] = 0;
+        for (int i = end - 1; i > start && whitespace[content[i] & 0xff]; i--)
+            content[i] = 0;
+        return content;
+    }
+
+    public static String allTrim(String s) {
+        return s.replaceAll("\\s+", " ").trim();
+    }
+    
+    /**
+     * 
+     * @param buffer
+     * @param start
+     * @param end
+     * @return String from buffer 
+     */
+    public static String toString(byte buffer[], int start, int end) {
+        if (end > start) {
+            int nullchars = 0;
+            for (int p = start; p < end; p++) {
+                if (buffer[p] == 0) {
+                    nullchars++;
+                }
+            }
+            if (nullchars == 0) {
+                return new String(buffer, start, end - start);
+            } else if (end > start + nullchars) {
+                byte[] c = new byte[end - start - nullchars];
+                for (int cnr = 0, p = start; p < end; p++) {
+                    if (buffer[p] != 0) {
+                        c[cnr++] = buffer[p];
+                    }
+                }
+                return new String(c);
+            }
+        }
+        return "";
+    }
+    
+    public static String toString(byte[] buffer) {
+       return toString(buffer, 0, buffer.length);
+    }
     /**
      *
      * @param object
@@ -98,8 +180,13 @@ public enum StrTools {
         return (pos < 1) ? "" : object.substring(0, pos);
     }
 
-    public static String getFromString(String object, String match) {
+    public static String getAfterFirstString(String object, String match) {
         int pos = object.indexOf(match);
+        return (pos < 1) ? "" : object.substring(pos + match.length());
+    }
+
+    public static String getAfterLastString(String object, String match) {
+        int pos = object.lastIndexOf(match);
         return (pos < 1) ? "" : object.substring(pos + match.length());
     }
 
@@ -200,6 +287,11 @@ public enum StrTools {
      */
     public static String stripAllFrom(String haystack) {
         return stripFrom(haystack, needles, exceptnl);
+    }
+
+    public static String stripFromLast(String haystack, String needle) {
+        int pos = haystack.lastIndexOf(needle);
+        return (pos >= 0)?haystack.substring(0, pos):haystack;
     }
 
     /**
@@ -390,12 +482,51 @@ public enum StrTools {
         return sb.toString();
     }
 
+    public static String concat(char seperator, Collection<String> str) {
+        StringBuilder sb = new StringBuilder();
+        boolean start = true;
+        for (String s : str) {
+            if (start) {
+                start = false;
+            } else {
+                sb.append(seperator);
+            }
+            sb.append(s);
+        }
+        return sb.toString();
+    }
+
+    public static String concat(char seperator, ArrayList<String> str, int start, int end) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = start; i < end; i++) {
+            if (sb.length() > 0) {
+                sb.append(seperator);
+            }
+            sb.append(str.get(i));
+        }
+        return sb.toString();
+    }
+
     /**
      * @param seperator String to place in between consecutive array elements
      * @param str array of Strings to be concatenated
      * @return Concatenated array of Strings, separated by the separator;
      */
     public static String concat(String seperator, String... str) {
+        StringBuilder sb = new StringBuilder();
+        boolean start = true;
+        for (String s : str) {
+            if (start) {
+                start = false;
+            } else {
+                sb.append(seperator);
+            }
+            sb.append(s);
+        }
+        return sb.toString();
+    }
+
+    public static String concat(String seperator, Collection<String> str) {
         StringBuilder sb = new StringBuilder();
         boolean start = true;
         for (String s : str) {
@@ -630,6 +761,23 @@ public enum StrTools {
         }
         return sb.toString();
     }
+    public static byte unicodebyte20[] = {
+        (byte) 0xe2, (byte) 0x80, (byte) 0x90,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x91,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x92,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x93,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x94,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x95,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x98,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x99,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x9a,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x9b,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x9c,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x9d,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x9e,
+        (byte) 0xe2, (byte) 0x80, (byte) 0x9f,
+    };
+    public static byte asciibyte20[] = {'-', '-', '-', '-', '-', '-', '\'', '\'', '\'', '\'', '"', '"', '"', '"'};
     public static byte unicodebyteC3[] = {(byte) 0x80, (byte) 0xA0, (byte) 0x88, (byte) 0xA8, (byte) 0x8C,
         (byte) 0xAC, (byte) 0x92, (byte) 0xB2, (byte) 0x99, (byte) 0xB9,
         (byte) 0x81, (byte) 0xA1, (byte) 0x89, (byte) 0xA9, (byte) 0x8D,
@@ -641,6 +789,8 @@ public enum StrTools {
         (byte) 0x8B, (byte) 0xAB, (byte) 0x8F, (byte) 0xAF, (byte) 0x96,
         (byte) 0xB6, (byte) 0x9C, (byte) 0xBC, (byte) 0xBF, (byte) 0x85,
         (byte) 0xA5, (byte) 0x87, (byte) 0xA7};
+    public static byte unicodebyteC2[] = {(byte) 0xA0};
+    public static byte asciibyteC2[] = {' '};
     public static byte asciibyteC3[] = {'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'Y', 'y', 'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'A', 'a', 'O', 'o', 'N', 'n', 'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'y', 'A', 'a', 'C', 'c'};
     public static byte unicodebyteC5[] = {(byte) 0xB6, (byte) 0xB7, (byte) 0xB8, (byte) 0x90, (byte) 0x91, (byte) 0xB0, (byte) 0xB1};
     public static byte asciibyteC5[] = {'Y', 'y', 'Y', 'O', 'o', 'U', 'u'};

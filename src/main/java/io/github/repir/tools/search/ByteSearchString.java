@@ -1,7 +1,6 @@
 package io.github.repir.tools.search;
 
 import io.github.repir.tools.lib.Log;
-import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.lib.PrintTools;
 import java.util.ArrayList;
 
@@ -82,6 +81,8 @@ public class ByteSearchString extends ByteSearch {
       laststart = start;
       for (lastend = start; lastend < end; lastend++) {
          if (haystack[lastend] != 0) { // skip \0 bytes
+            if (lastend > haystack.length - 1)
+                log.info("%d %d %s %d %d", start, end, new String(haystack), match, pattern.length);
             if (pattern[match][haystack[lastend] & 0xFF]) {
                if (++match == pattern.length) {
                   lastend++;

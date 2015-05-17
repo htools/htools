@@ -111,6 +111,18 @@ public enum PrintTools {
         return sb.toString();
     }
 
+    public static String boolDump(boolean[] mem) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; mem != null && i < mem.length; i += 20) {
+            sb.append(sprintf("%03d ", i));
+            for (int j = i; j < i + 20; j++) {
+                sb.append((j < mem.length)?sprintf("%d ", mem[j]?1:0):"  ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
     public static String memoryDump(byte[] mem) {
         return memoryDump(mem, 0, mem.length);
     }

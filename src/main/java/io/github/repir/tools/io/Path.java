@@ -40,6 +40,8 @@ public interface Path extends DirComponent, Iterable<DirComponent> {
 
    boolean exists();
    
+   void remove() throws IOException;
+   
     public Iterator<DirComponent> iterator();
 
     public Iterator<DirComponent> iteratorRecursive() throws IOException;
@@ -62,6 +64,8 @@ public interface Path extends DirComponent, Iterable<DirComponent> {
 
     public ArrayList<Datafile> getFiles() throws IOException;
 
+    public ArrayList<Datafile> getFilesNewerThan(long lastupdate) throws IOException;
+
     public ArrayList<String> getFilenames() throws IOException;
 
     public ArrayList<String> getFilepathnames() throws IOException;
@@ -73,4 +77,6 @@ public interface Path extends DirComponent, Iterable<DirComponent> {
     public ArrayList<? extends Path> getDirs(String regexstring) throws IOException;
     
     public ArrayList<Datafile> getFilesStartingWith(String start) throws IOException;
+
+
 }

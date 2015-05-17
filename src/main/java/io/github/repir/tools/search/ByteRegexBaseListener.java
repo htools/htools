@@ -1,4 +1,4 @@
-// Generated from ByteRegex.g4 by ANTLR 4.1
+// Generated from ByteRegex.g4 by ANTLR 4.2.2
 
     package io.github.repir.tools.search;
     import io.github.repir.tools.search.Node.*; 
@@ -19,117 +19,117 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class ByteRegexBaseListener implements ByteRegexListener {
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterFrag(@NotNull ByteRegexParser.FragContext ctx) { }
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFrag(@NotNull ByteRegexParser.FragContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterSet(@NotNull ByteRegexParser.SetContext ctx) { }
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitSet(@NotNull ByteRegexParser.SetContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterString(@NotNull ByteRegexParser.StringContext ctx) { }
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitString(@NotNull ByteRegexParser.StringContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterOperand(@NotNull ByteRegexParser.OperandContext ctx) { }
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitOperand(@NotNull ByteRegexParser.OperandContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterBracket(@NotNull ByteRegexParser.BracketContext ctx) { }
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitBracket(@NotNull ByteRegexParser.BracketContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterCharacter(@NotNull ByteRegexParser.CharacterContext ctx) { }
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCharacter(@NotNull ByteRegexParser.CharacterContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterStartRule(@NotNull ByteRegexParser.StartRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStartRule(@NotNull ByteRegexParser.StartRuleContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterEveryRule(@NotNull ParserRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitEveryRule(@NotNull ParserRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void visitTerminal(@NotNull TerminalNode node) { }
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void visitErrorNode(@NotNull ErrorNode node) { }
 }

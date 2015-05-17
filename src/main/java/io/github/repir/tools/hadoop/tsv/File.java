@@ -19,6 +19,11 @@ public abstract class File<J extends StructuredFileRecord> extends StructuredTex
        super(df);
    }
    
+   @Override
+   public void setDatafile(Datafile df) {
+       super.setDatafile(df);
+   }
+   
     @Override
     public J readRecord() {
         J u = newRecord();

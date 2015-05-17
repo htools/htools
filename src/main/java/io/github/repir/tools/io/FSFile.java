@@ -108,8 +108,7 @@ public class FSFile extends FileGeneric {
         return buffer.toByteArray();
     }
    /**
-    *
-    * @return
+    * @return true if file exists
     */
    public boolean exists() {
       return file.isFile();
@@ -120,37 +119,12 @@ public class FSFile extends FileGeneric {
    }
 
    /**
-    *
-    * @return
+    * @return name of the last component of the path
     */
    public String getFilename() {
       int slashpos = getFullPathName().lastIndexOf('/');
       String f = getFullPathName().substring(slashpos + 1);
       return f;
-   }
-
-   /**
-    *
-    * @return
-    */
-   public long getLastModified() {
-      if (exists()) {
-         return file.lastModified();
-      } else {
-         return NULLINT;
-      }
-   }
-
-   /**
-    *
-    * @param jf
-    * @return
-    */
-   public boolean newerThan(FSFile jf) {
-      if (getLastModified() == NULLINT || jf.getLastModified() == NULLINT) {
-         return false;
-      }
-      return getLastModified() > jf.getLastModified();
    }
 
    /**

@@ -131,7 +131,7 @@ public enum ClassTools {
      * this method will exit with a fatal exception if the constructor does not
      * exist.
      */
-    public static Constructor getConstructor(Class clazz, Class... parameters) {
+    public static <O> Constructor<O> getConstructor(Class<O> clazz, Class... parameters) {
         Constructor constructor = null;
         try {
             constructor = clazz.getDeclaredConstructor(parameters);
@@ -149,7 +149,7 @@ public enum ClassTools {
     * {@link java.lang.reflect.Constructor#newInstance(java.lang.Object[]) }
      * or null if fails.
      */
-    public static Constructor tryGetConstructor(Class clazz, Class... parameters) {
+    public static <O> Constructor<O> tryGetConstructor(Class<O> clazz, Class... parameters) {
         Constructor constructor = null;
         try {
             constructor = clazz.getDeclaredConstructor(parameters);
@@ -165,8 +165,8 @@ public enum ClassTools {
      * @return The constructed Object, or triggers a fatal exception when
      * instantiation fails
      */
-    public static Object construct(Constructor c, Object... params) {
-        Object o = null;
+    public static <O> O construct(Constructor<O> c, Object... params) {
+        O o = null;
         try {
             o = c.newInstance(params);
         } catch (Exception ex) {
@@ -308,9 +308,14 @@ public enum ClassTools {
         return construct(cons, parameters);
     }
 
-    public static Class getGenericType(Object c) {
+    public static Class getGenericType2(Object c) {
         Class generic = (Class) ((ParameterizedType) c.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         return generic;
+    }
+
+    public static Class getGenericType(Object c) {
+        String generic = ((ParameterizedType) c.getClass().getGenericSuperclass()).getActualTypeArguments()[0].getTypeName();
+        return toClass(generic);
     }
 
     public static <S, B extends S> Class[] findTypeParameters(Class<B> base, Class<S> superClass) {
@@ -344,29 +349,58 @@ public enum ClassTools {
         return null;
     }
 
-    public static ArrayList<Class> getClassesFromJars(Class superclass) throws IOException {
-        ArrayList<Class> list = new ArrayList<Class>();
+    public static ArrayList<Class> getAssignableClassesFromJar(Class superclass) throws IOException {
+        ArrayList<Class> list = new ArrayList();
+        for (String c : getClassesFromJars(superclass)) {
+            try {
+                Class clazz = Class.forName(c);
+                if (clazz.isAssignableFrom(superclass)) {
+                    list.add(clazz);
+                }
+            } catch (Exception ex) {}
+        }
+        return list;
+    }
+
+    public static ArrayList<String> getClassesInPackage(Class superclass) throws IOException {
+        String packagepath = superclass.getPackage().getName();
+        ArrayList<String> list = new ArrayList();
+        for (String c : getClassesFromJars(superclass)) {
+            if (c.startsWith(packagepath)) {
+                list.add(c);
+            }
+        }
+        return list;
+    }
+
+    public static ArrayList<String> getClassesFromJars(Class superclass) throws IOException {
+        ArrayList<String> list = new ArrayList();
         URL jar = getJarLocation(superclass);
         if (jar != null) {
-            String packagepath = superclass.getPackage().getName();
             ZipInputStream zip = new ZipInputStream(jar.openStream());
             for (ZipEntry ze = zip.getNextEntry(); ze != null; ze = zip.getNextEntry()) {
                 String entryName = ze.getName();
-                if (entryName.endsWith(".class")) {
+                if (entryName.endsWith(".class") && !entryName.contains("$")) {
                     String classname = entryName.substring(0, entryName.length() - 6).replace('/', '.');
-                    if (classname.startsWith(packagepath)) {
-                        Class candidate;
-                        try {
-                            candidate = Class.forName(classname);
-                            if (superclass.isAssignableFrom(candidate)) {
-                                list.add(candidate);
-                            }
-                        } catch (ClassNotFoundException | NoClassDefFoundError ex) {
-                        }
-                    }
+                    list.add(classname);
                 }
             }
+        }
+        return list;
+    }
 
+    public static ArrayList<String> getClassesFromJars(String jarfile) throws IOException {
+        ArrayList<String> list = new ArrayList();
+        URL jar = new URL(jarfile);
+        if (jar != null) {
+            ZipInputStream zip = new ZipInputStream(jar.openStream());
+            for (ZipEntry ze = zip.getNextEntry(); ze != null; ze = zip.getNextEntry()) {
+                String entryName = ze.getName();
+                if (entryName.endsWith(".class") && !entryName.contains("$")) {
+                    String classname = entryName.substring(0, entryName.length() - 6).replace('/', '.');
+                    list.add(classname);
+                }
+            }
         }
         return list;
     }
@@ -380,6 +414,11 @@ public enum ClassTools {
             return src.getLocation();
         }
         return null;
+    }
+
+    public static URL getJarLocation(String clazz) {
+        ClassLoader loader = ClassTools.class.getClassLoader();
+        return loader.getResource(clazz);
     }
 
     public static Class getMainClass() {

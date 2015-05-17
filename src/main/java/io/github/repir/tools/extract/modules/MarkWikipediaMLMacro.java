@@ -15,9 +15,9 @@ import io.github.repir.tools.extract.Extractor;
 public class MarkWikipediaMLMacro extends SectionMarker {
 
     public static Log log = new Log(MarkWikipediaMLMacro.class);
-    ByteRegex macroEnd = new ByteRegex("}}");
-    ByteRegex combi = ByteRegex.combine((ByteRegex) startmarker, macroEnd);
-    ByteRegex tableRow = new ByteRegex("\\n|-");
+    //ByteRegex macroEnd = new ByteRegex("\\}\\}");
+    //ByteRegex combi = ByteRegex.combine((ByteRegex) startmarker, macroEnd);
+    //ByteRegex tableRow = new ByteRegex("\\n|-");
 
     public MarkWikipediaMLMacro(Extractor extractor, String inputsection, String outputsection) {
         super(extractor, inputsection, outputsection);
@@ -25,7 +25,7 @@ public class MarkWikipediaMLMacro extends SectionMarker {
 
     @Override
     public ByteRegex getStartMarker() {
-        return new ByteRegex("{{");
+        return new ByteRegex("\\{\\{");
     }
 
     @Override
@@ -33,7 +33,7 @@ public class MarkWikipediaMLMacro extends SectionMarker {
         int macroopen = 2;
         int pos = section.innerstart;
         int newlines = 0;
-        while (macroopen > 0) {
+        while (macroopen > 0 && pos < section.innerend) {
             for (; pos < section.innerend && macroopen > 0; pos++) {
                 switch (entity.content[pos]) {
                     case '{':

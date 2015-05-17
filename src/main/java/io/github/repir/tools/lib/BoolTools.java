@@ -50,6 +50,15 @@ public enum BoolTools {;
       return a;
    }
 
+   public static boolean[] add(boolean[] range, char c) {
+      range[c] = true;
+      return range;
+   }
+
+   public static boolean[] zero() {
+      return createASCIIAccept((char)0);
+   }
+
    public static boolean[] not(boolean[] range1, boolean[] range2) {
       boolean a[] = new boolean[256];
          for (int i = 0; i < 256; i++) {
@@ -112,6 +121,13 @@ public enum BoolTools {;
               createASCIIAccept('_'));
    }
    
+   public static boolean[] alphanumeric() {
+      return combineRanges(
+              createASCIIAcceptRange('A', 'Z'), 
+              createASCIIAcceptRange('a', 'z'), 
+              createASCIIAcceptRange('0', '9'));
+   }
+   
    public static boolean[] word0() {
       return combineRanges(word(),
               createASCIIAccept((char)0));
@@ -121,6 +137,10 @@ public enum BoolTools {;
       return combineRanges(
               createASCIIAcceptRange('A', 'Z'), 
               createASCIIAcceptRange('a', 'z'));
+   }
+   
+   public static boolean[] capital() {
+      return createASCIIAcceptRange('A', 'Z');
    }
    
    public static boolean[] digit() {

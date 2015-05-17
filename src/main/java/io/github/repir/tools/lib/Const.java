@@ -14,6 +14,7 @@ public enum Const {;
     *
     */
    public static final int NULLINT = Integer.MIN_VALUE + 1;
+   public static final double NULLDOUBLE = Double.MIN_VALUE + 1;
    public static final long NULLLONG = Long.MIN_VALUE + 1;
    /**
     *

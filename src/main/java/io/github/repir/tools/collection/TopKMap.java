@@ -1,7 +1,10 @@
 package io.github.repir.tools.collection;
-import io.github.repir.tools.collection.ArrayMap.Entry;
 import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.lib.MapTools;
+import io.github.repir.tools.type.KV;
+import io.github.repir.tools.type.Tuple2;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -18,28 +21,53 @@ public class TopKMap<K extends Comparable, V> extends TopK<Map.Entry<K,V>> {
      super(k, comparator);
   }
 
-  public TopKMap(int k, Collection<Map.Entry<K, V>> collection, Comparator<? super Map.Entry<K,V>> comparator) {
+  public TopKMap(int k, Iterable<Map.Entry<K, V>> collection, Comparator<? super Map.Entry<K,V>> comparator) {
      this(k, comparator);
      addAll(collection);
   }
 
-  public TopKMap(int k, Collection<Map.Entry<K, V>> collection) {
+  public TopKMap(int k, Iterable<Map.Entry<K, V>> collection) {
      this(k);
      addAll(collection);
+  }
+  
+  public void addAll(Iterable<Map.Entry<K, V>> collection) {
+      for (Map.Entry<K, V> entry : collection)
+          add(entry);
   }
 
   public TopKMap(int k) {
      this(k, new StdComparator<K,V>());
   }
 
+  public TopKMap(int k, AbstractMap<K, V> map) {
+     this(k, map.entrySet(), new StdComparator<K,V>());
+  }
+
   public boolean add(K key, V value) {
-     return super.add(new Entry<K,V>(key, value));
+     return super.add(new KV<K,V>(key, value));
   }
    
+  public Collection<V> values() {
+      ArrayList<V> values = new ArrayList();
+      for (Map.Entry<K, V> entry : this) {
+          values.add(entry.getValue());
+      }
+      return values;
+  }
+  
   @Override
   public String toString() {
       return MapTools.toString(this);
   }
+  
+    public static <K, V> ArrayMap<K, V> invert(Iterable<? extends Map.Entry> c) {
+        ArrayMap<K, V> map = new ArrayMap();
+        for (Map.Entry<V, K> entry : c) {
+            map.add(entry.getValue(), entry.getKey());
+        }
+        return map;
+    }
   
   private static class StdComparator<K extends Comparable,V> implements Comparator<Map.Entry<K,V>> {
         @Override

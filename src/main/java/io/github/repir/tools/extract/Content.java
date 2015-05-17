@@ -1,5 +1,6 @@
 package io.github.repir.tools.extract;
 
+import io.github.repir.tools.collection.HashMapList;
 import io.github.repir.tools.search.ByteSearchSection;
 import io.github.repir.tools.extract.ExtractChannel;
 import io.github.repir.tools.io.EOCException;
@@ -29,7 +30,7 @@ public class Content extends HashMap<String, ExtractChannel> {
    public static Log log = new Log(Content.class);
    public byte[] content;
    public TreeSet<ByteSearchSection> positions = new TreeSet();
-   private HashMap<String, ArrayList<ByteSearchSection>> sectionpositions = new HashMap();
+   private HashMapList<String, ByteSearchSection> sectionpositions = new HashMapList();
    public long offset; //  currently not send over MR, could be used for debugging
 
    public Content() {
@@ -51,15 +52,18 @@ public class Content extends HashMap<String, ExtractChannel> {
       return d;
    }
 
-   public ByteSearchSection addSectionPos(String section, byte[] haystack, int openlead, int open, int close, int closetrail) {
-      ArrayList<ByteSearchSection> list = sectionpositions.get(section);
-      if (list == null) {
-         list = new ArrayList();
-         sectionpositions.put(section, list);
-      }
+   public ByteSearchSection addSectionPos(String sectionlabel, byte[] haystack, int openlead, int open, int close, int closetrail) {
       ByteSearchSection s = new ByteSearchSection(haystack, openlead, open, close, closetrail);
-      list.add(s);
+      addSectionPos(sectionlabel, s);
       return s;
+   }
+   
+   protected HashMapList<String, ByteSearchSection> getSectionPositions() {
+       return sectionpositions;
+   }
+
+   public void addSectionPos(String sectionlabel, ByteSearchSection section) {
+      sectionpositions.getList(sectionlabel).add(section);
    }
 
    public ArrayList<ByteSearchSection> getSectionPos(String section) {

@@ -27,7 +27,7 @@ public interface ByteSearchReader {
     * @return The String of the matched needle using {@link ByteTools#toString(byte[], int, int)},
     * or null if nor found.
     */
-   public String findString(ByteSearch needle) throws EOCException;
+   public String readString(ByteSearch needle) throws EOCException;
    
    /**
     * The buffer position is moved to the end of the needle, or to the end of the 
@@ -36,7 +36,7 @@ public interface ByteSearchReader {
     * @return The String of the matched needle using {@link ByteTools#toTrimmedString(byte[], int, int)},
     * or null if nor found.
     */
-   public String findTrimmedString(ByteSearch needle) throws EOCException;
+   public String readTrimmedString(ByteSearch needle) throws EOCException;
 
    /** 
     * The buffer position is moved to the end of the needle, or to the end of the 
@@ -45,7 +45,7 @@ public interface ByteSearchReader {
     * @return The String of the matched needle using {@link ByteTools#toFullTrimmedString(byte[], int, int)},
     * or null if nor found.
     */
-   public String findFullTrimmedString(ByteSearch needle) throws EOCException;
+   public String readFullTrimmedString(ByteSearch needle) throws EOCException;
 
    /**
     * The buffer position is moved to the end of the needle, or not moved
@@ -54,7 +54,7 @@ public interface ByteSearchReader {
     * @return The String of the matched needle using {@link ByteTools#toString(byte[], int, int)},
     * or null if nor found.
     */
-   public String matchString(ByteSearch needle) throws EOCException;
+   public String readMatchingString(ByteSearch needle) throws EOCException;
    
    /**
     * The buffer position is moved to the end of the needle, or not moved
@@ -63,7 +63,7 @@ public interface ByteSearchReader {
     * @return The String of the matched needle using {@link ByteTools#toTrimmedString(byte[], int, int)},
     * or null if nor found.
     */
-   public String matchTrimmedString(ByteSearch needle) throws EOCException;
+   public String readMatchingTrimmedString(ByteSearch needle) throws EOCException;
 
    /**
     * The buffer position is moved to the end of the needle, or not moved
@@ -72,7 +72,7 @@ public interface ByteSearchReader {
     * @return The String of the matched needle using {@link ByteTools#toFullTrimmedString(byte[], int, int)},
     * or null if nor found.
     */
-   public String matchFullTrimmedString(ByteSearch needle) throws EOCException;
+   public String readMatchingFullTrimmedString(ByteSearch needle) throws EOCException;
 
    /**
     * Moves the buffer position to the start of the next needle. If the current
@@ -81,7 +81,7 @@ public interface ByteSearchReader {
     * @param needle 
     * @return true if found
     */
-   public boolean skipStart(ByteSearch needle) throws EOCException;
+   public boolean skipUntil(ByteSearch needle) throws EOCException;
    
    /**
     * Moves the buffer position past the end of the next needle. If the current
@@ -90,7 +90,7 @@ public interface ByteSearchReader {
     * @param needle 
     * @return true if found
     */
-   public boolean skipEnd(ByteSearch needle) throws EOCException;
+   public boolean skipPast(ByteSearch needle) throws EOCException;
    
    /**
     * Does not move the current position
@@ -110,21 +110,21 @@ public interface ByteSearchReader {
     * @return ByteSearchPosition of the first matched needle from the current
     * position. The current position is moved to the needle start.
     */
-   public ByteSearchPosition findPos(ByteSearch needle) throws EOCException;
+   public ByteSearchPosition readPos(ByteSearch needle) throws EOCException;
 
    /**
     * @param needle 
     * @return ByteSearchPosition of the first matched needle from the current
     * position. The current position is moved to the needle start.
     */
-   public ByteSearchSection findSection(ByteSection needle) throws EOCException;
+   public ByteSearchSection readSection(ByteSection needle) throws EOCException;
 
    /**
     * @param needle 
     * @return ByteSearchPosition of the first matched needle from the current
     * position. The current position is moved to the needle start.
     */
-   public ByteSearchSection findSectionStart(ByteSection needle) throws EOCException;
+   public ByteSearchSection readSectionStart(ByteSection needle) throws EOCException;
 
    /**
     * @param position 

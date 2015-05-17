@@ -25,7 +25,7 @@ public enum MapTools {
     ;
    public static final Log log = new Log( MapTools.class );
 
-    public static <K,V> String toString(Collection<Map.Entry<K,V>> i) {
+    public static <K,V> String toString(Collection<? extends Map.Entry<K,V>> i) {
         StringBuilder sb = null;
         for (Map.Entry<K,V> e : i) {
             if (sb == null)

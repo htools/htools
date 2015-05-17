@@ -15,7 +15,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  * Supports creating a single output file per top input folder.
  * @author jeroen
  */
-public abstract class OutputFormatFolder<F extends StructuredRecordFile, V extends Writable> extends OutputFormat<F, V> {
+public abstract class OutputFormatFolder<F extends StructuredRecordFile, V extends FileWritable> extends OutputFormat<F, V> {
 
     public static Log log = new Log(OutputFormatFolder.class);
 

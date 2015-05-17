@@ -33,7 +33,7 @@ public class TokenPDF extends TokenChar {
     }
 
     @Override
-    public int preprocess(byte[] buffer, int pos, int endpos) {
+    public int endOfToken(byte[] buffer, int pos, int endpos) {
         ByteSearchPosition startPos = start.findPos(buffer, pos, endpos);
         if (startPos.found()) {
             ByteSearchPosition findPos = space.findPos(buffer, startPos.start, endpos);

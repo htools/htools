@@ -65,7 +65,7 @@ public class StopWordsMultiLang {
     public HashSet<String> getUnstemmedFilterSet() {
         if (unstemmedfilterset == null) {
             unstemmedfilterset = new HashSet<String>();
-            unstemmedfilterset.addAll(StopWordsInquery.getUnstemmedFilterSet());
+            unstemmedfilterset.addAll(StopWordsSmart.getUnstemmedFilterSet());
             unstemmedfilterset.addAll(StopWordsContractions.getUnstemmedFilterSet());
             unstemmedfilterset.addAll(StopWordsLetter.getUnstemmedFilterSet());
             unstemmedfilterset.addAll(StopWordsSpanish.getUnstemmedFilterSet());

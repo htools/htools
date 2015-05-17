@@ -2,6 +2,7 @@ package io.github.repir.tools.extract.modules;
 
 import io.github.repir.tools.extract.ExtractorConf;
 import io.github.repir.tools.lib.ArrayTools;
+import io.github.repir.tools.lib.ByteTools;
 import io.github.repir.tools.lib.ClassTools;
 import io.github.repir.tools.lib.Log;
 import java.lang.reflect.Constructor;
@@ -39,16 +40,18 @@ public abstract class TokenProcessorWithSubs extends TokenProcessor {
         }
     }
 
-    public void addSubProcessor(Class clazz) throws ClassNotFoundException {
-        Constructor constructor = ClassTools.getAssignableConstructor(clazz, TokenProcessor.class, TokenizerRegex.class, String.class);
-        subs.add((TokenProcessor) ClassTools.construct(constructor, tokenizer, name));
+    public void addSubProcessor(Class<? extends TokenProcessor> clazz) throws ClassNotFoundException {
+        Constructor<TokenProcessor> constructor = ClassTools.getAssignableConstructor(clazz, TokenProcessor.class, TokenizerRegex.class, String.class);
+        subs.add(ClassTools.construct(constructor, tokenizer, name));
     }
 
-    public abstract int preprocess(byte[] buffer, int startpos, int endpos);
+    public abstract int endOfToken(byte[] buffer, int startpos, int endpos);
 
     @Override
     public int process(byte[] buffer, int pos, int endpos) {
-        endpos = preprocess(buffer, pos, endpos);
+        //log.info("preprocess %d %s", pos, ByteTools.toString(buffer, pos, Math.min(pos+50, endpos)));
+        endpos = endOfToken(buffer, pos, endpos);
+        //log.info("endpos %d", endpos);
         if (endpos > pos) {
             for (TokenProcessor processor : subs) {
                 endpos = processor.process(buffer, pos, endpos);

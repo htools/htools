@@ -1,4 +1,4 @@
-// Generated from ByteRegex.g4 by ANTLR 4.1
+// Generated from ByteRegex.g4 by ANTLR 4.2.2
 
     package io.github.repir.tools.search;
     import io.github.repir.tools.search.Node.*; 

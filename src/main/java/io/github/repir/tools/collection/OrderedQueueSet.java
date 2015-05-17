@@ -15,7 +15,7 @@ import java.util.PriorityQueue;
  * can be continued on the remainder of the set.
  * @author Jeroen Vuurens
  */
-public class OrderedQueueSet<T> extends PriorityQueue<T> {
+public class OrderedQueueSet<T> extends PriorityQueue<T> implements Iterable<T> {
   public static Log log = new Log( OrderedQueueSet.class );
   final Comparator<? super T> comparator;
 
@@ -63,12 +63,12 @@ public class OrderedQueueSet<T> extends PriorityQueue<T> {
       return toArray;
   }
    
-  @Override
-  public Iterator<T> iterator() {
+  public Iterator<T> orderedIterator() {
      return new QueueIterator(this); 
   }
   
-  public Iterator<T> nonRemoveIterator() {
+  @Override
+  public Iterator<T> iterator() {
      return super.iterator();
   }
   

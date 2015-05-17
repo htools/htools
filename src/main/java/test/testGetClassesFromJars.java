@@ -14,9 +14,9 @@ public class testGetClassesFromJars {
    public static final Log log = new Log( testGetClassesFromJars.class );
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-       ArrayList<Class> classesFromJars = ClassTools.getClassesFromJars(DataIn.class);
-       for (Class c : classesFromJars) {
-           log.info(c.getCanonicalName());
+       ArrayList<String> classesFromJars = ClassTools.getClassesFromJars(DataIn.class);
+       for (String c : classesFromJars) {
+           log.printf(c);
        }
     }
 }

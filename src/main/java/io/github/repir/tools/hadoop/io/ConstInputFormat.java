@@ -1,12 +1,11 @@
 package io.github.repir.tools.hadoop.io;
 
+import io.github.repir.tools.hadoop.Job;
 import io.github.repir.tools.lib.Log;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.JobContext;
@@ -29,7 +28,7 @@ public abstract class ConstInputFormat<KEY, VALUE> extends InputFormat<KEY, VALU
 
    public static Log log = new Log(ConstInputFormat.class);
    static boolean cansplit = true;
-   HashMap<KEY, MRInputSplit> list = new HashMap();
+   static HashMap<Object, MRInputSplit> map = new HashMap();
 
    public ConstInputFormat() {}
    
@@ -37,29 +36,37 @@ public abstract class ConstInputFormat<KEY, VALUE> extends InputFormat<KEY, VALU
    public RecordReader<KEY, VALUE> createRecordReader(InputSplit is, TaskAttemptContext tac) {
       return new MRRecordReader<KEY, VALUE>();
    }
-
-   /**
-    * Add a Query request to the MapReduce job. Note that this is used as a
-    * static method (i.e. can only construct one job at the same startTime).
-    * <p/>
-    * @param repository Repository to retrieve the Query request from
-    * @param queryrequest The Query request to retrieve
-    */
-   public void add(KEY key, VALUE value) {
-         MRInputSplit<KEY, VALUE> split = list.get(key);
-         if (split == null) {
-            split = createIS(key);
-            list.put(key, split);
-         }
-         split.add(value);
+   
+   public static ConstInputFormat getInputFormat(Job job) {
+       return (ConstInputFormat)FileInputFormat.getInputFormat(job);
    }
-
-   public void setSplitable(boolean cansplit) {
+   
+   public static void setSplitable(boolean cansplit) {
       ConstInputFormat.cansplit = cansplit;
    }
 
-   public abstract MRInputSplit<KEY, VALUE> createIS(KEY key);
-
+   public static MRInputSplit getSplit(Object key) {
+       return map.get(key);
+   }
+   
+   public static void putSplit(Object key, MRInputSplit list) {
+       map.put(key, list);
+   }
+   
+   public static int size() {
+       return map.size();
+   }
+   
+   protected abstract MRInputSplit<KEY, VALUE> createSplit(KEY key);
+   
+    public static void add(Job job, Object key, Object value) {
+        MRInputSplit currentsplit = getSplit(key);
+        if (currentsplit == null) {
+            currentsplit = getInputFormat(job).createSplit(key);
+            putSplit(key, currentsplit);
+        }
+        currentsplit.add(value);
+    }
    /**
     * if there are less partitions than we have nodes, we can divide Splits into
     * smaller Splits to retrieve queries in parallel. This requires
@@ -70,6 +77,6 @@ public abstract class ConstInputFormat<KEY, VALUE> extends InputFormat<KEY, VALU
     */
    @Override
    public List<InputSplit> getSplits(JobContext context) throws IOException, InterruptedException {
-         return new ArrayList<InputSplit>(list.values());
+         return new ArrayList<InputSplit>(map.values());
    }
 }

@@ -38,7 +38,7 @@ public class TokenConfig extends TokenChar {
     }
 
     @Override
-    public int preprocess(byte[] buffer, int pos, int endpos) {
+    public int endOfToken(byte[] buffer, int pos, int endpos) {
         for (; pos < endpos && valid[buffer[pos] & 0xff]; pos++);
         return pos;
     }

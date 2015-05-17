@@ -30,10 +30,13 @@ public class MarkHead extends SectionMarker {
     @Override
     public ByteSearchSection process(Content content, ByteSearchSection section) {
         int tagclose = findQuoteSafeTagEnd(section);
+        //log.info("head marker %d %d", section.start, tagclose);
         if (tagclose > -1) {
             ByteSearchPosition end = endmarker.findPos(section, tagclose);
             if (end.found() && end.start > section.innerstart) {
-                return content.addSectionPos(outputsection, content.content, section.start, tagclose, end.start, end.end);
+                ByteSearchSection s = content.addSectionPos(outputsection, content.content, section.start, tagclose, end.start, end.end);
+                //log.info("head marker %d %d", s.innerstart, s.innerend);
+                return s;
             }
         }
         return null;

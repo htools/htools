@@ -199,6 +199,11 @@ public class ByteSection extends ByteSearch {
         return match.found() ? match.toString() : null;
     }
 
+    /**
+     * @param section
+     * @return string inside the first matching section 
+     */
+   @Override
     public String extract(ByteSearchSection section) {
         ByteSearchSection match = findPos(section.haystack, section.innerstart, section.innerend);
         return match.found() ? match.toString() : null;

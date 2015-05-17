@@ -30,7 +30,7 @@ public class DateTimeToolsTest {
     @Test
     public void testToY_M_D() throws ParseException {
         String time = "2013-02-13T23:54:58.000000Z";
-        Date parse = DateTools.FORMAT.DATETIMETSZ6.parse(time);
+        Date parse = DateTools.FORMAT.DATETIMETSZ6.toDate(time);
         assertEquals(1360797066, parse.getTime());
     }
     

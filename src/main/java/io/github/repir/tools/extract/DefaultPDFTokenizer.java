@@ -17,15 +17,11 @@ public class DefaultPDFTokenizer extends AbstractTokenizer {
    }
    
     @Override
-    protected void preProcess() {
+    protected void buildPreProcess() {
       this.addPreProcessor(ConvertPDFHyphen.class);
     }
 
     @Override
-    protected void process() {
-    }
-
-    @Override
-    protected void postProcess() {
+    protected void buildProcess() {
     }
 }

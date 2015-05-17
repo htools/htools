@@ -7,6 +7,7 @@ import io.github.repir.tools.extract.Extractor;
 import io.github.repir.tools.search.ByteSearchSingleClass;
 import io.github.repir.tools.lib.BoolTools;
 import io.github.repir.tools.lib.ClassTools;
+import io.github.repir.tools.lib.PrintTools;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import org.apache.hadoop.conf.Configuration;
@@ -68,9 +69,8 @@ public class TokenizerRegex extends ExtractorProcessor {
     }
 
     public TokenProcessor setupTokenProcessor(String name, Class processorclazz) {
-        //log.info("%s %s %s", name, regex, processorname);
-        Constructor cons = ClassTools.tryGetAssignableConstructor(processorclazz, TokenProcessor.class, TokenizerRegex.class, String.class);
-        TokenProcessor processor = (TokenProcessor) ClassTools.construct(cons, TokenizerRegex.this, name);
+        Constructor cons = ClassTools.tryGetAssignableConstructor(processorclazz, TokenChar.class, TokenizerRegex.class, String.class);
+        TokenProcessor processor = (TokenProcessor) ClassTools.construct(cons, this, name);
         boolean valid[] = processor.acceptedFirstChars();
         for (int i = 1; i < valid.length; i++) {
             if (valid[i]) {
@@ -82,10 +82,14 @@ public class TokenizerRegex extends ExtractorProcessor {
         }
         return processor;
     }
+    
+    public void dontSkip() {
+        skip = new boolean[256];
+    }
 
     @Override
     public void process(Content entity, ByteSearchSection section, String attribute) {
-        //log.info("process %d %d", section.open, section.close);
+        //log.info("process %d %d", section.innerstart, section.innerend);
         current = entity;
         this.bufferpos = section.innerstart;
         this.bufferend = section.innerend;
@@ -110,7 +114,8 @@ public class TokenizerRegex extends ExtractorProcessor {
                        addToken(buffer, chunks, pos, tokenend);
                        pos = tokenend;
                        continue LOOP;
-                   }
+                   } else if (tokenend < -1)
+                       pos = -tokenend;
                }
             }
             pos++;
@@ -131,7 +136,7 @@ public class TokenizerRegex extends ExtractorProcessor {
             }
             if (nullchars == 0) {
                 list.add(new String(buffer, tokenStart, tokenend - tokenStart));
-            } else {
+            } else if (tokenend > tokenStart + nullchars) {
                 c = new byte[tokenend - tokenStart - nullchars];
                 for (int cnr = 0, p = tokenStart; p < tokenend; p++) {
                     if (buffer[p] != 0) {

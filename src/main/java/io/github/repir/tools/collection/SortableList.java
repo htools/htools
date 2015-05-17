@@ -33,11 +33,6 @@ public class SortableList<K extends Comparable> extends ArrayList<K> {
         return this;
     }
 
-    public SortableList<K> sort(Comparator<K> comparator) {
-        Collections.sort(this, comparator);
-        return this;
-    }
-
     public SortableList<K> sortDesc() {
         Collections.sort(this, getDescComparator());
         return this;

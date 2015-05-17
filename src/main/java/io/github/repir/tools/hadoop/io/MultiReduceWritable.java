@@ -1,5 +1,6 @@
 package io.github.repir.tools.hadoop.io;
 
+import io.github.repir.tools.hadoop.io.buffered.DelayedWritable;
 import io.github.repir.tools.io.buffer.BufferDelayedWriter;
 import io.github.repir.tools.io.buffer.BufferReaderWriter;
 import io.github.repir.tools.lib.ClassTools;
@@ -22,17 +23,17 @@ public class MultiReduceWritable implements Writable {
    public static String CLASSCLASS = "multireducewritable.class";
    protected static Class[] classes;
    private static Constructor[] constructors;
-   protected MultiWritable record;
+   protected DelayedWritable record;
    protected int type;
    protected BufferDelayedWriter writer;
    protected BufferReaderWriter reader;
    
-   public void set(MultiWritable w) {
+   public void set(DelayedWritable w) {
        record = w;
        type = getType(w);
    }
 
-   public void get(MultiWritable w) {
+   public void get(DelayedWritable w) {
        w.readFields(reader);
    }
    
@@ -40,7 +41,7 @@ public class MultiReduceWritable implements Writable {
        classes = clazz;
        StringBuilder sb = new StringBuilder();
        for (Class c : classes) {
-           if (!(MultiWritable.class.isAssignableFrom(c)))
+           if (!(DelayedWritable.class.isAssignableFrom(c)))
                log.fatal("Classes used by MultiReduceWritable must implement MultiWritable %s", c.getCanonicalName());
            sb.append(",").append(c.getCanonicalName());
        }
@@ -67,7 +68,7 @@ public class MultiReduceWritable implements Writable {
         constructors = new Constructor[classes.length];
         for (int i = 0; i < classes.length; i++) {
             try {
-                Constructor constructor = ClassTools.getAssignableConstructor(classes[i], MultiWritable.class);
+                Constructor constructor = ClassTools.getAssignableConstructor(classes[i], DelayedWritable.class);
                 constructors[i] = constructor;
             } catch (ClassNotFoundException ex) {
                 log.exception(ex, "setConfiguration() class %s must extend MultiWritable", classes[i]);
@@ -75,7 +76,7 @@ public class MultiReduceWritable implements Writable {
         }
     }
 
-    public static int getType(MultiWritable w) {
+    public static int getType(DelayedWritable w) {
         if (classes == null)
             log.fatal("getType cannot be used before setConfiguration() is used to set the configuration");
         for (int i = 0; i < classes.length; i++) {
@@ -95,7 +96,7 @@ public class MultiReduceWritable implements Writable {
         return new MultiWritableIterator(iterator);
     }    
     
-    public static class MultiWritableIterator implements Iterator<MultiWritable>, Iterable<MultiWritable> {
+    public static class MultiWritableIterator implements Iterator<DelayedWritable>, Iterable<DelayedWritable> {
         Iterator<? extends MultiReduceWritable> iterator;
         
         public MultiWritableIterator(Iterable<? extends MultiReduceWritable> iterator) {
@@ -108,9 +109,9 @@ public class MultiReduceWritable implements Writable {
         }
 
         @Override
-        public MultiWritable next() {
+        public DelayedWritable next() {
             MultiReduceWritable record = iterator.next();
-            MultiWritable result = (MultiWritable)ClassTools.construct(constructors[record.type]);
+            DelayedWritable result = (DelayedWritable)ClassTools.construct(constructors[record.type]);
             record.get(result);
             return result;
         }
@@ -121,7 +122,7 @@ public class MultiReduceWritable implements Writable {
         }
 
         @Override
-        public Iterator<MultiWritable> iterator() {
+        public Iterator<DelayedWritable> iterator() {
             return this;
         }
     }

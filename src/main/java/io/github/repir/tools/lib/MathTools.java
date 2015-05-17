@@ -3,9 +3,6 @@ package io.github.repir.tools.lib;
 import static io.github.repir.tools.lib.PrintTools.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Collection;
-import org.apache.commons.math3.distribution.TDistribution;
-import static org.apache.commons.math3.special.Erf.erf;
 
 /**
  *
@@ -126,6 +123,14 @@ public enum MathTools {
         }
     }
 
+    public final static int sign(int i) {
+        return (i > 0)?1:(i < 0)?-1:0;
+    }
+    
+    public final static int sign(double i) {
+        return (i > 0)?1:(i < 0)?-1:0;
+    }
+    
     public final static double EPSILON = 0.0000001;
 
     public static boolean equals(double a, double b) {
@@ -234,6 +239,14 @@ public enum MathTools {
 
     public static int mod(int x, int y) {
         int result = x % y;
+        if (result < 0) {
+            result += y;
+        }
+        return result;
+    }
+
+    public static int mod(long x, int y) {
+        int result = (int)(x % y);
         if (result < 0) {
             result += y;
         }
@@ -426,7 +439,7 @@ public enum MathTools {
     public static final double SQRT2 = Math.sqrt(2);
 
     public static double cumulativeProbability(double x, double mean, double standardDeviation) {
-        return 0.5 * (1 + erf(x - mean / (standardDeviation * SQRT2)));
+        return 0.5 * (1 + org.apache.commons.math3.special.Erf.erf(x - mean / (standardDeviation * SQRT2)));
     }
     
     public static double welchDegreesOfFreedom(double vara, double varb, int sizea, int sizeb) {
@@ -437,5 +450,10 @@ public enum MathTools {
         double B2 = B * B / (sizeb - 1);
         double df = AB2 / (A2 + B2);
         return df;
+    }
+    
+    public static double chiTest(double chi2, int df) {
+        org.apache.commons.math3.distribution.ChiSquaredDistribution dist = new org.apache.commons.math3.distribution.ChiSquaredDistribution(df);
+        return 1 - dist.cumulativeProbability(chi2);
     }
 }

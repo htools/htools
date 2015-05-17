@@ -129,6 +129,10 @@ public class ByteRegex extends ByteSearch {
       return new ByteRegex(list);
    }
 
+   public static ByteRegex create(String pattern) {
+      return new ByteRegex(pattern);
+   }
+
    /**
     * @return a shallow copy of the regex. use clone() on the root element to
     * create a deep copy.
@@ -312,6 +316,48 @@ public class ByteRegex extends ByteSearch {
       return pos;
    }
 
+   /**
+    * Quote safe version of find, that avoids finding matches within a quoted
+    * value that can contain escape characters. E.g. findQuoteSafe with pattern
+    * "s" will only exists the last occurrence in "s" "\"s" 's' '\'s' '"s' s.
+    */
+   @Override
+   public ByteSearchPosition findPosDoubleQuoteSafe(byte b[], int start, int end) {
+      ByteSearchPosition pos = new ByteSearchPosition(b);
+      if (root == null) {
+         pos.start = start;
+         pos.end = start;
+      } else if (root.type == TYPE.START) {
+         return matchPos(b, start, end);
+      } else {
+         LOOP:
+         for (int i = start; i <= end; i++) {
+            if (i < end) {
+               switch (b[i]) {
+                  case '"':
+                     for (i++; i < end; i++) {
+                        if (b[i] == '\\') {
+                           i++;
+                        } else if (b[i] == '"') {
+                           continue LOOP;
+                        }
+                     }
+                     break LOOP;
+               }
+            }
+            if (i == end || root.allowed[b[i] & 0xFF]) {
+               pos = getPos(root, b, start, i, end);
+               if (pos.found() || pos.endreached) {
+                  return pos;
+               }
+            }
+         }
+         pos.start = end;
+         pos.endreached = true;
+      }
+      return pos;
+   }
+
    protected int advance(byte b[], int currentpos, int end) {
       for (currentpos++; currentpos < end && b[currentpos] == 0; currentpos++);
       return currentpos;
@@ -321,15 +367,12 @@ public class ByteRegex extends ByteSearch {
       //print();
       ByteSearchPosition pos = new ByteSearchPosition(b);
       int choice = 0;
-      Node currentnode = root;;
+      Node currentnode = root;
       ArrayDeque<State> states = new ArrayDeque<State>();
       currentpos = advance(b, currentpos - 1, end);
       pos.start = currentpos;
       pos.endreached = currentpos == end;
       while (currentnode != null) {
-         //if (currentpos < b.length) {
-         //   log.info("current %s %d", new String(b, currentpos, b.length - currentpos), currentnode.id);
-         //}
          if (currentnode.type == TYPE.START) {
             if (currentpos == start) {
                currentnode = currentnode.next[0];
@@ -339,18 +382,13 @@ public class ByteRegex extends ByteSearch {
          } else if (currentnode.type == TYPE.END) {
             if (currentpos == end) {
                currentnode = currentnode.next[0];
-               //pos.endreached = true;
             } else {
                choice = 1;
             }
          } else if (currentnode.type == TYPE.CHAR) {
-            //if (currentpos < b.length) {
-            //   log.info("char %s %b %d", new String(b, currentpos, b.length - currentpos), currentnode.allowed[b[currentpos] & 0xFF], currentnode.id);
-            //}
             if (currentpos < end && currentnode.allowed[b[currentpos] & 0xFF]) {
                currentpos = advance(b, currentpos, end);
                if (currentnode.next[0] == null) {
-                  //log.info("end of pattern reached %d", currentpos);
                   currentnode = null;
                   break;
                } else if (currentpos == end || currentnode.next[0].allowed[ b[currentpos] & 0xFF]) {
@@ -358,7 +396,6 @@ public class ByteRegex extends ByteSearch {
                      pos.endreached |= currentpos == end;
                   }
                   State state = new State(currentnode, currentpos, choice);
-                  //log.info("push char pos %d oldstatenum %d newstate %s", currentpos, states.size(), state);
                   states.push(state);
                   currentnode = currentnode.next[ choice];
                   choice = 0;
@@ -445,7 +482,6 @@ public class ByteRegex extends ByteSearch {
          while (currentnode != null && choice >= currentnode.next.length) {
             if (states.size() > 0) {
                State state = states.pop();
-               //log.info("pop %d %s", states.size(), state);
                currentnode = state.node;
                choice = state.choice + 1;
                currentpos = state.pos;
@@ -459,7 +495,6 @@ public class ByteRegex extends ByteSearch {
       }
       if (currentnode == null) {
          pos.end = currentpos;
-         //log.info("found pos %s", pos);
          return pos;
       }
 

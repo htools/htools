@@ -84,6 +84,27 @@ public abstract class StructuredFile extends StructuredDataStream {
       }
    }
 
+    public void write() {
+       if (writer != null) {
+         try {
+            Field first = start.nextField();
+            if (nextField == first) {
+               this.recordoffset = getOffset();
+               //log.info("read field %s offset %d", nextField.getLabel(), this.getOffset());
+               nextField.write();
+
+            }
+            while (nextField != first) {
+               //log.info("read field %s offset %d", nextField.getLabel(), this.getOffset());
+               nextField.write();
+            }
+         } catch (EOCException ex) {
+             //log.info("Ex");
+         }
+      }
+      this.resetNextField();
+   }   
+   
    /**
     * @return {@link Datafile} that the StructuredFile class read/writes to.
     */

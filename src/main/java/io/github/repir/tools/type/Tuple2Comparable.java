@@ -1,6 +1,8 @@
 package io.github.repir.tools.type;
 
-public class Tuple2Comparable<R extends Comparable, S extends Comparable> implements Comparable<Tuple2Comparable<R, S>> {
+import java.util.Map;
+
+public class Tuple2Comparable<R extends Comparable, S extends Comparable> implements Comparable<Tuple2Comparable<R, S>>,Map.Entry<R, S> {
 
    public final R value1;
    public final S value2;
@@ -29,4 +31,19 @@ public class Tuple2Comparable<R extends Comparable, S extends Comparable> implem
    public String toString() {
        return new StringBuilder().append("(").append(value1).append(",").append(value2).append(")").toString();
    }
+
+    @Override
+    public R getKey() {
+        return value1;
+    }
+
+    @Override
+    public S getValue() {
+        return value2;
+    }
+
+    @Override
+    public S setValue(S value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

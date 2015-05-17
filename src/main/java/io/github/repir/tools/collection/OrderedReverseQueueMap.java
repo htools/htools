@@ -1,6 +1,5 @@
 package io.github.repir.tools.collection;
 
-import io.github.repir.tools.collection.ArrayMap.Entry;
 import io.github.repir.tools.collection.OrderedQueueMap;
 import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.lib.MapTools;
@@ -41,7 +40,7 @@ public class OrderedReverseQueueMap<K extends Comparable, V> extends OrderedQueu
         return MapTools.toString(this);
     }
 
-    private static class StdComparator<K extends Comparable, V> implements Comparator<Map.Entry<K, V>> {
+    protected static class StdComparator<K extends Comparable, V> implements Comparator<Map.Entry<K, V>> {
 
         @Override
         public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {

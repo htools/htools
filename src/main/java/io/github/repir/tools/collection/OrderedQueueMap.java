@@ -1,8 +1,8 @@
 package io.github.repir.tools.collection;
 
-import io.github.repir.tools.collection.ArrayMap.Entry;
 import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.lib.MapTools;
+import io.github.repir.tools.type.KV;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -52,7 +52,7 @@ public class OrderedQueueMap<K extends Comparable, V> extends OrderedQueueSet<Ma
     }
 
     public boolean add(K key, V value) {
-        return super.add(new Entry<K, V>(key, value));
+        return super.add(new KV<K, V>(key, value));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class OrderedQueueMap<K extends Comparable, V> extends OrderedQueueSet<Ma
         return MapTools.toString(this);
     }
 
-    private static class StdComparator<K extends Comparable, V> implements Comparator<Map.Entry<K, V>> {
+    protected static class StdComparator<K extends Comparable, V> implements Comparator<Map.Entry<K, V>> {
 
         @Override
         public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {

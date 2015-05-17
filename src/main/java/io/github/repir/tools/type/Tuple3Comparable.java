@@ -1,8 +1,10 @@
 package io.github.repir.tools.type;
 
 import io.github.repir.tools.lib.MathTools;
+import java.util.Map;
 
-public class Tuple3Comparable<R extends Comparable, S extends Comparable, T extends Comparable> implements Comparable<Tuple3Comparable<R, S, T>> {
+public class Tuple3Comparable<R extends Comparable, S extends Comparable, T extends Comparable> 
+       implements Comparable<Tuple3Comparable<R, S, T>>, Map.Entry<R,Tuple2<S, T>> {
 
    public final R value1;
    public final S value2;
@@ -41,4 +43,19 @@ public class Tuple3Comparable<R extends Comparable, S extends Comparable, T exte
    public String toString() {
        return new StringBuilder().append("(").append(value1).append(",").append(value2).append(",").append(value3).append(")").toString();
    }
+
+    @Override
+    public R getKey() {
+        return value1;
+    }
+
+    @Override
+    public Tuple2<S, T> getValue() {
+        return new Tuple2(value2, value3);
+    }
+
+    @Override
+    public Tuple2<S, T> setValue(Tuple2<S, T> value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

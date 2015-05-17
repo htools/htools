@@ -27,8 +27,8 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 /**
  * @author jeroen
  */
-public abstract class OutputFormat<F extends StructuredRecordFile, V extends Writable> 
-    extends TextOutputFormat<NullWritable, V> implements Configurable {
+public abstract class OutputFormat<F extends StructuredRecordFile, V extends FileWritable>
+        extends TextOutputFormat<NullWritable, V> implements Configurable {
 
     public static Log log = new Log(OutputFormat.class);
     protected static final String OUTPUTDIR = "mapreduce.output.fileoutputformat.outputdir";
@@ -36,6 +36,7 @@ public abstract class OutputFormat<F extends StructuredRecordFile, V extends Wri
     protected static final String PARTITIONS = "mapreduce.task.partition";
     protected static Class fileclass;
     protected static Class writableclass;
+    protected static OutputFormat singleton;
     protected Configuration conf;
 
     public OutputFormat(Job job, Class fileclass, Class writableclass) {
@@ -43,46 +44,52 @@ public abstract class OutputFormat<F extends StructuredRecordFile, V extends Wri
         job.setOutputFormatClass(getClass());
         job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(writableclass);
+        singleton = this;
     }
-    
+
     public OutputFormat(Class fileclass, Class writableclass) {
         this.fileclass = fileclass;
         this.writableclass = writableclass;
     }
-    
+
     public static Class getWritableClass() {
         return writableclass;
     }
-    
+
     public static Class getFileClass() {
         return fileclass;
     }
-    
+
     public F getFile(Datafile datafile) throws ClassNotFoundException {
         Constructor constructor = ClassTools.getAssignableConstructor(fileclass, StructuredRecordFile.class, Datafile.class);
         return (F) ClassTools.construct(constructor, datafile);
     }
 
     public static OutputFormat getOutputFormat(Configuration conf) throws ClassNotFoundException {
-        Class clazz = conf.getClass(Job.OUTPUT_FORMAT_CLASS_ATTR, OutputFormat.class);
-        Constructor constructor = ClassTools.getAssignableConstructor(clazz, OutputFormat.class);
-        return (OutputFormat) ClassTools.construct(constructor);
+        if (singleton == null) {
+            Class clazz = conf.getClass(Job.OUTPUT_FORMAT_CLASS_ATTR, OutputFormat.class);
+            Constructor constructor = ClassTools.getAssignableConstructor(clazz, OutputFormat.class);
+            return (OutputFormat) ClassTools.construct(constructor);
+        } else {
+            return singleton;
+        }
     }
-    
+
     public Datafile getDatafile(TaskAttemptContext context) throws IOException {
         return getDatafile(context, context.getConfiguration().get(OUTPUTDIR));
     }
-    
+
     public static HDFSPath getLogDir(TaskAttemptContext context) {
-       TaskAttemptID taskAttemptID = context.getTaskAttemptID();
+        TaskAttemptID taskAttemptID = context.getTaskAttemptID();
         TaskType taskType = taskAttemptID.getTaskType();
         Configuration conf = context.getConfiguration();
         String filename = conf.get(SINGLEFILE);
-        if (filename == null)
+        if (filename == null) {
             return new HDFSPath(conf, conf.get(OUTPUTDIR)).getSubdir("_log");
+        }
         return new HDFSPath(conf, filename).getParent().getSubdir("_log_" + filename.substring(filename.lastIndexOf('/') + 1));
     }
-    
+
     public Datafile getDatafile(TaskAttemptContext context, String folder) throws IOException {
         int task = ContextTools.getTaskID(context);
         Configuration conf = context.getConfiguration();
@@ -105,15 +112,16 @@ public abstract class OutputFormat<F extends StructuredRecordFile, V extends Wri
         }
         return null;
     }
-    
+
     public static void setSingleOutput(Job job, Path file) throws IOException {
         job.getConfiguration().set(SINGLEFILE, file.toString());
         HDFSPath tempDirectorySingle = getTempDirectorySingle(job.getConfiguration());
-        if (tempDirectorySingle.exists())
-            tempDirectorySingle.delete();
+        if (tempDirectorySingle.exists()) {
+            tempDirectorySingle.remove();
+        }
         TextOutputFormat.setOutputPath(job, getTempDirectorySingle(job.getConfiguration()));
     }
-    
+
     public static HDFSPath getTempDirectorySingle(Configuration conf) {
         return new HDFSPath(conf, conf.get(SINGLEFILE) + ".temp");
     }
@@ -125,12 +133,13 @@ public abstract class OutputFormat<F extends StructuredRecordFile, V extends Wri
             super.checkOutputSpecs(job);
         }
     }
-    
+
     public void cleanupTempDir(Job job) throws IOException {
-        if (isSingleFile(job.getConfiguration()))
+        if (isSingleFile(job.getConfiguration())) {
             getTempDirectorySingle(job.getConfiguration()).trash();
+        }
     }
-    
+
     static boolean isSingleFile(Configuration conf) {
         return conf.get(SINGLEFILE, null) != null;
     }
@@ -144,7 +153,7 @@ public abstract class OutputFormat<F extends StructuredRecordFile, V extends Wri
     public Configuration getConf() {
         return conf;
     }
-    
+
     public class StructuredRecordWriter<NullWritable, V extends StructuredFileRecord> extends RecordWriter<NullWritable, V> {
 
         F fsout;

@@ -2,6 +2,7 @@ package io.github.repir.tools.lib;
 
 import static io.github.repir.tools.lib.MathTools.welchDegreesOfFreedom;
 import java.util.Collection;
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.distribution.TDistribution;
 
 /**

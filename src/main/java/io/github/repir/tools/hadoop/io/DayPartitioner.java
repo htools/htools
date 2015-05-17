@@ -40,7 +40,7 @@ public class DayPartitioner extends Partitioner<LongWritable, Object> implements
     }
 
     public static int getPartition(Configuration conf, String date) throws ParseException {
-        long now = DateTools.FORMAT.Y_M_D.parse(date).getTime() / 1000;
+        long now = DateTools.FORMAT.Y_M_D.toDate(date).getTime() / 1000;
         if (validDate(conf, now)) {
             startdate = conf.getLong(starttimelabel, 0);
             return (int) ((now - startdate) / secperday);
@@ -56,12 +56,12 @@ public class DayPartitioner extends Partitioner<LongWritable, Object> implements
     }
 
     public static void setStartTime(Configuration conf, String date) throws ParseException {
-        Date start = DateTools.FORMAT.Y_M_D.parse(date);
+        Date start = DateTools.FORMAT.Y_M_D.toDate(date);
         conf.setLong(starttimelabel, start.getTime() / 1000);
     }
 
     public static void setEndTime(Configuration conf, String date) throws ParseException {
-        Date end = DateTools.FORMAT.Y_M_D.parse(date);
+        Date end = DateTools.FORMAT.Y_M_D.toDate(date);
         conf.setLong(endtimelabel, end.getTime() / 1000);
     }
 
@@ -82,7 +82,7 @@ public class DayPartitioner extends Partitioner<LongWritable, Object> implements
     
     public static String getDate(Configuration conf, int reducer) {
         long start = conf.getLong(starttimelabel, 0) + reducer * secperday;
-        return DateTools.FORMAT.Y_M_D.format(start * 1000); 
+        return DateTools.FORMAT.Y_M_D.formatEpoch(start); 
     }
 
 }

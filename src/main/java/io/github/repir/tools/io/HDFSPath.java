@@ -1,15 +1,24 @@
 package io.github.repir.tools.io;
 
+import io.github.repir.tools.collection.ArrayMap;
+import io.github.repir.tools.collection.HashMapList;
+import io.github.repir.tools.collection.HashMapSet;
 import io.github.repir.tools.search.ByteSearch;
 import io.github.repir.tools.collection.ListIterator;
+import io.github.repir.tools.hadoop.io.DatafileInputFormat;
 import static io.github.repir.tools.io.HDFSMove.verbose;
 import io.github.repir.tools.lib.IteratorIterable;
 import io.github.repir.tools.lib.Log;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +26,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.BlockLocation;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Trash;
 import org.apache.hadoop.io.IOUtils;
 
@@ -26,7 +36,7 @@ import org.apache.hadoop.io.IOUtils;
  * <p/>
  * @author jbpvuurens
  */
-public class HDFSPath extends org.apache.hadoop.fs.Path implements Path { 
+public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
 
     public static Log log = new Log(HDFSPath.class);
     public FileSystem fs;
@@ -76,7 +86,7 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
             log.exception(ex, "Constructor( %s, %s, %s )", path, conf, child);
         }
     }
-    
+
     public HDFSPath wildcardIterator() {
         ArrayDeque<String> components = new ArrayDeque();
         HDFSPath path = this;
@@ -85,14 +95,19 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
             path = path.getParent();
         }
         log.info("%s %s", path.toString(), components);
-        if (components.size() == 0)
+        if (components.size() == 0) {
             return this;
+        }
         return new HDFSPathWildcard(path, components);
     }
 
+    public FileSystem getFileSystem() {
+        return fs;
+    }
 
-    public void delete() throws IOException {
-        fs.delete(this.makeQualified(fs), true);
+    @Override
+    public void remove() throws IOException {
+        delete(fs, this);
     }
 
     public void deleteOnExit() throws IOException {
@@ -108,6 +123,28 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         return null;
     }
 
+    public static long getLastModified(FileSystem fs, String file) throws IOException {
+        org.apache.hadoop.fs.Path path = new org.apache.hadoop.fs.Path(file);
+        return fs.getFileStatus(path).getModificationTime();
+    }
+
+    public static void setLastModified(FileSystem fs, String file, long time) throws IOException {
+        org.apache.hadoop.fs.Path path = new org.apache.hadoop.fs.Path(file);
+        fs.setTimes(path, time, time);
+    }
+
+    public FileStatus getFileStatus() throws IOException {
+        return fs.getFileStatus(this);
+    }
+
+    public long getModificationTime() throws IOException {
+        return fs.getFileStatus(this).getModificationTime();
+    }
+
+    public FileStatus[] listFileStatus() throws IOException {
+        return fs.listStatus(this);
+    }
+
     /**
      * @return parent directory of a file or directory
      */
@@ -116,8 +153,9 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         String path = toString();
         int lastSlash = path.lastIndexOf('/');
         if (lastSlash < 1) {
-            if (path.startsWith("/"))
+            if (path.startsWith("/")) {
                 return new HDFSPath(fs, "/");
+            }
             return new HDFSPath(fs, "");
         }
         String parent = path.substring(0, lastSlash);
@@ -196,37 +234,184 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         return false;
     }
 
-    public static boolean copy(FileSystem fs, org.apache.hadoop.fs.Path path, org.apache.hadoop.fs.Path dest) {
-        OutputStream out = null;
-        try {
-            InputStream in = fs.open(path);
-            out = fs.create(dest);
-            IOUtils.copyBytes(in, out, 4096, false);
-            in.close();
-            out.close();
-            return true;
-        } catch (IOException ex) {
-            log.exception(ex, "copy %s %s", path, dest);
-        } finally {
-            try {
-                out.close();
-            } catch (IOException ex) {
-                log.exception(ex, "copy %s %s", path, dest);
-            }
-        }
-        return false;
-    }
-
     public static boolean rename(FileSystem fs, String source, String dest) {
         return rename(fs, new org.apache.hadoop.fs.Path(source), new org.apache.hadoop.fs.Path(dest));
     }
 
-    public static boolean copy(FileSystem fs, String source, String dest) {
-        return copy(fs, new org.apache.hadoop.fs.Path(source), new org.apache.hadoop.fs.Path(dest));
+    public static boolean copy(FileSystem fs, String source, String dest) throws IOException {
+        return FileUtil.copy(fs, new org.apache.hadoop.fs.Path(source), fs, new org.apache.hadoop.fs.Path(dest), false, true, fs.getConf());
+    }
+
+    public static boolean copy(FileSystem fs, org.apache.hadoop.fs.Path source, org.apache.hadoop.fs.Path dest) throws IOException {
+        if (fs.isDirectory(dest)) {
+            dest = dest.suffix("/" + source.getName());
+        }
+        FileUtil.copy(fs, source, fs, dest.suffix("._COPYING"), false, true, fs.getConf());
+        if (fs.exists(dest)) {
+            fs.delete(dest, false);
+        }
+        return rename(fs, dest.suffix("._COPYING"), dest);
+    }
+
+    public static boolean move(FileSystem fs, String source, String dest) throws IOException {
+        org.apache.hadoop.fs.Path path = new org.apache.hadoop.fs.Path(dest);
+        if (fs.exists(path))
+            fs.delete(path, false);
+        return FileUtil.copy(fs, new org.apache.hadoop.fs.Path(source), fs, path, true, true, fs.getConf());
+    }
+
+    public static boolean copyToLocal(FileSystem fs, String source, String dest) throws IOException {
+        return FileUtil.copy(fs, new org.apache.hadoop.fs.Path(source), new File(dest), false, fs.getConf());
+    }
+
+    public static boolean copyFromLocal(FileSystem fs, String source, String dest) throws IOException {
+        return FileUtil.copy(new File(source), fs, new org.apache.hadoop.fs.Path(source), false, fs.getConf());
     }
 
     public static boolean delete(FileSystem fs, String filename) {
         return delete(fs, new org.apache.hadoop.fs.Path(filename));
+    }
+
+    public static void backup(HDFSPath source, HDFSPath dest) throws IOException {
+        if (dest.isFile()) {
+            log.warn("synchronize cannot overwrite existing file with dir %s", dest.getCanonicalPath());
+            return;
+        }
+        if (source.isDir()) {
+            if (dest.exists()) {
+                FileStatus[] sourceStatus = source.fs.listStatus(source);
+                HashMap<String, FileStatus> map = dest.getStatusMap();
+                for (FileStatus s : sourceStatus) {
+                    String name = s.getPath().getName();
+                    if (s.isDirectory()) {
+                        map.remove(name);
+                        backup(source.getSubdir(name), dest.getSubdir(name));
+                    } else {
+                        if (dest.exists()) {
+                            FileStatus dstatus = map.remove(name);
+                            if (dstatus == null || dstatus.getModificationTime() < s.getModificationTime()) {
+                                copy(source.fs, source.getSubdir(name), dest.getSubdir(name));
+                            }
+                        }
+                    }
+                }
+                for (FileStatus dstatus : map.values()) {
+                    dest.getFile(dstatus.getPath().getName()).delete();
+                }
+            } else {
+                copy(source.fs, source, dest);
+            }
+        }
+    }
+
+    public static void restore(HDFSPath source, HDFSPath dest) throws IOException {
+        if (dest.isFile()) {
+            log.warn("restore cannot overwrite existing file with dir %s", dest.getCanonicalPath());
+            return;
+        }
+        if (source.isDir()) {
+            if (dest.exists()) {
+                FileStatus[] sourceStatus = source.fs.listStatus(source);
+                HashMap<String, FileStatus> map = dest.getStatusMap();
+                for (FileStatus s : sourceStatus) {
+                    String name = s.getPath().getName();
+                    if (s.isDirectory()) {
+                        map.remove(name);
+                        backup(source.getSubdir(name), dest.getSubdir(name));
+                    } else {
+                        FileStatus dstatus = map.remove(name);
+                        if (dstatus == null || dstatus.getModificationTime() > s.getModificationTime()) {
+                            copy(source.fs, source.getSubdir(name), dest.getSubdir(name));
+                        }
+                    }
+                }
+                for (FileStatus dstatus : map.values()) {
+                    dest.getFile(dstatus.getPath().getName()).delete();
+                }
+            } else {
+                copy(source.fs, source, dest);
+            }
+        }
+    }
+
+    /**
+     * Distributes files in the given paths (not recursing to sub folders) 
+     * over their locations, using the least frequently occurring location first
+     * @param paths
+     * @return <Location, List<File>>
+     */
+    public static HashMapList<String, String> distributePath(FileSystem filesystem, Collection<HDFSPath> paths) {
+        ArrayList<FileStatus> statussen = new ArrayList();
+        for (HDFSPath p : paths) {
+            try {
+                FileStatus[] listFileStatus = p.listFileStatus();
+                if (listFileStatus != null)
+                    for (FileStatus fs : listFileStatus)
+                        statussen.add(fs);
+            } catch (IOException ex) {}
+        }
+        return distributeFiles(filesystem, statussen);
+    }
+    
+    public static HashMapList<String, String> distributeDatafiles(FileSystem filesystem, Collection<Datafile> files) {
+        HashMapSet<String, String> dirmap = new HashMapSet();
+        for (Datafile df : files) {
+            dirmap.add(df.getDir().getCanonicalPath(), df.getFilename());
+        }
+        ArrayList<FileStatus> statussen = new ArrayList();
+        for (Map.Entry<String, HashSet<String>> entry : dirmap.entrySet()) {
+            try {
+                FileStatus[] listFileStatus = filesystem.listStatus(new org.apache.hadoop.fs.Path(entry.getKey()));
+                if (listFileStatus != null)
+                    for (FileStatus fs : listFileStatus)
+                        if (entry.getValue().contains(fs.getPath().getName()))
+                            statussen.add(fs);
+            } catch (IOException ex) {}
+        }
+        return distributeFiles(filesystem, statussen);
+    }
+    
+    private static HashMapList<String, String> distributeFiles(FileSystem filesystem, Collection<FileStatus> dirs) {
+        HashMapList<String, String> dist = new HashMapList();
+        HashMapList<String, String> counthosts = new HashMapList();
+        for (FileStatus file : dirs) {
+            try {
+                BlockLocation[] fileBlockLocations = filesystem.getFileBlockLocations(file, 0, 0);
+                if (fileBlockLocations != null) {
+                    for (BlockLocation b : fileBlockLocations) {
+                        for (String h : b.getHosts()) {
+                            counthosts.add(h, file.getPath().toString());
+                        }
+                    }
+                }
+            } catch (IOException ex) { }
+        }
+        ArrayMap<ArrayList<String>, String> sorted = ArrayMap.invert(counthosts).sorted(new Comparator2());
+        HashSet<String> assigned = new HashSet();
+        for (Map.Entry<ArrayList<String>, String> entry : sorted) {
+            for (String file : entry.getKey()) {
+                if (!assigned.contains(file)) {
+                    dist.add(entry.getValue(), file);
+                    assigned.add(file);
+                }
+            }
+        }
+        return dist;
+    }
+    
+    static class Comparator2 implements Comparator<Map.Entry<ArrayList<String>, String>> {
+        @Override
+        public int compare(Map.Entry<ArrayList<String>, String> o1, Map.Entry<ArrayList<String>, String> o2) {
+            return o1.getKey().size() - o2.getKey().size();
+        }
+    }
+    
+    public HashMap<String, FileStatus> getStatusMap() throws IOException {
+        HashMap<String, FileStatus> map = new HashMap();
+        for (FileStatus f : fs.listStatus(this)) {
+            map.put(f.getPath().getName(), f);
+        }
+        return map;
     }
 
     /**
@@ -360,17 +545,27 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
     }
 
     public void trash() throws IOException {
-        Trash trash = new Trash(fs, fs.getConf());
-        trash.moveToTrash(this);
+        if (exists()) {
+            Trash trash = new Trash(fs, fs.getConf());
+            trash.moveToTrash(this);
+        }
+    }
+
+    public static void trash(FileSystem fs, org.apache.hadoop.fs.Path path) throws IOException {
+        if (fs.exists(path)) {
+            Trash trash = new Trash(fs, fs.getConf());
+            trash.moveToTrash(path);
+        }
     }
 
     @Override
     public IteratorIterable<DirComponent> iterator() {
         try {
-            if (!this.exists() && this.getCanonicalPath().contains("*"))
+            if (!this.exists() && this.getCanonicalPath().contains("*")) {
                 return wildcardIterator().iterator();
-            else
+            } else {
                 return new ListIterator(get());
+            }
         } catch (IOException ex) {
             log.fatalexception(ex, "iterator( %s )", this.getCanonicalPath());
         }
@@ -489,11 +684,107 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
     }
 
     @Override
+    public ArrayList<Datafile> getFilesNewerThan(long lastupdate) throws IOException {
+        ArrayList<Datafile> results = new ArrayList();
+        if (isDir(fs, this)) {
+            for (FileStatus child : fs.listStatus(this)) {
+                if (!child.isDir() && child.getModificationTime() >= lastupdate) {
+                    results.add(new Datafile(fs, child.getPath().toString()));
+                }
+            }
+        } else if (isFile(fs, this)) {
+            results.add(new Datafile(fs, this));
+        }
+        return results;
+    }
+
+    public ArrayList<Datafile> getFilesNewerThan(HDFSPath path) throws IOException {
+        ArrayList<Datafile> results = new ArrayList();
+        if (isDir(fs, this)) {
+            if (path.isDir() && path.exists()) {
+                HashMap<String, FileStatus> mapped = new HashMap();
+                for (FileStatus f : path.fs.listStatus(path)) {
+                    mapped.put(f.getPath().getName(), f);
+                }
+                for (FileStatus child : fs.listStatus(this)) {
+                    if (!child.isDir()) {
+                        FileStatus f = mapped.get(child.getPath().getName());
+                        if (f == null || child.getModificationTime() > f.getModificationTime()) {
+                            results.add(new Datafile(fs, child.getPath().toString()));
+                        }
+                    }
+                }
+            } else {
+                return getFiles();
+            }
+        } else if (isFile(fs, this)) {
+            if (path.isDir() && path.exists()) {
+                HDFSPath child = path.getSubdir(this.getName());
+                if (isFile(fs, child) && this.getModificationTime() > child.getModificationTime()) {
+                    results.add(new Datafile(fs, getFileStatus().getPath().toString()));
+                }
+            } else if (!path.exists() || getModificationTime() > path.getModificationTime())
+                results.add(new Datafile(fs, getFileStatus().getPath().toString()));
+        }
+        return results;
+    }
+
+    public ArrayList<Datafile> getFilesOlderThan(HDFSPath path) throws IOException {
+        ArrayList<Datafile> results = new ArrayList();
+        if (isDir(fs, this)) {
+            if (path.isDir() && path.exists()) {
+                HashMap<String, FileStatus> mapped = new HashMap();
+                for (FileStatus f : path.fs.listStatus(path)) {
+                    mapped.put(f.getPath().getName(), f);
+                }
+                for (FileStatus child : fs.listStatus(this)) {
+                    if (!child.isDir()) {
+                        FileStatus f = mapped.get(child.getPath().getName());
+                        if (f == null || child.getModificationTime() < f.getModificationTime()) {
+                            results.add(new Datafile(fs, child.getPath().toString()));
+                        }
+                    }
+                }
+            } else {
+                return getFiles();
+            }
+        } else if (isFile(fs, this)) {
+            if (path.isDir() && path.exists()) {
+                HDFSPath child = path.getSubdir(this.getName());
+                if (isFile(fs, child) && this.getModificationTime() < child.getModificationTime()) {
+                    results.add(new Datafile(fs, getFileStatus().getPath().toString()));
+                }
+            } else if (!path.exists() || getModificationTime() < path.getModificationTime())
+                results.add(new Datafile(fs, getFileStatus().getPath().toString()));
+        }
+        return results;
+    }
+
+    public ArrayList<Datafile> getFilesNonExist(HDFSPath path) throws IOException {
+        ArrayList<Datafile> results = new ArrayList();
+        if (isDir(fs, this)) {
+            if (path.isDir() && path.exists()) {
+                HashSet<String> mapped = new HashSet();
+                for (FileStatus f : path.fs.listStatus(path)) {
+                    mapped.add(f.getPath().getName());
+                }
+                for (FileStatus child : fs.listStatus(this)) {
+                    if (!child.isDir() && !mapped.contains(child.getPath().getName())) {
+                        results.add(new Datafile(fs, child.getPath().toString()));
+                    }
+                }
+            }
+        }
+        return results;
+    }
+
+    @Override
     public ArrayList<String> getFilenames() throws IOException {
         ArrayList<String> results = new ArrayList();
         for (DirComponent c : iterator()) {
-            if (c instanceof Datafile)
-                results.add(((Datafile)c).getFilename());
+            if (c instanceof Datafile) {
+                results.add(((Datafile) c).getFilename());
+            }
         }
         return results;
     }
@@ -516,7 +807,7 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
 
     @Override
     public ArrayList<Datafile> getFiles(String regexstring) throws IOException {
-        return getFiles( ByteSearch.createFilePattern(regexstring) );
+        return getFiles(ByteSearch.createFilePattern(regexstring));
     }
 
     private ArrayList<Datafile> getFiles(ByteSearch pattern) throws IOException {
@@ -537,7 +828,7 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
     }
 
     public ArrayList<String> getFilenames(String regexstring) throws IOException {
-        return getFilenames( ByteSearch.createFilePattern(regexstring) );
+        return getFilenames(ByteSearch.createFilePattern(regexstring));
     }
 
     private ArrayList<String> getFilenames(ByteSearch pattern) throws IOException {
@@ -605,7 +896,7 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
     public ArrayList<HDFSPath> getDirs(String regexstring) throws IOException {
         return getDirs(ByteSearch.createFilePattern(regexstring));
     }
-    
+
     private ArrayList<HDFSPath> getDirs(ByteSearch pattern) throws IOException {
         ArrayList<HDFSPath> results = new ArrayList();
         if (isDir(fs, this)) {

@@ -1,6 +1,7 @@
 package io.github.repir.tools.lib;
 
 import io.github.repir.tools.type.Tuple2Comparable;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,13 +36,15 @@ public enum ByteTools {
                     c[cnr++] = array[p];
                 }
             }
-            return new String(c, 0, c.length);
+            try {
+                return new String(c, 0, c.length, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {  }
         }
         return "";
     }
 
     public static String toTrimmedString(byte b[], int pos, int end) {
-        char c[];
+        byte c[];
         for (; pos < end && whitespacezero[b[pos] & 0xFF]; pos++);
         for (; end > pos && whitespacezero[b[end - 1] & 0xFF]; end--);
         int realchars = 0;
@@ -51,15 +54,14 @@ public enum ByteTools {
             }
         }
         if (realchars > 0) {
-            c = new char[realchars];
+            c = new byte[realchars];
             for (int cnr = 0, p = pos; p < end; p++) {
-                if (b[p] > 0) {
-                    c[cnr++] = (char) b[p];
-                } else if (b[p] < 0) {
-                    c[cnr++] = (char) (b[p] & 0xFF);
-                }
+                if (b[p] != 0)
+                    c[cnr++] = b[p];
             }
-            return new String(c);
+            try {
+                return new String(c, "UTF-8");
+            } catch (UnsupportedEncodingException ex) { }
         }
         return "";
     }
@@ -71,31 +73,31 @@ public enum ByteTools {
      * @return
      */
     public static String toFullTrimmedString(byte b[], int pos, int end) {
-        char c[];
+        byte c[];
         for (; pos < end && whitespacezero[b[pos] & 0xFF]; pos++);
         for (; end > pos && whitespacezero[b[end - 1] & 0xFF]; end--);
         int realchars = 0;
         for (int p = pos; p < end; p++) {
             if (whitespace[b[p] & 0xFF]) {
-                b[p] = 32;
                 realchars++;
-                for (; p + 1 < end && whitespace[b[p + 1] & 0xFF]; p++) {
-                    b[p + 1] = 0;
-                }
+                for (; p + 1 < end && whitespace[b[p + 1] & 0xFF]; p++);
             } else if (b[p] != 0) {
                 realchars++;
             }
         }
         if (realchars > 0) {
-            c = new char[realchars];
+            c = new byte[realchars];
             for (int cnr = 0, p = pos; p < end; p++) {
-                if (b[p] > 0) {
-                    c[cnr++] = (char) b[p];
-                } else if (b[p] < 0) {
-                    c[cnr++] = (char) (b[p] & 0xFF);
+                if (b[p] != 0) {
+                    c[cnr++] = b[p];
+                    if (whitespace[b[p] & 0xFF]) {
+                       for (; p + 1 < end && whitespace[b[p + 1] & 0xFF]; p++);
+                    }
                 }
             }
-            return new String(c);
+            try {
+                return new String(c, "UTF-8");
+            } catch (UnsupportedEncodingException ex) { }
         }
         return "";
     }
@@ -396,7 +398,7 @@ public enum ByteTools {
             startpos += needle.length;
             endpos = find(haystack, needle2, startpos, endpos, ignorecase, omitquotes);
             if (endpos > -1) {
-                return new String(haystack, startpos, endpos - startpos);
+                return ByteTools.toString(haystack, startpos, endpos);
             }
         }
         return "";

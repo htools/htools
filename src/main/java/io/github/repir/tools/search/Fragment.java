@@ -1,10 +1,11 @@
 package io.github.repir.tools.search;
 
 import io.github.repir.tools.lib.Log;
+import static io.github.repir.tools.lib.PrintTools.sprintf;
 import java.util.ArrayList;
 
 public class Fragment {
-
+   public static Log log = new Log(Fragment.class); 
    public Node start;
    public ArrayList<Node> end = new ArrayList<Node>();
 
@@ -28,5 +29,9 @@ public class Fragment {
          }
       }
       end = new ArrayList<Node>();
+   }
+   
+   public String toString() {
+       return sprintf("Fragment start %s ends %d %s", start, end.size(), end);
    }
 }

@@ -171,7 +171,7 @@ public class BufferDelayedWriter implements StructureWriter {
 //      } else {
 //         StringBuilder sb = new StringBuilder();
 //         for (int i = 0; i < b.length; i++) {
-//            if (b[i] == escape || io.github.repir.tools.Lib.ByteTools.matchStringWS(b, esc, i)) {
+//            if (b[i] == escape || io.github.repir.tools.lib.ByteTools.matchStringWS(b, esc, i)) {
 //               sb.append((char) escape);
 //            }
 //            sb.append((char) (b[i]));
@@ -189,7 +189,7 @@ public class BufferDelayedWriter implements StructureWriter {
 //      } else {
 //         StringBuilder sb = new StringBuilder();
 //         for (int i = 0; i < b.length; i++) {
-//            if (b[i] == escape || io.github.repir.tools.Lib.ByteTools.matchStringWS(b, esc, i) || io.github.repir.tools.Lib.ByteTools.matchStringWS(b, esc2, i)) {
+//            if (b[i] == escape || io.github.repir.tools.lib.ByteTools.matchStringWS(b, esc, i) || io.github.repir.tools.lib.ByteTools.matchStringWS(b, esc2, i)) {
 //               sb.append((char) escape);
 //            }
 //            sb.append((char) (b[i]));
@@ -226,14 +226,14 @@ public class BufferDelayedWriter implements StructureWriter {
    }
 
    public void write(JsonObject s) {
-        BufferDelayedWriter.this.write(s == null?null:s.toString());
+        write(s == null?null:s.toString());
    }
 
    public void write(Object s, Type type) {
        if (s == null)
-           BufferDelayedWriter.this.write((String)null);
+           write((String)null);
        else {
-            BufferDelayedWriter.this.write(gson.toJson(s, type));
+            write(gson.toJson(s, type));
        }
    }
 
@@ -269,20 +269,20 @@ public class BufferDelayedWriter implements StructureWriter {
    @Override
    public void write(StringBuilder s) {
       if (s == null) {
-            BufferDelayedWriter.this.write(-1);
+            write(-1);
       } else {
-            BufferDelayedWriter.this.write(s.toString());
+            write(s.toString());
       }
    }
 
    @Override
    public void write(String array[]) {
       if (array == null) {
-            BufferDelayedWriter.this.write(-1);
+            write(-1);
       } else {
-            BufferDelayedWriter.this.write(array.length);
+         write(array.length);
          for (String s : array) {
-                BufferDelayedWriter.this.write(s);
+                write(s);
          }
       }
    }
@@ -290,11 +290,11 @@ public class BufferDelayedWriter implements StructureWriter {
    @Override
    public void write(long array[]) {
       if (array == null) {
-            BufferDelayedWriter.this.write(-1);
+            write(-1);
       } else {
-            BufferDelayedWriter.this.write(array.length);
+            write(array.length);
          for (long s : array) {
-                BufferDelayedWriter.this.write(s);
+               write(s);
          }
       }
    }
@@ -302,11 +302,23 @@ public class BufferDelayedWriter implements StructureWriter {
    @Override
    public void write(int array[]) {
       if (array == null) {
-            BufferDelayedWriter.this.write(-1);
+            write(-1);
       } else {
-            BufferDelayedWriter.this.write(array.length);
+            write(array.length);
          for (int s : array) {
-                BufferDelayedWriter.this.write(s);
+                write(s);
+         }
+      }
+   }
+
+   @Override
+   public void write(boolean array[]) {
+      if (array == null) {
+            write(-1);
+      } else {
+            write(array.length);
+         for (boolean s : array) {
+                write(s);
          }
       }
    }
@@ -314,11 +326,11 @@ public class BufferDelayedWriter implements StructureWriter {
    @Override
    public void write(double i[]) {
       if (i == null) {
-            BufferDelayedWriter.this.write(-1);
+            write(-1);
       } else {
-            BufferDelayedWriter.this.write(i.length);
+            write(i.length);
          for (double l : i) {
-                BufferDelayedWriter.this.write(l);
+                write(l);
          }
       }
    }
@@ -396,7 +408,7 @@ public class BufferDelayedWriter implements StructureWriter {
    @Override
    public void writeC(long i) {
       if (i >= -112 && i <= 127) {
-            BufferDelayedWriter.this.write((byte) i);
+            write((byte) i);
          return;
       }
       int len = -112;
@@ -409,12 +421,12 @@ public class BufferDelayedWriter implements StructureWriter {
          tmp = tmp >> 8;
          len--;
       }
-        BufferDelayedWriter.this.write((byte) len);
+      write((byte) len);
       len = (len < -120) ? -(len + 120) : -(len + 112);
       for (int idx = len; idx != 0; idx--) {
          int shiftbits = (idx - 1) * 8;
          long mask = 0xFFL << shiftbits;
-            BufferDelayedWriter.this.write((byte) ((i & mask) >> shiftbits));
+            write((byte) ((i & mask) >> shiftbits));
       }
    }
 
@@ -449,18 +461,18 @@ public class BufferDelayedWriter implements StructureWriter {
             //log.info("longmask %d %d", m[s-i], l[s]);
             mask |= (m[s - i] << ((s - i) * 2));
          }
-            BufferDelayedWriter.this.write(mask);
+         write(mask);
          for (int s = i; s < i + 4; s++) {
             switch (m[s - i]) {
                case 3:
                   writeC(l[s]);
                   break;
                case 2:
-                  BufferDelayedWriter.this.write((byte) ((l[s] >> 16) & 0xFF));
+                  write((byte) ((l[s] >> 16) & 0xFF));
                case 1:
-                  BufferDelayedWriter.this.write((byte) ((l[s] >> 8) & 0xFF));
+                  write((byte) ((l[s] >> 8) & 0xFF));
                case 0:
-                  BufferDelayedWriter.this.write((byte) (l[s] & 0xFF));
+                  write((byte) (l[s] & 0xFF));
             }
          }
       }
@@ -532,7 +544,7 @@ public class BufferDelayedWriter implements StructureWriter {
          }
       }
       writeC(leap);
-        BufferDelayedWriter.this.write(ltf);
+      write(ltf);
    }
 
    @Override
@@ -575,13 +587,13 @@ public class BufferDelayedWriter implements StructureWriter {
          for (int s = i; s < i + 4; s++) {
             switch (m[s - i]) {
                case 3:
-                  BufferDelayedWriter.this.write((byte) ((l[s] >> 24) & 0xFF));
+                  write((byte) ((l[s] >> 24) & 0xFF));
                case 2:
-                  BufferDelayedWriter.this.write((byte) ((l[s] >> 16) & 0xFF));
+                  write((byte) ((l[s] >> 16) & 0xFF));
                case 1:
-                  BufferDelayedWriter.this.write((byte) ((l[s] >> 8) & 0xFF));
+                  write((byte) ((l[s] >> 8) & 0xFF));
                case 0:
-                  BufferDelayedWriter.this.write(((byte) (l[s] & 0xFF)));
+                  write(((byte) (l[s] & 0xFF)));
             }
          }
       }
@@ -609,17 +621,17 @@ public class BufferDelayedWriter implements StructureWriter {
             m[s] = longmask(v[s]);
             mask |= (m[s] << (s * 2));
          }
-            BufferDelayedWriter.this.write(mask);
+         write(mask);
          for (int s = 0; s < 4; s++) {
             switch (m[s]) {
                case 3:
-                  BufferDelayedWriter.this.write((byte) ((v[s] >> 24) & 0xFF));
+                  write((byte) ((v[s] >> 24) & 0xFF));
                case 2:
-                  BufferDelayedWriter.this.write((byte) ((v[s] >> 16) & 0xFF));
+                  write((byte) ((v[s] >> 16) & 0xFF));
                case 1:
-                  BufferDelayedWriter.this.write((byte) ((v[s] >> 8) & 0xFF));
+                  write((byte) ((v[s] >> 8) & 0xFF));
                case 0:
-                  BufferDelayedWriter.this.write(((byte) (v[s] & 0xFF)));
+                  write(((byte) (v[s] & 0xFF)));
             }
          }
       }
@@ -696,20 +708,20 @@ public class BufferDelayedWriter implements StructureWriter {
 
    @Override
    public void write2(int i) {
-        BufferDelayedWriter.this.write((byte) ((i >>> 8) & 0xFF));
-        BufferDelayedWriter.this.write((byte) ((i) & 0xFF));
+        write((byte) ((i >>> 8) & 0xFF));
+        write((byte) ((i) & 0xFF));
    }
 
    @Override
    public void write3(int i) {
-        BufferDelayedWriter.this.write((byte) ((i >>> 16) & 0xFF));
-        BufferDelayedWriter.this.write((byte) ((i >>> 8) & 0xFF));
-        BufferDelayedWriter.this.write((byte) ((i) & 0xFF));
+        write((byte) ((i >>> 16) & 0xFF));
+        write((byte) ((i >>> 8) & 0xFF));
+        write((byte) ((i) & 0xFF));
    }
 
    @Override
    public void writeUB(int i) {
-        BufferDelayedWriter.this.write((byte) ((i) & 0xFF));
+        write((byte) ((i) & 0xFF));
    }
 
    @Override
@@ -717,17 +729,17 @@ public class BufferDelayedWriter implements StructureWriter {
       if (s != null) {
          writeRaw(s.getBytes());
       }
-        BufferDelayedWriter.this.write((byte) 0);
+      this.write((byte) 0);
    }
 
    @Override
    public void write(Collection<Integer> al) {
       if (al == null) {
-            BufferDelayedWriter.this.write(-1);
+          write(-1);
       } else {
-            BufferDelayedWriter.this.write(al.size());
+         write(al.size());
          for (int l : al) {
-                BufferDelayedWriter.this.write(l);
+            write(l);
          }
       }
    }
@@ -735,11 +747,11 @@ public class BufferDelayedWriter implements StructureWriter {
    @Override
    public void writeStr(Collection<String> al) {
       if (al == null) {
-            BufferDelayedWriter.this.write(-1);
+           write(-1);
       } else {
-            BufferDelayedWriter.this.write(al.size());
+         write(al.size());
          for (String l : al) {
-                BufferDelayedWriter.this.write(l);
+            write(l);
          }
       }
    }
@@ -786,10 +798,10 @@ public class BufferDelayedWriter implements StructureWriter {
 
    @Override
    public void write(Map<String, String> map) {
-        BufferDelayedWriter.this.write(map.size());
+      write(map.size());
       for (Map.Entry<String, String> e : map.entrySet()) {
-            BufferDelayedWriter.this.write(e.getKey());
-            BufferDelayedWriter.this.write(e.getValue());
+         write(e.getKey());
+         write(e.getValue());
       }
    }
 

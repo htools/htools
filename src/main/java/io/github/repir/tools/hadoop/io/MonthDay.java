@@ -43,7 +43,7 @@ public class MonthDay extends LongWritable {
 
         @Override
         public int getPartition(MonthDay key, Object value, int i) {
-            Calendar c = DateTools.secToCalendar(key.get());
+            Calendar c = DateTools.epochToCalendar(key.get());
             int month = c.get(Calendar.MONTH) + 1;
             int day = c.get(Calendar.DAY_OF_MONTH);
             return month * 100 + day;

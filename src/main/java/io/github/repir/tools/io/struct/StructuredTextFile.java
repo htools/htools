@@ -2,6 +2,7 @@ package io.github.repir.tools.io.struct;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import io.github.repir.tools.io.buffer.BufferReaderWriter;
 import io.github.repir.tools.search.ByteSearch;
@@ -57,6 +58,10 @@ public abstract class StructuredTextFile {
         return datafile;
     }
 
+    protected void setDatafile(Datafile df) {
+        this.datafile = df;
+    }
+
     /**
      * StructuredTextFile needs a root FolderNode that symbolizes a record.
      * Implementations of StructuredTextFile supply this by overriding this
@@ -74,7 +79,7 @@ public abstract class StructuredTextFile {
             }
             datafile.openRead();
             if (hasHeader) {
-                ByteSearchSection section = reader.findSectionStart(root.section);
+                ByteSearchSection section = reader.readSectionStart(root.section);
                 if (section.notEmpty()) {
                     root.readHeader(section);
                     reader.movePast(section);
@@ -200,7 +205,7 @@ public abstract class StructuredTextFile {
     public boolean nextRecord() {
         try {
             while (true) {
-                ByteSearchSection section = reader.findSectionStart(root.section);
+                ByteSearchSection section = reader.readSectionStart(root.section);
                 if (validRecord(section)) {
                     root.emptyDataContainer();
                     root.readNode(section);
@@ -226,7 +231,7 @@ public abstract class StructuredTextFile {
         openRead();
         try {
             while (true) {
-                ByteSearchSection section = reader.findSectionStart(root.section);
+                ByteSearchSection section = reader.readSectionStart(root.section);
                 if (section.notEmpty()) {
                     root.readNode(section);
                     reader.movePast(section);
@@ -245,7 +250,7 @@ public abstract class StructuredTextFile {
     }
 
     protected ArrayList<ByteSearchSection> findAllSections(ByteSearchSection section, ByteSection needle) {
-        return section.findAllSectionsDontMove(needle);
+        return section.findAllSections(needle);
     }
 
     public class NodeValue extends HashMap<String, ArrayList> {
@@ -591,15 +596,19 @@ public abstract class StructuredTextFile {
 
         @Override
         public int[] value(ByteSearchSection section) {
-            int[] result = ArrayTools.emptyIntArray;
+            int[] result = new int[0];
             if (section.notEmpty()) {
-                try {
-                    String part[] = stringValue(section).split(",");
-                    result = new int[part.length];
-                    for (int i = 0; i < part.length; i++)
-                       result[i] = Integer.parseInt(part[i]);
-                } catch (NumberFormatException ex) {
-                    log.fatalexception(ex, "value() offset %d section %s", StructuredTextFile.this.datafile.getOffset(), section.reportString());
+                String stringvalue = stringValue(section);
+                if (stringvalue.length() > 0) {
+                    try {
+                        String part[] = stringvalue.split(",");
+                        result = new int[part.length];
+                        for (int i = 0; i < part.length; i++) {
+                            result[i] = Integer.parseInt(part[i]);
+                        }
+                    } catch (NumberFormatException ex) {
+                        log.fatalexception(ex, "value() offset %d section %s", StructuredTextFile.this.datafile.getOffset(), section.reportString());
+                    }
                 }
             }
             return result;
@@ -621,13 +630,17 @@ public abstract class StructuredTextFile {
         public long[] value(ByteSearchSection section) {
             long[] result = ArrayTools.emptyLongArray;
             if (section.notEmpty()) {
-                try {
-                    String part[] = stringValue(section).split(",");
-                    result = new long[part.length];
-                    for (int i = 0; i < part.length; i++)
-                       result[i] = Long.parseLong(part[i]);
-                } catch (NumberFormatException ex) {
-                    log.fatalexception(ex, "value() offset %d section %s", StructuredTextFile.this.datafile.getOffset(), section.reportString());
+                String stringvalue = stringValue(section);
+                if (stringvalue.length() > 0) {
+                    try {
+                        String part[] = stringvalue.split(",");
+                        result = new long[part.length];
+                        for (int i = 0; i < part.length; i++) {
+                            result[i] = Long.parseLong(part[i]);
+                        }
+                    } catch (NumberFormatException ex) {
+                        log.fatalexception(ex, "value() offset %d section %s", StructuredTextFile.this.datafile.getOffset(), section.reportString());
+                    }
                 }
             }
             return result;
@@ -649,13 +662,17 @@ public abstract class StructuredTextFile {
         public double[] value(ByteSearchSection section) {
             double[] result = ArrayTools.emptyDoubleArray;
             if (section.notEmpty()) {
-                try {
-                    String part[] = stringValue(section).split(",");
-                    result = new double[part.length];
-                    for (int i = 0; i < part.length; i++)
-                       result[i] = Double.parseDouble(part[i]);
-                } catch (NumberFormatException ex) {
-                    log.fatalexception(ex, "value() offset %d section %s", StructuredTextFile.this.datafile.getOffset(), section.reportString());
+                String stringvalue = stringValue(section);
+                if (stringvalue.length() > 0) {
+                    try {
+                        String part[] = stringvalue.split(",");
+                        result = new double[part.length];
+                        for (int i = 0; i < part.length; i++) {
+                            result[i] = Double.parseDouble(part[i]);
+                        }
+                    } catch (NumberFormatException ex) {
+                        log.fatalexception(ex, "value() offset %d section %s", StructuredTextFile.this.datafile.getOffset(), section.reportString());
+                    }
                 }
             }
             return result;
@@ -677,16 +694,17 @@ public abstract class StructuredTextFile {
         public String[] value(ByteSearchSection section) {
             if (section.notEmpty()) {
                 return stringValue(section).split(",");
-            } else { 
-                return ArrayTools.emptyStringArray;
+            } else {
+                return new String[0];
             }
         }
 
         @Override
         public String toString(String[] value) {
             String result = ArrayTools.toString(value, 0, value.length, ",");
-            if (StrTools.countIndexOf(result, ',') != value.length -1)
+            if (StrTools.countIndexOf(result, ',') != value.length - 1) {
                 log.fatal("StringArrayField cannot contain , in '%s'", result);
+            }
             return result;
         }
     }
@@ -815,7 +833,14 @@ public abstract class StructuredTextFile {
             if (section.notEmpty()) {
                 String stringValue = this.stringValue(section);
                 //log.info("JsonArray %s", stringValue);
-                return (ArrayList<T>) gson.fromJson(stringValue, genericType);
+                ArrayList<T> result;
+                try {
+                    result = (ArrayList<T>) gson.fromJson(stringValue, genericType);
+                } catch (JsonSyntaxException ex) {
+                    log.info("failing %s", stringValue);
+                    throw ex;
+                }
+                return result;
             } else {
                 return new ArrayList<T>();
             }
@@ -832,11 +857,11 @@ public abstract class StructuredTextFile {
         }
 
         private void check(String content) {
-            if (!checked && open != null && open != ByteSearch.EMPTY) {
-                if (open.match(content)) {
+            if (!checked) {
+                if (open != null && open != ByteSearch.EMPTY && open.match(content)) {
                     log.fatalexception(new RuntimeException(), "StructuredTextFile.JsonArrayField value matches open tag: [%s]\n%s", open.toString(), content);
                 }
-                if (close != null && close.exists(content)) {
+                if (close != null && close != ByteSearch.EMPTY && close.exists(content)) {
                     ByteSearchPosition findPos = close.findPos(content);
                     if (findPos.notEmpty()) {
                         log.fatalexception(new RuntimeException(), "StructuredTextFile.JsonArrayField value matches close tag: [%s]\n%s", close.toString(), content);

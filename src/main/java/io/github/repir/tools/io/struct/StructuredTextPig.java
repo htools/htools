@@ -78,7 +78,7 @@ public abstract class StructuredTextPig extends StructuredTextCSV {
 
         @Override
         protected void readNode(ByteSearchSection section) {
-            for (ByteSearchSection s : section.findAllSectionsDontMove(brack)) {
+            for (ByteSearchSection s : section.findAllSections(brack)) {
                 this.addAnother();
                 for (Node f : orderedfields) {
                     ByteSearchSection pos = findSection(s, f.section);

@@ -4,7 +4,7 @@ grammar ByteRegex;
     package io.github.repir.tools.search;
     import io.github.repir.tools.search.Node.*; 
     import java.util.ArrayList;
-    import io.github.repir.tools.Lib.Log;
+    import io.github.repir.tools.lib.Log;
 }
 
 @members {
@@ -38,6 +38,7 @@ frag returns [ Fragment fragout ]
         System.arraycopy( $fragout.start.next, 0, next, 0, $fragout.start.next.length );
         next[ $fragout.start.next.length ] = $string.fragout.start;
         $fragout.start.next = next;
+        $fragout.addEnd( $string.fragout );
       } else {
         Node node = new Node( TYPE.CHOICE, casesensitive );
         node.next = new Node[2];

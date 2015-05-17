@@ -39,8 +39,9 @@ public class ExtractorPatternMatcher {
    void processSectionMarkers(Content entity, ByteSearchSection content) {
       ByteSearchSection[] lastSection = new ByteSearchSection[markers.size()];
       ArrayList<ByteSearchPosition> positions = patternmatcher.findAllPos(content);
+      //log.info("processSectionMarkers %s %s", patternmatcher.pattern, positions);
       for (ByteSearchPosition pos : positions) { // find all possible section starts
-          if (lastSection[pos.pattern] == null || lastSection[pos.pattern].end < pos.start) {
+          if (lastSection[pos.pattern] == null || lastSection[pos.pattern].end <= pos.start) {
              ByteSearchSection psection = new ByteSearchSection(content.haystack, pos.start, pos.end, content.innerend, content.end);
              ByteSearchSection section = markers.get(pos.pattern).process(entity, psection);
              if (section != null) {

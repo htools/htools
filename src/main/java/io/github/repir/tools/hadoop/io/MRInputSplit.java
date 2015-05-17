@@ -7,6 +7,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.InputSplit;
 
@@ -40,6 +41,10 @@ public abstract class MRInputSplit<KEY, VALUE> extends InputSplit implements Wri
       this.list.add(term);
    }
 
+   public void addAll(Collection<VALUE> term) {
+      this.list.addAll(term);
+   }
+
    /**
     * @return the number of Query requests in this split
     */
@@ -65,7 +70,7 @@ public abstract class MRInputSplit<KEY, VALUE> extends InputSplit implements Wri
       for (VALUE key : list) {
          writeValue(writer, key);
       }
-      out.write(writer.getAsByteBlock());
+      writer.writeBuffer(out);
    }
    
    public abstract void writeValue(BufferDelayedWriter out, VALUE value);
@@ -74,10 +79,7 @@ public abstract class MRInputSplit<KEY, VALUE> extends InputSplit implements Wri
 
    @Override
    public void readFields(DataInput in) throws IOException {
-      int length = in.readInt();
-      byte b[] = new byte[length];
-      in.readFully(b);
-      BufferReaderWriter reader = new BufferReaderWriter(b);
+      BufferReaderWriter reader = new BufferReaderWriter(in);
       hosts = reader.readStringArray();
       partition = readKey(reader);
       int listsize = reader.readInt();

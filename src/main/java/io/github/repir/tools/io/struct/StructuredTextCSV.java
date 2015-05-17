@@ -62,7 +62,7 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
    }
 
    protected ByteSearchSection findSection(ByteSearchSection section, ByteSection needle) {
-      return section.findSectionDontMove(needle);
+      return section.findSection(needle);
    }
 
    protected class OrderedNode extends FolderNode {

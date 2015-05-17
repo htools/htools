@@ -9,6 +9,8 @@ import io.github.repir.tools.search.ByteSearchPosition;
 import io.github.repir.tools.search.ByteSearchSection;
 import io.github.repir.tools.search.ByteSection;
 import io.github.repir.tools.io.ByteSearchReader;
+import io.github.repir.tools.lib.Const;
+import static io.github.repir.tools.lib.Const.NULLLONG;
 import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.lib.PrintTools;
 import static io.github.repir.tools.lib.PrintTools.sprintf;
@@ -21,6 +23,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -112,6 +115,9 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         this(df.filename);
         this.type = df.type;
         this.fs = df.fs;
+        this.setOffset(df.getOffset());
+        this.setCeiling(df.getCeiling());
+        this.setBufferSize(df.getBufferSize());
     }
 
     public Datafile(Datafile df, String suffix) {
@@ -121,7 +127,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     protected Datafile(FSDataInputStream in, long offset, long end) {
-        this( new ISDataIn(in));
+        this(new ISDataIn(in));
         rwbuffer.setOffset(offset);
         rwbuffer.setCeiling(end);
     }
@@ -145,7 +151,6 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
 //    public void write(byte[] b, byte[] esc, byte esc2[], byte escape) {
 //        rwbuffer.write(b, esc, esc2, escape);
 //    }
-
     public int[] readCIntIncr() throws EOCException {
         return rwbuffer.readCIntIncr();
     }
@@ -160,14 +165,51 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
 
     public void delete() {
         if (fs != null) {
+            HDFSPath.delete(fs, new Path(filename));
+        } else {
+            new FSFile(filename).delete();
+        }
+    }
+
+    public void trash() {
+        if (fs != null) {
             try {
-                fs.delete(new Path(filename), false);
+                HDFSPath.trash(fs, new Path(filename));
             } catch (IOException ex) {
                 log.exception(ex, "delete() when deleting file %s using FileSystem %s", filename, fs);
             }
         } else {
             new FSFile(filename).delete();
         }
+    }
+
+    public long getLastModified() {
+        if (fs != null) {
+            try {
+                return HDFSPath.getLastModified(fs, filename);
+            } catch (IOException ex) {
+                log.exception(ex, "delete() when deleting file %s using FileSystem %s", filename, fs);
+            }
+        } else {
+            return FSPath.getLastModified(filename);
+        }
+        return NULLLONG;
+    }
+
+    /**
+     * @param df
+     * @return true if new than df, false if either path does not exist
+     */
+    public boolean newerThan(Datafile df) {
+        long modificationtime = getLastModified();
+        if (modificationtime == NULLLONG) {
+            return false;
+        }
+        long modificationtime_df = df.getLastModified();
+        if (modificationtime_df == NULLLONG) {
+            return false;
+        }
+        return modificationtime > modificationtime_df;
     }
 
     public void closeRead() {
@@ -467,14 +509,27 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         hasbeenopened = true;
     }
 
-    public boolean rename(Datafile df) throws Exception {
+    public boolean move(Datafile df) throws IOException {
         boolean result = false;
         if (status != STATUS.CLOSED) {
             log.info("File %s must be closed before you can move");
         } else {
             if (type == TYPE.FS) {
-                result = FSPath.rename(getCanonicalPath(), df.getCanonicalPath());
+                if (df.type == TYPE.FS) {
+                    result = FSPath.rename(getCanonicalPath(), df.getCanonicalPath());
+                } else if (df.type == TYPE.HDFS) {
+                    copy(df);
+                    this.delete();
+                }
             } else if (type == TYPE.HDFS) {
+                if (df.type == TYPE.HDFS) {
+                    if (df.exists()) {
+                        df.delete();
+                    }
+                } else if (df.type == TYPE.FS) {
+                    copy(df);
+                    this.delete();
+                }
                 result = HDFSPath.rename(fs, getCanonicalPath(), df.getCanonicalPath());
             } else {
                 log.fatal("attempt to rename Datafile type %s", type.toString());
@@ -484,6 +539,41 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
             }
         }
         return result;
+    }
+
+    public boolean copy(Datafile df) throws IOException {
+        switch (type) {
+            case FS:
+                switch (df.type) {
+                    case FS:
+                        FSPath.copy(this.getCanonicalPath(), df.getCanonicalPath());
+                        return true;
+                    case HDFS:
+                        HDFSPath.copyFromLocal(df.fs, this.getCanonicalPath(), df.getCanonicalPath());
+                        return true;
+                }
+                break;
+            case HDFS:
+                switch (df.type) {
+                    case FS:
+                        HDFSPath.copyToLocal(fs, this.getCanonicalPath(), df.getCanonicalPath());
+                        return true;
+                    case HDFS:
+                        HDFSPath.copy(fs, this.getCanonicalPath(), df.getCanonicalPath());
+                        return true;
+                }
+        }
+        return false;
+    }
+
+    public boolean setTimestamp(long timestamp) throws IOException {
+        if (type == TYPE.FS) {
+            return FSPath.setLastModified(filename, timestamp);
+        } else if (type == TYPE.HDFS) {
+            HDFSPath.setLastModified(fs, filename, timestamp);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -572,6 +662,10 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
 
     public void skipIntArray() throws EOCException {
         rwbuffer.skipIntArray();
+    }
+
+    public void skipBoolArray() throws EOCException {
+        rwbuffer.skipBoolArray();
     }
 
     public void skipSquaredIntArray2() throws EOCException {
@@ -895,6 +989,13 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return rwbuffer.readByteArray();
     }
 
+    public boolean[] readBoolArray() throws EOCException {
+        if (status != STATUS.READ) {
+            throw new FileClosedOnReadException(this);
+        }
+        return rwbuffer.readBoolArray();
+    }
+
     public boolean readBoolean() throws EOCException {
         return readByte() == 0 ? false : true;
     }
@@ -1128,6 +1229,14 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         }
     }
 
+    public void write(boolean i[]) {
+        if (status == STATUS.WRITE) {
+            rwbuffer.write(i);
+        } else {
+            log.fatal("DataFile has to be put in a specific write mode before writing");
+        }
+    }
+
     public void write(Collection<Integer> al) {
         if (status == STATUS.WRITE) {
             rwbuffer.write(al);
@@ -1322,7 +1431,6 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return null;
     }
 
-
     public InputStream getInputStream() throws IOException {
         if (!isReadOpen()) {
             this.openRead();
@@ -1337,18 +1445,18 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return this.rwbuffer.dataout.getOutputStream();
     }
 
-    public boolean skipStart(ByteSearch regex) throws EOCException {
+    public boolean skipUntil(ByteSearch regex) throws EOCException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.skipStart(regex);
+        return rwbuffer.skipUntil(regex);
     }
 
-    public boolean skipEnd(ByteSearch regex) throws EOCException {
+    public boolean skipPast(ByteSearch regex) throws EOCException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.skipEnd(regex);
+        return rwbuffer.skipPast(regex);
     }
 
     @Override
@@ -1357,6 +1465,11 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
             throw new FileClosedOnReadException(this);
         }
         return rwbuffer.readStringUntil(eof);
+    }
+
+    static ByteSearch EOL = ByteSearch.create("\n");
+    public String readLine() throws EOCException {
+        return readStringUntil(EOL);
     }
 
     @Override
@@ -1368,51 +1481,51 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     @Override
-    public String findString(ByteSearch needle) throws EOCException, FileClosedOnReadException {
+    public String readString(ByteSearch needle) throws EOCException, FileClosedOnReadException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.findString(needle);
+        return rwbuffer.readString(needle);
     }
 
     @Override
-    public String matchString(ByteSearch needle) throws EOCException {
+    public String readMatchingString(ByteSearch needle) throws EOCException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.matchString(needle);
+        return rwbuffer.readMatchingString(needle);
     }
 
     @Override
-    public String matchTrimmedString(ByteSearch needle) throws EOCException {
+    public String readMatchingTrimmedString(ByteSearch needle) throws EOCException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.matchTrimmedString(needle);
+        return rwbuffer.readMatchingTrimmedString(needle);
     }
 
     @Override
-    public String findTrimmedString(ByteSearch needle) throws EOCException {
+    public String readTrimmedString(ByteSearch needle) throws EOCException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.findTrimmedString(needle);
+        return rwbuffer.readTrimmedString(needle);
     }
 
     @Override
-    public String findFullTrimmedString(ByteSearch needle) throws EOCException {
+    public String readFullTrimmedString(ByteSearch needle) throws EOCException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.findFullTrimmedString(needle);
+        return rwbuffer.readFullTrimmedString(needle);
     }
 
     @Override
-    public String matchFullTrimmedString(ByteSearch needle) throws EOCException {
+    public String readMatchingFullTrimmedString(ByteSearch needle) throws EOCException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.matchFullTrimmedString(needle);
+        return rwbuffer.readMatchingFullTrimmedString(needle);
     }
 
     @Override
@@ -1424,27 +1537,27 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     @Override
-    public ByteSearchPosition findPos(ByteSearch needle) throws EOCException {
+    public ByteSearchPosition readPos(ByteSearch needle) throws EOCException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.findPos(needle);
+        return rwbuffer.readPos(needle);
     }
 
     @Override
-    public ByteSearchSection findSection(ByteSection needle) throws EOCException {
+    public ByteSearchSection readSection(ByteSection needle) throws EOCException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.findSection(needle);
+        return rwbuffer.readSection(needle);
     }
 
     @Override
-    public ByteSearchSection findSectionStart(ByteSection needle) throws EOCException {
+    public ByteSearchSection readSectionStart(ByteSection needle) throws EOCException {
         if (status != STATUS.READ) {
             throw new FileClosedOnReadException(this);
         }
-        return rwbuffer.findSectionStart(needle);
+        return rwbuffer.readSectionStart(needle);
     }
 
     @Override
@@ -1455,4 +1568,33 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         rwbuffer.movePast(section);
     }
 
+    public Iterable<String> readLines() {
+        return new LineIterator(this);
+    }
+    
+    static class LineIterator implements Iterator<String>, Iterable<String> {
+        Datafile df;
+        String next;
+        
+        public LineIterator(Datafile df) {
+            this.df = new Datafile(df);
+            this.df.openRead();
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return df.getOffset() < df.getLength();
+        }
+
+        @Override
+        public String next() {
+            return df.readLine();
+        }
+
+        @Override
+        public Iterator<String> iterator() {
+            return this;
+        }
+    }
+    
 }

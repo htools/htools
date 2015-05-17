@@ -3,8 +3,11 @@ package io.github.repir.tools.hadoop.io;
 import io.github.repir.tools.io.HDFSPath;
 import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.hadoop.Job;
+import io.github.repir.tools.lib.ClassTools;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.JobContext;
@@ -16,6 +19,7 @@ public abstract class FileInputFormat<K, V>
         extends org.apache.hadoop.mapreduce.lib.input.FileInputFormat<K, V> {
 
     public static Log log = new Log(FileInputFormat.class);
+    public static org.apache.hadoop.mapreduce.InputFormat singleton;
     private static final String SPLITABLE = "structuredinputformat.issplitable";
     protected final Class fileclass;
 
@@ -23,6 +27,19 @@ public abstract class FileInputFormat<K, V>
         this.fileclass = fileclass;
     }
 
+    public static org.apache.hadoop.mapreduce.InputFormat getInputFormat(Job job) {
+        if (singleton == null) {
+            try {
+                Constructor cons = ClassTools.getAssignableConstructor(
+                        job.getInputFormatClass(), org.apache.hadoop.mapreduce.InputFormat.class);
+                singleton = (org.apache.hadoop.mapreduce.InputFormat)ClassTools.construct(cons);
+            } catch (ClassNotFoundException ex) {
+                log.fatalexception(ex, "getInputFormat() InputFormat either not set or not constructable");
+            }
+        }
+        return singleton;
+    }
+    
     public static void setNonSplitable(Job job) {
         job.getConfiguration().setBoolean(SPLITABLE, false);
         job.getConfiguration().setLong("mapreduce.input.fileinputformat.split.minsize", Long.MAX_VALUE);
@@ -37,30 +54,38 @@ public abstract class FileInputFormat<K, V>
      * @throws IOException
      */
     public static void addDirs(Job job, String dir) throws IOException {
-        FileSystem fs = HDFSPath.getFS(job.getConfiguration());
-        ArrayList<HDFSPath> paths = new ArrayList<HDFSPath>();
-        ArrayList<Path> files = new ArrayList<Path>();
+        ArrayList<String> list = getDirList(job.getFS(), dir);
+        for (String d : list)
+            FileInputFormat.addInputPath(job, new Path(d));
+    }
+
+    public static ArrayList<String> getDirList(FileSystem fs, String dir) throws IOException {
+        ArrayList<String> list = new ArrayList();
         if (dir.length() > 0) {
             if (dir.contains(",")) {
                 for (String d : dir.split(",")) {
-                    addDirs(job, d);
+                    getDirList(list, new HDFSPath(fs, d));
                 }
             } else {
-                HDFSPath d = new HDFSPath(fs, dir);
-                if (!d.getName().startsWith("_")) {
-                    if (d.isFile()) {
-                        addFile(job, new Path(dir));
-                    } else {
-                        for (String f : d.getFilepathnames()) {
-                            Path path = new Path(f);
-                            if (!path.getName().startsWith("_")) {
-                                addFile(job, path);
-                            }
-                        }
-                        for (HDFSPath f : d.getDirs()) {
-                            addDirs(job, f.getCanonicalPath());
-                        }
+                getDirList(list, new HDFSPath(fs, dir));
+            }
+        }
+        return list;
+    }
+
+    protected static void getDirList(ArrayList<String> list, HDFSPath d) throws IOException {
+        if (!d.getName().startsWith("_")) {
+            if (d.isFile()) {
+                list.add(d.getCanonicalPath());
+            } else {
+                for (String f : d.getFilepathnames()) {
+                    Path path = new Path(f);
+                    if (!path.getName().startsWith("_")) {
+                        list.add(f);
                     }
+                }
+                for (HDFSPath f : d.getDirs()) {
+                    getDirList(list, f);
                 }
             }
         }

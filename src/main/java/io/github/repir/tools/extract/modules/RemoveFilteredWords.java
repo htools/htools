@@ -5,6 +5,7 @@ import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.extract.Content;
 import io.github.repir.tools.extract.ExtractChannel;
 import io.github.repir.tools.extract.Extractor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,8 +39,20 @@ public class RemoveFilteredWords extends ExtractorProcessor {
       ExtractChannel attribute = entity.get(attributename);
       Iterator<String> iter = attribute.iterator();
       while (iter.hasNext()) {
-         if (words.contains(iter.next()))
+         String word = iter.next();
+         if (words.contains(word)) {
             iter.remove();
+         }
+      }
+   }
+   
+   public void process(Iterable<String> list) {
+      Iterator<String> iter = list.iterator();
+      while (iter.hasNext()) {
+         String word = iter.next();
+         if (words.contains(word)) {
+            iter.remove();
+         }
       }
    }
 }

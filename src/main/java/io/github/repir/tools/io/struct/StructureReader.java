@@ -77,6 +77,8 @@ public interface StructureReader extends ByteSearchReader {
 
    public byte[] readByteArray() throws EOCException;
 
+   public boolean[] readBoolArray() throws EOCException;
+
    public <T> T read(Type t)  throws EOCException;
         
    public void skipByte() throws EOCException;
@@ -118,6 +120,8 @@ public interface StructureReader extends ByteSearchReader {
    public int[] readIntArray() throws EOCException;
 
    public void skipIntArray() throws EOCException;
+
+   public void skipBoolArray() throws EOCException;
 
    public int[][] readCIntArray2() throws EOCException;
 

@@ -2,6 +2,7 @@ package io.github.repir.tools.collection;
 
 import io.github.repir.tools.type.Tuple2;
 import io.github.repir.tools.lib.Log;
+import io.github.repir.tools.type.KV;
 import java.util.HashMap;
 
 /**
@@ -9,7 +10,7 @@ import java.util.HashMap;
  * <p/>
  * @author jeroen
  */
-public class HashMap3<K, V1, V2> extends HashMap<K, Tuple2<V1, V2>> {
+public class HashMap3<K, V1, V2> extends HashMap<K, KV<V1, V2>> {
 
    public static Log log = new Log(HashMap3.class);
    
@@ -18,6 +19,6 @@ public class HashMap3<K, V1, V2> extends HashMap<K, Tuple2<V1, V2>> {
    }
    
    public void put(K k, V1 v1, V2 v2) {
-       super.put( k, new Tuple2<V1, V2>(v1, v2));
+       super.put( k, new KV<V1, V2>(v1, v2));
    }
 }

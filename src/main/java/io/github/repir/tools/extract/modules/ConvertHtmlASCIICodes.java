@@ -6,6 +6,7 @@ import io.github.repir.tools.extract.Content;
 import io.github.repir.tools.extract.Extractor;
 import io.github.repir.tools.search.ByteSearch;
 import io.github.repir.tools.search.ByteSearchSection;
+import java.text.Normalizer;
 import java.util.ArrayList;
 
 /**
@@ -32,6 +33,14 @@ public class ConvertHtmlASCIICodes extends ExtractorProcessor {
          }
          if (ascii > 31 && ascii < 128) {
             entity.content[p.start] = (ascii > 31 && ascii < 256) ? (byte) ascii : 0;
+         } else if (ascii > 128) {
+             String replaceAll = Normalizer.normalize("" + (char)ascii, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+","");
+             if (replaceAll.length() > 0)
+                 entity.content[p.start] = (byte)replaceAll.charAt(0);
+             else
+                 entity.content[p.start] = 0;
+         } else {
+             entity.content[p.start] = 0;
          }
          for (int i = p.start + 1; i < p.end; i++) {
             entity.content[i] = 0;

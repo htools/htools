@@ -13,16 +13,15 @@ public abstract class AbstractTokenizer extends Extractor {
    public static final Log log = new Log( AbstractTokenizer.class );
    protected TokenizerRegex tokenizer;
    protected TokenChar wordprocessor;
+   protected Class tokenClass;
 
    public AbstractTokenizer(Class tokenClass) {
        super();
-       preProcess();
-       process();
-       this.addSectionProcess("all", "tokenize", "result");
-       tokenizer = new TokenizerRegex(this, "tokenize");
-       wordprocessor = (TokenChar)tokenizer.setupTokenProcessor("word", tokenClass);
-       this.addProcess("tokenize", tokenizer);
-       postProcess();
+       this.tokenClass = tokenClass;
+       buildPreProcess();
+       buildProcess();
+       createSectionProcess();
+       buildPostProcess();
    }
    
    public TokenizerRegex getTokenizer() {
@@ -33,9 +32,17 @@ public abstract class AbstractTokenizer extends Extractor {
        return wordprocessor;
    }
    
-   protected abstract void preProcess();
-   protected abstract void process();
-   protected abstract void postProcess();
+   protected void createSectionProcess() {
+       this.addSectionProcess("all", "tokenize", "result");
+   }
+   
+   protected abstract void buildPreProcess();
+   protected abstract void buildProcess();
+   protected void buildPostProcess() {
+       tokenizer = new TokenizerRegex(this, "tokenize");
+       wordprocessor = (TokenChar)tokenizer.setupTokenProcessor("word", tokenClass);
+       this.addProcess("tokenize", tokenizer);
+   }
    
    protected void addProcess(Class clazz) {
        this.addProcess("tokenize", clazz);

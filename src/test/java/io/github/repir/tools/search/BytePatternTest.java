@@ -83,7 +83,7 @@ public class BytePatternTest {
       ByteSearch quote = ByteSearch.create("['\"]");
       ArrayList<String> results = new ArrayList<String>();
       do {
-         ByteSearchSection section = reader.findSection(metatag);
+         ByteSearchSection section = reader.readSection(metatag);
          log.info("%s", section);
          if (!section.found()) {
             break;

@@ -27,8 +27,57 @@ public enum ArrayTools {;
       return n;
    }
 
+   public static int[] addArr(int[] obj, int... o) {
+      int n[] = new int[obj.length + o.length];
+      System.arraycopy(obj, 0, n, 0, obj.length);
+      System.arraycopy(o, 0, n, obj.length, o.length);
+      return n;
+   }
+
+   public static long[] addArr(long[] obj, long... o) {
+      long n[] = new long[obj.length + o.length];
+      System.arraycopy(obj, 0, n, 0, obj.length);
+      System.arraycopy(o, 0, n, obj.length, o.length);
+      return n;
+   }
+
+   public static double[] addArr(double[] obj, double... o) {
+      double n[] = new double[obj.length + o.length];
+      System.arraycopy(obj, 0, n, 0, obj.length);
+      System.arraycopy(o, 0, n, obj.length, o.length);
+      return n;
+   }
+
+   /**
+    * @param <K>
+    * @param obj
+    * @param start
+    * @param end
+    * @return An array with the elements start to end (exclusive) removed 
+    */
    public static <K> K[] delete(K[] obj, int start, int end) {
       K n[] = createArray( obj, obj.length - (end - start));
+      System.arraycopy(obj, 0, n, 0, start);
+      System.arraycopy(obj, end, n, start, obj.length - end);
+      return n;
+   }
+
+   public static int[] delete(int[] obj, int start, int end) {
+      int n[] = new int[obj.length - (end - start)];
+      System.arraycopy(obj, 0, n, 0, start);
+      System.arraycopy(obj, end, n, start, obj.length - end);
+      return n;
+   }
+
+   public static long[] delete(long[] obj, int start, int end) {
+      long n[] = new long[obj.length - (end - start)];
+      System.arraycopy(obj, 0, n, 0, start);
+      System.arraycopy(obj, end, n, start, obj.length - end);
+      return n;
+   }
+
+   public static double[] delete(double[] obj, int start, int end) {
+      double n[] = new double[obj.length - (end - start)];
       System.arraycopy(obj, 0, n, 0, start);
       System.arraycopy(obj, end, n, start, obj.length - end);
       return n;
@@ -76,13 +125,19 @@ public enum ArrayTools {;
    }
    
    public static <K> K[] createArray( K other[], int size) {
-       return createArray( other.getClass().getComponentType(), size );
+       return createArray( (Class<? extends K>)other.getClass().getComponentType(), size );
+       //K[] a = Arrays.copyOf(other, 0);
+       //return (K[])Arrays.copyOf(a, size, other.getClass());
+   }
+
+   public static <K> K[] createArray( Collection<K> coll, int size) {
+       return createArray( (Class<? extends K>)coll.getClass().getComponentType(), size );
        //K[] a = Arrays.copyOf(other, 0);
        //return (K[])Arrays.copyOf(a, size, other.getClass());
    }
 
    private static Object[] nullarray = new Object[0];
-   public static <K> K[] createArray( Class datatype, int size) {
+   public static <K> K[] createArray( Class<? extends K> datatype, int size) {
       //return (K[])Arrays.copyOf(nullarray, size, datatype);
       return (K[]) java.lang.reflect.Array.newInstance(datatype, size);
    }
@@ -114,6 +169,12 @@ public enum ArrayTools {;
 
    public static int[] clone(int[] a) {
       int r[] = new int[a.length];
+      System.arraycopy(a, 0, r, 0, r.length);
+      return r;
+   }
+
+   public static long[] clone(long[] a) {
+      long r[] = new long[a.length];
       System.arraycopy(a, 0, r, 0, r.length);
       return r;
    }
@@ -197,8 +258,8 @@ public enum ArrayTools {;
       return ret;
    }
 
-   public static String[] toStringArray(Collection<String> strings) {
-      return strings.toArray(new String[ strings.size()] );
+   public static String[] toArray(Collection<String> strings) {
+       return strings.toArray(new String[strings.size()]);
    }
 
    public static double[] toDoubleArray(Collection<Double> integers) {
@@ -217,9 +278,30 @@ public enum ArrayTools {;
        return list;
    }
 
+   public static ArrayList<Long> toList(long array[]) {
+       ArrayList<Long> list = new ArrayList();
+       for (long d : array)
+           list.add(d);
+       return list;
+   }
+
    public static ArrayList<Integer> toList(int array[]) {
        ArrayList<Integer> list = new ArrayList();
        for (int d : array)
+           list.add(d);
+       return list;
+   }
+
+   public static <K> ArrayList<K> toList(K array[]) {
+       ArrayList<K> list = new ArrayList();
+       for (K d : array)
+           list.add(d);
+       return list;
+   }
+
+   public static <K> HashSet<K> toSet(K array[]) {
+       HashSet<K> list = new HashSet();
+       for (K d : array)
            list.add(d);
        return list;
    }
