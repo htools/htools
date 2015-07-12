@@ -84,6 +84,15 @@ public enum DateTools {
            return format.parse(timestring).getTime() / 1000;
        }
        
+       public long toEpochNE(String timestring) {
+           try {
+               return toEpoch(timestring);
+           } catch (ParseException ex) {
+               log.fatalexception(ex, "not a valid date %s %s", this.getPattern().toString(), timestring);
+               return -1;
+           }
+       }
+       
        public long toMS(String timestring) throws ParseException {
            return format.parse(timestring).getTime();
        }

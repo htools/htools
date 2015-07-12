@@ -70,7 +70,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
    public void mergeIndexSegments() throws IOException {
       long offsets[] = valuetuple.mergeSegments();
       HDFSPath dir = (HDFSPath) getDatafile().getDir();
-      TreeSet<Datafile> sortedfiles = new TreeSet(dir.getFilesStartingWith(getDatafile().getFilename()));
+      TreeSet<Datafile> sortedfiles = new TreeSet(dir.getFilesStartingWith(getDatafile().getName()));
       StructuredFileIndex in = this.clone();
       for (int i = 0; i < intkeys.length; i++) {
          intkeys[i].value = in.intkeys[i].key;
@@ -163,7 +163,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
 
    private void setIndexFile() {
       StringBuilder sb = new StringBuilder();
-      String filename = this.getFilename(valuetuple.getDatafile().getFilename());
+      String filename = this.getFilename(valuetuple.getDatafile().getName());
       setDatafile(new Datafile(getDatafile().getFileSystem(), getDatafile().getDir().getFilename(filename)));
    }
 

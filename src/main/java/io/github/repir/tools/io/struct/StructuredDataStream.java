@@ -1306,7 +1306,7 @@ public abstract class StructuredDataStream extends StructuredStream {
         public void write(ArrayList<Integer> list) {
             checkRead(this);
             if (writer != null) {
-                writer.write(list);
+                writer.writeIntList(list);
             }
             writeDone(this);
         }

@@ -3,6 +3,7 @@ package io.github.repir.tools.extract;
 import io.github.repir.tools.extract.modules.ConvertHtmlASCIICodes;
 import io.github.repir.tools.extract.modules.ConvertHtmlSpecialCodes;
 import io.github.repir.tools.extract.modules.ConvertUnicodeDiacritics;
+import io.github.repir.tools.extract.modules.ConvertWhitespace;
 import io.github.repir.tools.extract.modules.MarkHead;
 import io.github.repir.tools.extract.modules.MarkTitle;
 import io.github.repir.tools.extract.modules.RemoveHtmlComment;
@@ -12,7 +13,8 @@ import io.github.repir.tools.lib.Log;
 import java.util.ArrayList;
 
 /**
- * Extracts the literal title from a HTML page.
+ * Extracts the literal title from a HTML page. 
+ * Whitespaces are converted to a single space
  * @author jeroen
  */
 public class HtmlTitleExtractor extends ExtractorConf {
@@ -30,6 +32,7 @@ public class HtmlTitleExtractor extends ExtractorConf {
        this.addSectionMarker(MarkTitle.class, "head", "title");
        this.addSectionProcess("title", "store", "result");
 
+       this.addProcess("store", ConvertWhitespace.class);
        this.addProcess("store", StoreLiteralSection.class);
    }
    

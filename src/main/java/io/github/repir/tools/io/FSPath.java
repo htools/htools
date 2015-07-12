@@ -20,7 +20,7 @@ import org.apache.hadoop.io.IOUtils;
  * <p/>
  * @author jbpvuurens
  */
-public class FSPath extends File implements Path {
+public class FSPath extends File implements HPath {
 
     public static Log log = new Log(FSPath.class);
 
@@ -63,6 +63,12 @@ public class FSPath extends File implements Path {
         return null;
     }
 
+    @Override
+    public String getName() {
+        String path = getCanonicalPath();
+        return path.substring(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')) + 1);
+    }
+    
     public static void copy(String path1, String path2) throws IOException {
         java.nio.file.Files.copy( 
                 new java.io.File(path1).toPath(),
@@ -125,6 +131,7 @@ public class FSPath extends File implements Path {
      * @param filename
      * @return
      */
+    @Override
     public String getFilename(String filename) {
         return this.getCanonicalPath() + "/" + filename;
     }
@@ -220,10 +227,22 @@ public class FSPath extends File implements Path {
         return new ListIterator(getDirs(regexstring));
     }
 
+    public ListIterator<DirComponent> iteratorDirs(ByteSearch regexstring) throws IOException {
+        return new ListIterator(getDirs(regexstring));
+    }
+    
+    public ListIterator<DirComponent> iterator(ByteSearch regex) throws IOException {
+        return new ListIterator(get(regex));
+    }
+    
     public ListIterator<DirComponent> iteratorFiles(String regexstring) {
         return new ListIterator(FSPath.this.getFiles(regexstring));
     }
 
+    public HPathWildcardIterator wildcardIterator() {
+        return new HPathWildcardIterator(this);
+    }
+    
     public ArrayList<DirComponent> get() {
         ArrayList<DirComponent> results = new ArrayList();
         for (String f : list()) {
@@ -256,6 +275,10 @@ public class FSPath extends File implements Path {
 
     public ArrayList<DirComponent> get(String regexstring) {
         ByteSearch pattern = ByteSearch.create(regexstring);
+        return get(pattern);
+    }
+
+    public ArrayList<DirComponent> get(ByteSearch pattern) {
         ArrayList<DirComponent> results = new ArrayList();
         if (isDirectory()) {
             for (String f : list()) {
@@ -274,7 +297,7 @@ public class FSPath extends File implements Path {
         }
         return results;
     }
-
+    
     @Override
     public ArrayList<Datafile> getFiles() {
         ArrayList<Datafile> results = new ArrayList();
@@ -361,8 +384,22 @@ public class FSPath extends File implements Path {
         return results;
     }
 
-    public ArrayList<Path> getDirs() {
-        ArrayList<Path> results = new ArrayList();
+    @Override
+    public FSPath getParentPath() {
+        String path = toString();
+        int lastSlash = path.lastIndexOf('/');
+        if (lastSlash < 1) {
+            if (path.startsWith("/")) {
+                return new FSPath("/");
+            }
+            return new FSPath("");
+        }
+        String parent = path.substring(0, lastSlash);
+        return new FSPath(parent);
+    }
+    
+    public ArrayList<HPath> getDirs() {
+        ArrayList<HPath> results = new ArrayList();
         for (String f : list()) {
             String fullname = getFilename(f);
             File file = new File(fullname);
@@ -385,9 +422,9 @@ public class FSPath extends File implements Path {
         return results;
     }
 
-    public ArrayList<Path> getDirs(String regexstring) {
+    public ArrayList<HPath> getDirs(String regexstring) {
         ByteSearch pattern = ByteSearch.create(regexstring);
-        ArrayList<Path> results = new ArrayList();
+        ArrayList<HPath> results = new ArrayList();
         for (String f : list()) {
             if (pattern.exists(f)) {
                 String fullname = getFilename(f);
@@ -400,6 +437,20 @@ public class FSPath extends File implements Path {
         return results;
     }
 
+    public ArrayList<FSPath> getDirs(ByteSearch pattern) throws IOException {
+        ArrayList<FSPath> results = new ArrayList();
+            for (String name : list()) {
+                if (pattern.exists(name)) {
+                String fullname = getFilename(name);
+                File file = new File(fullname);
+                if (file.isDirectory()) {
+                    results.add(new FSPath(fullname));
+                }
+            }
+        }
+        return results;
+    }
+    
     @Override
     public ArrayList<Datafile> getFilesStartingWith(String start) {
         ArrayList<Datafile> results = new ArrayList();

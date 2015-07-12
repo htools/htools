@@ -765,6 +765,7 @@ public enum StrTools {
         (byte) 0xe2, (byte) 0x80, (byte) 0x90,
         (byte) 0xe2, (byte) 0x80, (byte) 0x91,
         (byte) 0xe2, (byte) 0x80, (byte) 0x92,
+        (byte) 0xe2, (byte) 0x88, (byte) 0x92,
         (byte) 0xe2, (byte) 0x80, (byte) 0x93,
         (byte) 0xe2, (byte) 0x80, (byte) 0x94,
         (byte) 0xe2, (byte) 0x80, (byte) 0x95,
@@ -777,7 +778,7 @@ public enum StrTools {
         (byte) 0xe2, (byte) 0x80, (byte) 0x9e,
         (byte) 0xe2, (byte) 0x80, (byte) 0x9f,
     };
-    public static byte asciibyte20[] = {'-', '-', '-', '-', '-', '-', '\'', '\'', '\'', '\'', '"', '"', '"', '"'};
+    public static byte asciibyte20[] = {'-', '-', '-', '-', '-', '-', '-', '\'', '\'', '\'', '\'', '"', '"', '"', '"'};
     public static byte unicodebyteC3[] = {(byte) 0x80, (byte) 0xA0, (byte) 0x88, (byte) 0xA8, (byte) 0x8C,
         (byte) 0xAC, (byte) 0x92, (byte) 0xB2, (byte) 0x99, (byte) 0xB9,
         (byte) 0x81, (byte) 0xA1, (byte) 0x89, (byte) 0xA9, (byte) 0x8D,
@@ -789,12 +790,12 @@ public enum StrTools {
         (byte) 0x8B, (byte) 0xAB, (byte) 0x8F, (byte) 0xAF, (byte) 0x96,
         (byte) 0xB6, (byte) 0x9C, (byte) 0xBC, (byte) 0xBF, (byte) 0x85,
         (byte) 0xA5, (byte) 0x87, (byte) 0xA7};
-    public static byte unicodebyteC2[] = {(byte) 0xA0};
-    public static byte asciibyteC2[] = {' '};
     public static byte asciibyteC3[] = {'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'Y', 'y', 'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'A', 'a', 'O', 'o', 'N', 'n', 'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'y', 'A', 'a', 'C', 'c'};
     public static byte unicodebyteC5[] = {(byte) 0xB6, (byte) 0xB7, (byte) 0xB8, (byte) 0x90, (byte) 0x91, (byte) 0xB0, (byte) 0xB1};
     public static byte asciibyteC5[] = {'Y', 'y', 'Y', 'O', 'o', 'U', 'u'};
-    public static byte asciiextendedbyte[] = {(byte) 0xC0, (byte) 0xC1, (byte) 0xC2, (byte) 0xC3, (byte) 0xC4,
+    public static byte asciiextendedbyte[] = {
+        (byte) 0xA0,(byte) 0xB4, (byte) 0xF7, (byte)0xA6, (byte)0xA1,
+        (byte) 0xC0, (byte) 0xC1, (byte) 0xC2, (byte) 0xC3, (byte) 0xC4,
         (byte) 0xC7,
         (byte) 0xC8, (byte) 0xC9, (byte) 0xCA, (byte) 0xCB,
         (byte) 0xCC, (byte) 0xCD, (byte) 0xCE, (byte) 0xCF,
@@ -810,7 +811,9 @@ public enum StrTools {
         (byte) 0xF2, (byte) 0xF3, (byte) 0xF4, (byte) 0xF5, (byte) 0xF6,
         (byte) 0xF9, (byte) 0xFA, (byte) 0xFB, (byte) 0xFC,
         (byte) 0xFD, (byte) 0xFF};
-    public static byte asciibyte[] = {'A', 'A', 'A', 'A', 'A',
+    public static byte asciibyte[] = {
+        ' ', '\'', '/', '|', '!',
+        'A', 'A', 'A', 'A', 'A',
         'C',
         'E', 'E', 'E', 'E',
         'I', 'I', 'I', 'I',

@@ -7,6 +7,8 @@ package io.github.repir.tools.io;
 public interface DirComponent {
 
    String getCanonicalPath();
+   
+   String getName();
 
    boolean exists();
 }

@@ -62,6 +62,10 @@ public class ByteSearchPosition implements Comparator<ByteSearchPosition>, Compa
       return end > -1;
    }
 
+   public void setNotFound() {
+      end = -1;
+   }
+
    public boolean notEmpty() {
       return found() && start < end;
    }
@@ -75,6 +79,15 @@ public class ByteSearchPosition implements Comparator<ByteSearchPosition>, Compa
        return end - start;
    }
    
+   public byte byteAt(int index) {
+      int i = start;
+      for (; index >= 0; i++) {
+          if (haystack[i] != 0)
+              index--;
+      }
+      return haystack[i - 1];
+   }
+
    public String substring(int start) {
       return StrTools.toString(haystack, this.start + start, end);
    }

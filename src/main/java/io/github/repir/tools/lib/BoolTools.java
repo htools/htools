@@ -143,6 +143,10 @@ public enum BoolTools {;
       return createASCIIAcceptRange('A', 'Z');
    }
    
+   public static boolean[] lowercase() {
+      return createASCIIAcceptRange('a', 'z');
+   }
+   
    public static boolean[] digit() {
       return createASCIIAcceptRange('0', '9');
    }

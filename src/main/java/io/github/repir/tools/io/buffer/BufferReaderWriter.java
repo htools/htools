@@ -17,6 +17,7 @@ import io.github.repir.tools.lib.ByteTools;
 import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.lib.PrintTools;
 import static io.github.repir.tools.lib.PrintTools.memoryDump;
+import io.github.repir.tools.type.Long128;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -236,7 +237,7 @@ public class BufferReaderWriter implements StructureData {
 
     @Override
     public void fillBuffer() throws EOCException {
-        //log.info("fillBuffer datain %s hasmore %b pos %d end %d", datain, hasmore, bufferpos, end);
+        log.info("fillBuffer datain %s hasmore %b pos %d end %d buffersize %d", datain, hasmore, bufferpos, end, buffer.length);
         if (datain != null) {
             if (!hasmore || !softFillBuffer()) {
                 throw getEOF();
@@ -590,6 +591,12 @@ public class BufferReaderWriter implements StructureData {
         long ch8 = buffer[bufferpos++] & 0xFF;
         long result = ((ch1 << 56) + (ch2 << 48) + (ch3 << 40) + (ch4 << 32)
                 + (ch5 << 24) + (ch6 << 16) + (ch7 << 8) + (ch8));
+        return result;
+    }
+
+    public Long128 readLong128() throws EOCException {
+        Long128 result = new Long128();
+        result.read(this);
         return result;
     }
 
@@ -1012,6 +1019,10 @@ public class BufferReaderWriter implements StructureData {
         buffer[bufferpos++] = (byte) ((i) & 0xFF);
     }
 
+    public void write(Long128 i) {
+        i.write(this);
+    }
+
     public void write(long i[]) {
         if (i == null) {
             write(-1);
@@ -1059,7 +1070,7 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public void write(Collection<Integer> i) {
+    public void writeIntList(Collection<Integer> i) {
         if (i == null) {
             write(-1);
         } else {
@@ -1070,7 +1081,19 @@ public class BufferReaderWriter implements StructureData {
         }
     }
 
-    public void writeStr(Collection<String> i) {
+    @Override
+    public void writeLongList(Collection<Long> i) {
+        if (i == null) {
+            write(-1);
+        } else {
+            write(i.size());
+            for (Long l : i) {
+                write(l);
+            }
+        }
+    }
+
+    public void writeStringList(Collection<String> i) {
         if (i == null) {
             write(-1);
         } else {
@@ -2059,7 +2082,7 @@ public class BufferReaderWriter implements StructureData {
         return l;
     }
 
-    public ArrayList<Integer> readIntArrayList() throws EOCException {
+    public ArrayList<Integer> readIntList() throws EOCException {
         int length = readInt();
         if (length == -1) {
             return null;
@@ -2071,7 +2094,19 @@ public class BufferReaderWriter implements StructureData {
         return l;
     }
 
-    public ArrayList<String> readStrArrayList() throws EOCException {
+    public ArrayList<Long> readLongList() throws EOCException {
+        int length = readInt();
+        if (length == -1) {
+            return null;
+        }
+        ArrayList<Long> l = new ArrayList();
+        for (int i = 0; i < length; i++) {
+            l.add(this.readLong());
+        }
+        return l;
+    }
+
+    public ArrayList<String> readStringList() throws EOCException {
         int length = readInt();
         if (length == -1) {
             return null;

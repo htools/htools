@@ -19,10 +19,15 @@ import java.util.HashSet;
 public class DefaultTokenizer extends AbstractTokenizer {
 
     public static final Log log = new Log(DefaultTokenizer.class);
-    //static HashSet<String> unstemmedFilterSet = StopWordsMultiLang.get().getUnstemmedFilterSet();
+    static HashSet<String> unstemmedFilterSet = StopWordsMultiLang.get().getUnstemmedFilterSet();
 
     public DefaultTokenizer() {
-        super(TokenWord.class);
+        super();
+    }
+
+    @Override
+    public Class getTokenMarker() {
+        return TokenWord.class;
     }
 
     @Override
@@ -38,5 +43,9 @@ public class DefaultTokenizer extends AbstractTokenizer {
     protected void buildProcess() {
         this.addProcess(RemoveHtmlSpecialCodes.class);
         //this.addEndPipeline(new RemoveFilteredWords(this, unstemmedFilterSet));
+    }
+    
+    public void removeStopWords() {
+        addEndPipeline(new RemoveFilteredWords(this, unstemmedFilterSet));
     }
 }

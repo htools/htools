@@ -51,11 +51,11 @@ public abstract class StructuredRecordReader<F extends StructuredRecordFile, K, 
             end = start + fileSplit.getLength();
             structuredRecordFile = getFile(new Datafile(filesystem, file));
             structuredRecordFile.setOffset(start);
-            structuredRecordFile.setBufferSize(1000000);
+            structuredRecordFile.setBufferSize(InputFormat.getBufferSize(conf));
             structuredRecordFile.openRead();
             structuredRecordFile.findFirstRecord();
             structuredRecordFile.setCeiling(end);
-            FileInputFormat.log.info("RecordReader %d %d %s", start, end, file.toString());
+            FileInputFormat.log.info("RecordReader start %d end %d buffer %d path %s", start, end, structuredRecordFile.getDatafile().getBufferSize(), file.toString());
         } catch (IOException ex) {
             FileInputFormat.log.exception(ex, "initialize( %s ) conf %s filesystem %s fsin %s", is, conf, filesystem, structuredRecordFile);
         } catch (ClassNotFoundException ex) {

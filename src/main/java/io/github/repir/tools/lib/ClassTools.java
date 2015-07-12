@@ -252,6 +252,16 @@ public enum ClassTools {
         return null;
     }
 
+    public static void preLoad(Class... classes) {
+        for (Class c : classes) {
+            try {
+                Class.forName(c.getCanonicalName());
+            } catch (ClassNotFoundException ex) {
+                log.fatalexception(ex, "preLoad %s", c.getCanonicalName());
+            }
+        }
+    }
+
     /**
      * @param clazz simple or canonical name of the Class Object to obtain
      * @param packagenames optionally, names of packages to scan for a Class
@@ -357,7 +367,8 @@ public enum ClassTools {
                 if (clazz.isAssignableFrom(superclass)) {
                     list.add(clazz);
                 }
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+            }
         }
         return list;
     }

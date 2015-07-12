@@ -217,7 +217,7 @@ public abstract class StructuredFile extends StructuredDataStream {
    public long[] mergeSegments() throws IOException {
       HDFSPath dir = (HDFSPath) datafile.getDir();
       //log.info("%s %s %s", datafile.getFullPath(), datafile.getDir().getCanonicalPath(), datafile.getFilename());
-      long offsets[] = dir.mergeFiles(new Datafile(datafile.getFileSystem(), datafile.getCanonicalPath()), datafile.getFilename());
+      long offsets[] = dir.mergeFiles(new Datafile(datafile.getFileSystem(), datafile.getCanonicalPath()), datafile.getName());
       return offsets;
    }
 

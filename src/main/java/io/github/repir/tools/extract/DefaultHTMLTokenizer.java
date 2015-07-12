@@ -18,7 +18,7 @@ public class DefaultHTMLTokenizer extends AbstractTokenizer {
    public static final Log log = new Log( DefaultHTMLTokenizer.class );
 
    public DefaultHTMLTokenizer() {
-       super(TokenWord.class);
+       super();
    }
    
    @Override
@@ -36,4 +36,9 @@ public class DefaultHTMLTokenizer extends AbstractTokenizer {
        this.addProcess(RemoveHtmlTags.class);
        this.addProcess(RemoveHtmlSpecialCodes.class);
    }
+
+    @Override
+    public Class getTokenMarker() {
+        return TokenWord.class;
+    }
 }

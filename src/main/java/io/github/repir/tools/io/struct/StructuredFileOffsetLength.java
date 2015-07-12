@@ -68,7 +68,7 @@ public abstract class StructuredFileOffsetLength extends StructuredFile {
    public void mergeIndexSegments() throws IOException {
       long offsets[] = getSource().mergeSegments();
       HDFSPath dir = (HDFSPath) getDatafile().getDir();
-      TreeSet<Datafile> sortedfiles = new TreeSet(dir.getFilesStartingWith(getDatafile().getFilename()));
+      TreeSet<Datafile> sortedfiles = new TreeSet(dir.getFilesStartingWith(getDatafile().getName()));
       StructuredFileOffsetLength in = (StructuredFileOffsetLength) this.clone();
       int offsetpos = 0;
       this.openWrite();

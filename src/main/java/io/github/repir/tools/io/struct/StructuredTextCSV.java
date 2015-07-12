@@ -137,6 +137,10 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
       return addLongArray(getRoot(), label, regex_open, regex_close, open, close);
    }
 
+   public Long128ArrayField addLong128Array(String label) {
+      return addLong128Array(getRoot(), label, regex_open, regex_close, open, close);
+   }
+
    public DoubleArrayField addDoubleArray(String label) {
       return addDoubleArray(getRoot(), label, regex_open, regex_close, open, close);
    }
@@ -163,5 +167,9 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
 
    public LongField addLong(String label) {
       return addLong(getRoot(), label, regex_open, regex_close, open, close);
+   }
+   
+   public Long128Field addLong128(String label) {
+      return addLong128(getRoot(), label, regex_open, regex_close, open, close);
    }
 }

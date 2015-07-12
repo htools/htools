@@ -21,7 +21,7 @@ import org.apache.hadoop.fs.Path;
  * <p/>
  * @author jbpvuurens
  */
-class HDFSOut implements DataOut {
+public class HDFSOut implements DataOut {
 
     private static Log log = new Log(HDFSOut.class);
     public final FileSystem fs;
@@ -31,13 +31,13 @@ class HDFSOut implements DataOut {
     public BufferReaderWriter buffer;
     public int lc = 0;
 
-    public HDFSOut(FileSystem fs, Path path, int buffersize) {
+    protected HDFSOut(FileSystem fs, Path path, int buffersize) {
         this.fs = fs;
         this.path = path;
         this.buffersize = buffersize;
     }
 
-    public HDFSOut(FileSystem fs, String filename, int buffersize) {
+    protected HDFSOut(FileSystem fs, String filename, int buffersize) {
         this(fs, new Path(filename), buffersize);
     }
 

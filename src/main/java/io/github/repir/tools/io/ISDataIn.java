@@ -34,6 +34,7 @@ public class ISDataIn implements DataIn {
         this.buffer = buffer;
     }
 
+    @Override
     public void fillBuffer(BufferReaderWriter buffer) throws EOCException {
         //log.info("readStringFillBuffer");
         if (!buffer.hasMore()) {
@@ -64,7 +65,7 @@ public class ISDataIn implements DataIn {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         int nRead;
-        byte[] data = new byte[16384];
+        byte[] data = new byte[1000000];
 
         while ((nRead = getInputStream().read(data, 0, data.length)) != -1) {
             buffer.write(data, 0, nRead);
@@ -72,7 +73,10 @@ public class ISDataIn implements DataIn {
 
         buffer.flush();
 
-        return buffer.toByteArray();
+        byte[] toByteArray = buffer.toByteArray();
+        buffer.close();
+        getInputStream().close();
+        return toByteArray;
     }
 
     @Override

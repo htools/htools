@@ -182,7 +182,7 @@ public abstract class StructuredFileKey<R extends StructuredFileKeyRecord, D ext
    @Override
    public void openAppend() {
       if (!getDatafile().hasLock())
-         throw new RuntimeException(PrintTools.sprintf("Should lock file before append: %s", getDatafile().getFilename()));
+         throw new RuntimeException(PrintTools.sprintf("Should lock file before append: %s", getDatafile().getName()));
       if (residenttable == null) {
          openRead();
       }

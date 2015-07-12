@@ -15,6 +15,7 @@ import io.github.repir.tools.lib.ArrayTools;
 import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.lib.PrintTools;
 import io.github.repir.tools.lib.StrTools;
+import io.github.repir.tools.type.Long128;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -161,7 +162,7 @@ public abstract class StructuredTextFile {
 
     public void openAppend() {
         if (!datafile.hasLock()) {
-            throw new RuntimeException(PrintTools.sprintf("Should lock file before append %s", datafile.getFilename()));
+            throw new RuntimeException(PrintTools.sprintf("Should lock file before append %s", datafile.getName()));
         }
         datafile.openAppend();
     }
@@ -571,6 +572,14 @@ public abstract class StructuredTextFile {
             super(parent, label, open, close, openlabel, closelabel);
         }
 
+        public IntField(String label, String open, String close, String openlabel, String closelabel) {
+            this(getRoot(), label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
+        }
+
+        public IntField(FolderNode parent, String label, String open, String close, String openlabel, String closelabel) {
+            this(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
+        }
+
         @Override
         public Integer value(ByteSearchSection section) {
             if (section.notEmpty()) {
@@ -652,6 +661,38 @@ public abstract class StructuredTextFile {
         }
     }
 
+    public class Long128ArrayField extends DataNode<Long128[]> {
+
+        protected Long128ArrayField(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
+            super(parent, label, open, close, openlabel, closelabel);
+        }
+
+        @Override
+        public Long128[] value(ByteSearchSection section) {
+            Long128[] result = new Long128[0];
+            if (section.notEmpty()) {
+                String stringvalue = stringValue(section);
+                if (stringvalue.length() > 0) {
+                    try {
+                        String part[] = stringvalue.split(",");
+                        result = new Long128[part.length];
+                        for (int i = 0; i < part.length; i++) {
+                            result[i] = new Long128(part[i]);
+                        }
+                    } catch (NumberFormatException ex) {
+                        log.fatalexception(ex, "value() offset %d section %s", StructuredTextFile.this.datafile.getOffset(), section.reportString());
+                    }
+                }
+            }
+            return result;
+        }
+
+        @Override
+        public String toString(Long128[] value) {
+            return ArrayTools.toString(value, 0, value.length, ",");
+        }
+    }
+
     public class DoubleArrayField extends DataNode<double[]> {
 
         protected DoubleArrayField(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
@@ -725,6 +766,26 @@ public abstract class StructuredTextFile {
         }
 
         public String toString(Long value) {
+            return value.toString();
+        }
+    }
+
+    public class Long128Field extends DataNode<Long128> {
+
+        protected Long128Field(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
+            super(parent, label, open, close, openlabel, closelabel);
+        }
+
+        @Override
+        public Long128 value(ByteSearchSection section) {
+            if (section.notEmpty()) {
+                return new Long128(stringValue(section));
+            } else {
+                return null;
+            }
+        }
+
+        public String toString(Long128 value) {
             return value.toString();
         }
     }
@@ -935,6 +996,18 @@ public abstract class StructuredTextFile {
         return addLong(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
     }
 
+    public Long128Field addLong128(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
+        return new Long128Field(parent, label, open, close, openlabel, closelabel);
+    }
+
+    public Long128Field addLong128(String label, String open, String close, String openlabel, String closelabel) {
+        return addLong128(getRoot(), label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
+    }
+
+    public Long128Field addLong128(FolderNode parent, String label, String open, String close, String openlabel, String closelabel) {
+        return addLong128(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
+    }
+
     public DoubleField addDouble(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
         return new DoubleField(parent, label, open, close, openlabel, closelabel);
     }
@@ -993,6 +1066,18 @@ public abstract class StructuredTextFile {
 
     public LongArrayField addLongArray(FolderNode parent, String label, String open, String close, String openlabel, String closelabel) {
         return addLongArray(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
+    }
+
+    public Long128ArrayField addLong128Array(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {
+        return new Long128ArrayField(parent, label, open, close, openlabel, closelabel);
+    }
+
+    public Long128ArrayField addLong128Array(String label, String open, String close, String openlabel, String closelabel) {
+        return addLong128Array(getRoot(), label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
+    }
+
+    public Long128ArrayField addLong128Array(FolderNode parent, String label, String open, String close, String openlabel, String closelabel) {
+        return addLong128Array(parent, label, ByteSearch.create(open), ByteSearch.create(close), openlabel, closelabel);
     }
 
     public DoubleArrayField addDoubleArray(FolderNode parent, String label, ByteSearch open, ByteSearch close, String openlabel, String closelabel) {

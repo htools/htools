@@ -200,45 +200,28 @@ public class Extractor {
         return null;
     }
 
-    public ByteSearchSection getAll(Content entity) {
-        ArrayList<ByteSearchSection> list = entity.getSectionPos("all");
-        if (list.size() == 0) {
-            entity.addSectionPos("all", entity.content, 0, 0, entity.content.length, entity.content.length);
-            list = entity.getSectionPos("all");
-        }
-        return list.get(0);
-    }
-
     /**
-     * Processes the entity according to the configured extraction process.
+     * Processes the content according to the configured extraction process.
      *
-     * @param entity
+     * @param content
      */
-    public void process(Content entity) {
-        if (neverused) {
-            neverused = false;
-            createPatternMatchers();
-        }
+    public void process(Content content) {
         //ShowContent showcontent = new ShowContent(this, "tokenize");
-        int bufferpos = 0;
-        int bufferend = entity.content.length;
-        //log.info("process() bufferpos %d bufferend %d", bufferpos, bufferend);
-        if (bufferpos >= bufferend) {
+        if (content.content.length == 0) {
             return;
         }
         try {
-            getAll(entity);
             for (ExtractorProcessor proc : this.preprocess) {
                 //log.info("PreProcess %s", proc.getClass().getCanonicalName());
-                proc.process(entity, getAll(entity), null);
+                proc.process(content, content.getAll(), null);
             }
-            this.processSectionMarkers(entity, bufferpos, bufferend);
-            preProcess(entity);
+            this.processSectionMarkers(content);
+            preProcess(content);
             for (SectionProcess p : this.processors) {
-                for (ByteSearchSection section : entity.getSectionPos(p.section)) {
+                for (ByteSearchSection section : content.getSectionPos(p.section)) {
                     //log.info("section %d %d", section.start, section.innerstart);
                     for (ExtractorProcessor proc : processor.get(p.process)) {
-                        proc.process(entity, section, p.entityattribute);
+                        proc.process(content, section, p.entityattribute);
                     }
                 }
             }
@@ -270,15 +253,19 @@ public class Extractor {
         }
     }
 
-    protected void processSectionMarkers(Content entity, int bufferpos, int bufferend) {
+    protected void processSectionMarkers(Content content) {
         //log.info("process sessionmarkers %d ", inputsections.size());
-        //log.info("sctions %s ", entity.getSectionPositions());
+        if (neverused) {
+            neverused = false;
+            createPatternMatchers();
+        }
+        content.getAll();
         for (int section = 0; section < inputsections.size(); section++) {
             String sectionname = inputsections.get(section);
             ExtractorPatternMatcher patternmatcher = patternmatchers.get(section);
             //log.info("process sessionmarkers %s %d %s", sectionname, patternmatcher.markers.size(), entity.getSectionPos(sectionname));
-            for (ByteSearchSection pos : entity.getSectionPos(sectionname)) {
-                patternmatcher.processSectionMarkers(entity, pos);
+            for (ByteSearchSection pos : content.getSectionPos(sectionname)) {
+                patternmatcher.processSectionMarkers(content, pos);
             }
         }
     }

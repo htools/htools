@@ -38,7 +38,7 @@ public class RemoveNonASCII extends ExtractorProcessor {
       super(extractor, null);
       nonascii = new boolean[256];
       for (int i = 0; i < 256; i++)
-          nonascii[i] = (i > 0 && i < 32) || i > 126;
+          nonascii[i] = (i > 0 && i < 10) || (i > 10 && i < 32) || i > 126;
       if (nonasciiremoveword) {
          letterdigit = BoolTools.combineRanges(
                  BoolTools.createASCIIAcceptRange('A', 'Z'),

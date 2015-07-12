@@ -16,6 +16,10 @@ public class TermVectorDouble extends HashMapDouble<String> {
     public TermVectorDouble() {
     }
 
+    public TermVectorDouble(HashMapDouble<String> map) {
+        super(map);
+    }
+
     public TermVectorDouble(Collection<String> terms) {
         add(terms);
     }
@@ -51,7 +55,7 @@ public class TermVectorDouble extends HashMapDouble<String> {
     public double magnitude() {
         if (magnitude == null) {
             total = null;
-            int sum = 0;
+            double sum = 0;
             for (Double freq : values()) {
                 sum += freq * freq;
             }
@@ -104,6 +108,10 @@ public class TermVectorDouble extends HashMapDouble<String> {
         return result;
     }
 
+    public TermVectorDouble divide(double div) {
+        return (TermVectorDouble)super.divide(new TermVectorDouble(), div);
+    }
+
     public String getMax() {
         double max = Double.MIN_VALUE;
         String maxterm = null;
@@ -114,6 +122,10 @@ public class TermVectorDouble extends HashMapDouble<String> {
             }
         }
         return maxterm;
+    }
+
+    public TermVectorDouble getTop(int k) {
+        return super.getTop(new TermVectorDouble(), k);
     }
 
     public Double total() {

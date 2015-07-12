@@ -1,6 +1,7 @@
 package io.github.repir.tools.io.struct;
 
 import com.google.gson.JsonObject;
+import io.github.repir.tools.type.Long128;
 import java.io.DataOutput;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ public interface StructureWriter {
    public void write3(int i);
 
    public void write(long i);
+
+   public void write(Long128 i);
 
    public void write(double i);
 
@@ -65,9 +68,11 @@ public interface StructureWriter {
 
    public void write(boolean b[]);
 
-   public void write(Collection<Integer> al);
+   public void writeIntList(Collection<Integer> al);
 
-   public void writeStr(Collection<String> al);
+   public void writeStringList(Collection<String> al);
+
+   public void writeLongList(Collection<Long> l);
 
    public void writeC(int i[][]);
 

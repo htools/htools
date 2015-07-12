@@ -26,7 +26,7 @@ public abstract class ExtractorProcessor {
 
    public int findQuoteSafeTagEnd(Content entity, int pos, int end) {
       int p = endtag.find(entity.content, ++pos, end);
-      if ((p < 0) || (p - pos > 50)) {
+      if ((p < 0) || (p - pos > 1000)) {
          p = endtag.findNoQuoteSafe(entity.content, pos, end);
       }
       return p;

@@ -28,6 +28,7 @@ import java.util.TreeSet;
 public class Content extends HashMap<String, ExtractChannel> {
 
    public static Log log = new Log(Content.class);
+   public static final String ALL = "all";
    public byte[] content;
    public TreeSet<ByteSearchSection> positions = new TreeSet();
    private HashMapList<String, ByteSearchSection> sectionpositions = new HashMapList();
@@ -36,10 +37,22 @@ public class Content extends HashMap<String, ExtractChannel> {
    public Content() {
    }
 
+   public Content(byte[] content) {
+       setContent(content);
+   }
+
    public void setContent(byte[] content) {
       this.content = content;
    }
 
+   public byte[] getContent() {
+       return content;
+   }
+   
+   public int length() {
+       return content.length;
+   }
+   
    public ExtractChannel get(String channelname) {
       if (channelname == null) {
          return null;
@@ -52,6 +65,15 @@ public class Content extends HashMap<String, ExtractChannel> {
       return d;
    }
 
+    public ByteSearchSection getAll() {
+        ArrayList<ByteSearchSection> list = getSectionPos(ALL);
+        if (list.size() == 0) {
+            addSectionPos(ALL, content, 0, 0, content.length, content.length);
+            list = getSectionPos(ALL);
+        }
+        return list.get(0);
+    }
+   
    public ByteSearchSection addSectionPos(String sectionlabel, byte[] haystack, int openlead, int open, int close, int closetrail) {
       ByteSearchSection s = new ByteSearchSection(haystack, openlead, open, close, closetrail);
       addSectionPos(sectionlabel, s);

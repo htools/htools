@@ -145,7 +145,7 @@ public abstract class StructuredFileKeyValue<R extends StructuredFileKeyValueRec
    @Override
    public void openAppend() {
       if (!getDatafile().hasLock())
-         throw new RuntimeException(PrintTools.sprintf("Should lock file before append %s", getDatafile().getFilename()));
+         throw new RuntimeException(PrintTools.sprintf("Should lock file before append %s", getDatafile().getName()));
       openRead();
       this.resetNextField();
    }

@@ -15,14 +15,16 @@ public abstract class AbstractTokenizer extends Extractor {
    protected TokenChar wordprocessor;
    protected Class tokenClass;
 
-   public AbstractTokenizer(Class tokenClass) {
+   public AbstractTokenizer() {
        super();
-       this.tokenClass = tokenClass;
+       this.tokenClass = getTokenMarker();
        buildPreProcess();
        buildProcess();
        createSectionProcess();
        buildPostProcess();
    }
+   
+   public abstract Class getTokenMarker();
    
    public TokenizerRegex getTokenizer() {
        return tokenizer;
@@ -46,6 +48,10 @@ public abstract class AbstractTokenizer extends Extractor {
    
    protected void addProcess(Class clazz) {
        this.addProcess("tokenize", clazz);
+   }
+   
+   protected void addProcess(ExtractorProcessor processor) {
+       this.addProcess("tokenize", processor);
    }
    
    public void addEndPipeline(Class clazz) {

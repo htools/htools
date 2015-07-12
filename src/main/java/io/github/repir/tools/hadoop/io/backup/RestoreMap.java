@@ -34,7 +34,7 @@ public class RestoreMap extends CopyMap {
             } catch (IOException ex) {
             }
             if (outtime > intime) {
-                //HDFSPath.copy(fs, key, value);
+                HDFSPath.copy(fs, key, value);
             }
         } catch (IOException ex) {
             log.exception(ex, "copy %s %s", key, value);

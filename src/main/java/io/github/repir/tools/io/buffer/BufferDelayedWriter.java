@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.repir.tools.io.struct.StructureWriter;
 import io.github.repir.tools.lib.Log;
+import io.github.repir.tools.type.Long128;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -126,6 +127,11 @@ public class BufferDelayedWriter implements StructureWriter {
    public void write(long i) {
       list.add(i);
       size += 8;
+   }
+
+   @Override
+   public void write(Long128 i) {
+      i.write(this);
    }
 
    public void overwrite(int pos, long i) {
@@ -294,6 +300,18 @@ public class BufferDelayedWriter implements StructureWriter {
       } else {
             write(array.length);
          for (long s : array) {
+               write(s);
+         }
+      }
+   }
+
+   @Override
+   public void writeLongList(Collection<Long> array) {
+      if (array == null) {
+            write(-1);
+      } else {
+            write(array.size());
+         for (Long s : array) {
                write(s);
          }
       }
@@ -733,7 +751,7 @@ public class BufferDelayedWriter implements StructureWriter {
    }
 
    @Override
-   public void write(Collection<Integer> al) {
+   public void writeIntList(Collection<Integer> al) {
       if (al == null) {
           write(-1);
       } else {
@@ -745,7 +763,7 @@ public class BufferDelayedWriter implements StructureWriter {
    }
 
    @Override
-   public void writeStr(Collection<String> al) {
+   public void writeStringList(Collection<String> al) {
       if (al == null) {
            write(-1);
       } else {

@@ -2,7 +2,7 @@ package io.github.repir.tools.hadoop;
 
 import io.github.repir.tools.io.Datafile;
 import io.github.repir.tools.io.HDFSPath;
-import io.github.repir.tools.io.Path;
+import io.github.repir.tools.io.HPath;
 import io.github.repir.tools.lib.Log;
 import static io.github.repir.tools.lib.PrintTools.sprintf;
 import io.github.repir.tools.io.struct.StructuredTextTSV;
@@ -69,8 +69,8 @@ public abstract class LogFileAbstract extends StructuredTextTSV {
     }
 
     public static Datafile getDatafile(Datafile df) {
-        Path dir = df.getDir();
-        df = dir.getFile(sprintf("_log/%s", df.getFilename()));
+        HPath dir = df.getDir();
+        df = dir.getFile(sprintf("_log/%s", df.getName()));
         return df;
     }
 

@@ -11,22 +11,33 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The Dir class represents a wildcarded directory, through which you can iterate
- * using the iterator().
+ * The Dir class represents a wildcarded directory, through which you can
+ * iterate using the iterator().
  * <p/>
  * @author jbpvuurens
  */
-class HDFSPathWildcard extends HDFSPath implements IteratorIterable<DirComponent> {
+public class HPathWildcardIterator implements IteratorIterable<DirComponent> {
 
-    public static Log log = new Log(HDFSPathWildcard.class);
+    public static Log log = new Log(HPathWildcardIterator.class);
+    HPath hpath;
     private ArrayDeque<String> components;
     private ArrayList<ByteSearch> regex = new ArrayList();
     private ArrayList<Iterator<DirComponent>> contents = new ArrayList();
     DirComponent lastcomponent;
 
-    protected HDFSPathWildcard(HDFSPath path, ArrayDeque<String> components) {
-        super(path);
-        this.components = components;
+    protected HPathWildcardIterator(HPath path) {
+        set(path);
+    }
+
+    protected void set(HPath path) {
+        components = new ArrayDeque();
+        components.addFirst(path.getName());
+        path = path.getParentPath();
+        while (!path.exists()) {
+            components.addFirst(path.getName());
+            path = path.getParentPath();
+        }
+        hpath = path;
     }
 
     @Override
@@ -34,13 +45,12 @@ class HDFSPathWildcard extends HDFSPath implements IteratorIterable<DirComponent
         for (String component : components) {
             regex.add(ByteSearch.createFilePattern(component));
         }
-        HDFSPath p = new HDFSPath(this);
-        setupIterator(p, 0);
+        setupIterator(hpath, 0);
 
         return this;
     }
 
-    public boolean setupIterator(HDFSPath p, int i) {
+    public boolean setupIterator(HPath p, int i) {
         try {
             ByteSearch r = regex.get(i);
             Iterator<DirComponent> iter;
@@ -52,8 +62,8 @@ class HDFSPathWildcard extends HDFSPath implements IteratorIterable<DirComponent
             contents.add(iter);
             if (iter.hasNext()) {
                 DirComponent next = iter.next();
-                if (next instanceof HDFSPath) {
-                    p = (HDFSPath) next;
+                if (next instanceof HPath) {
+                    p = (HPath) next;
                     if (i < regex.size() - 1) {
                         return setupIterator(p, i + 1);
                     }
@@ -64,7 +74,7 @@ class HDFSPathWildcard extends HDFSPath implements IteratorIterable<DirComponent
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(HDFSPathWildcard.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HPathWildcardIterator.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -85,7 +95,7 @@ class HDFSPathWildcard extends HDFSPath implements IteratorIterable<DirComponent
             for (int i = regex.size() - 1; i >= 0; i--) {
                 iter = contents.get(i);
                 if (iter.hasNext()) {
-                    HDFSPath next = (HDFSPath) iter.next();
+                    HPath next = (HPath) iter.next();
                     setupIterator(next, i + 1);
                     break;
                 } else {
@@ -95,7 +105,7 @@ class HDFSPathWildcard extends HDFSPath implements IteratorIterable<DirComponent
         }
         return result;
     }
-    
+
     @Override
     public void remove() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

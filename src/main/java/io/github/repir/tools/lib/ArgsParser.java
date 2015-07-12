@@ -56,9 +56,8 @@ public class ArgsParser {
         setFlags(message);
         Iterator<Parameter> iterpos = positional.iterator();
         for (int i = 0; i < args.length; i++) {
-            if (flag.match(args[i])) {
-                String flagtag = args[i].substring(1);
-                Parameter f = flags.get(flagtag);
+            if (flag.match(args[i]) || booleanflag.match(args[i])) {
+                Parameter f = flags.get(args[i]);
                 if (f == null) {
                     log.exit("undefined flag '%s'", args[i]);
                 }
@@ -84,27 +83,40 @@ public class ArgsParser {
                         }
                 }
             } else {
-                boolean success = false;
-                while (iterpos.hasNext()) {
-                    Parameter f = iterpos.next();
-                    if (f.values.size() > 0) {
-                        continue;
+                int equals = args[i].indexOf('=');
+                if (equals > 0) {
+                    String name = args[i].substring(0, equals);
+                    String value = args[i].substring(equals + 1);
+                    Parameter f = getflags.get(name);
+                    if (f != null) {
+                        f.values.add(value);
+                    } else {
+                        f = addFlag(2, name, name);
+                        f.values.add(value);
                     }
-                    success = true;
-                    switch (f.type) {
-                        case 0:
-                        case 2:
-                            f.values.add(args[i]);
-                            break;
-                        case 1:
-                            do {
+                } else {
+                    boolean success = false;
+                    while (iterpos.hasNext()) {
+                        Parameter f = iterpos.next();
+                        if (f.values.size() > 0) {
+                            continue;
+                        }
+                        success = true;
+                        switch (f.type) {
+                            case 0:
+                            case 2:
                                 f.values.add(args[i]);
-                            } while (i < args.length - 1 && !flag.match(args[i + 1]) && ++i > 0);
+                                break;
+                            case 1:
+                                do {
+                                    f.values.add(args[i]);
+                                } while (i < args.length - 1 && !flag.match(args[i + 1]) && ++i > 0);
+                        }
+                        break;
                     }
-                    break;
-                }
-                if (!success) {
-                    log.exit("too many arguments for [%s] %s", message, ArrayTools.toString(args));
+                    if (!success) {
+                        log.exit("too many arguments for [%s] %s", message, ArrayTools.toString(args));
+                    }
                 }
             }
         }
@@ -115,22 +127,28 @@ public class ArgsParser {
         }
     }
 
+    public void dump() {
+        for (Parameter p : getflags.values()) {
+            log.info("Arsparser %s=%s", p.name, p.values);
+        }
+    }
+
     private ArrayList<String> getArgumentNames(byte bmessage[], ArrayList<ByteSearchPosition> findAll) {
         ArrayList<String> names = new ArrayList();
         for (int posi = 0; posi < findAll.size(); posi++) {
             ByteSearchPosition p = findAll.get(posi);
             switch (p.pattern) {
                 case 2: // normal argument
-                    names.add(p.toString());
+                    names.add(p.toString().trim());
                     break;
                 case 0: // optional argument
                     names.add(new String(bmessage, p.start + 1, p.end - p.start - 2).trim());
                     break;
                 case 3: // flag - switch flag for description name
-                    names.add(new String(bmessage, p.start + 1, p.end - p.start - 1).trim());
+                    names.add(p.toString().trim());
                     break;
                 case 4: // boolean flag - switch flag for description name
-                    names.add(new String(bmessage, p.start + 2, p.end - p.start - 2).trim());
+                    names.add(p.toString().trim());
                     break;
                 case 1: // repeated group, can only be last in list (or use flags)
                     names.add(new String(bmessage, p.start + 1, p.end - p.start - 2).trim());
@@ -145,7 +163,7 @@ public class ArgsParser {
 
     public ArrayList<String> getParameter(String name) {
         if (!getflags.containsKey(name)) {
-            log.fatal("argument %s not in argument list: %s", name, argumentstring);
+            log.exit("argument %s not in argument list: %s", name, argumentstring);
         }
         return getflags.get(name).values;
     }
@@ -157,17 +175,62 @@ public class ArgsParser {
 
     public int getInt(String name, int def) {
         String v = get(name);
+        try {
         return v == null ? def : Integer.parseInt(v);
+        } catch (NumberFormatException | NullPointerException ex) {
+            log.exit("flag %s does not contain a valid Integer %s", name, v);
+            return 0; // unreachable
+        }
     }
 
     public long getLong(String name, long def) {
         String v = get(name);
+        try {
         return v == null ? def : Long.parseLong(v);
+        } catch (NumberFormatException | NullPointerException ex) {
+            log.exit("flag %s does not contain a valid Long %s", name, v);
+            return 0; // unreachable
+        }
     }
 
     public double getDouble(String name, double def) {
         String v = get(name);
-        return v == null ? def : Double.parseDouble(v);
+        try {
+            return v == null ? def : Double.parseDouble(v);
+        } catch (NumberFormatException | NullPointerException ex) {
+            log.exit("flag %s does not contain a valid Double %s", name, v);
+            return 0.0; // unreachable
+        }
+    }
+
+    public double getDouble(String name) {
+        String v = get(name);
+        try {
+            return Double.parseDouble(v);
+        } catch (NumberFormatException | NullPointerException ex) {
+            log.exit("flag %s does not contain a valid Double %s", name, v);
+            return 0.0; // unreachable
+        }
+    }
+
+    public int getInt(String name) {
+        String v = get(name);
+        try {
+            return Integer.parseInt(v);
+        } catch (NumberFormatException | NullPointerException ex) {
+            log.exit("flag %s does not contain a valid Integer %s", name, v);
+            return 0; // unreachable
+        }
+    }
+
+    public long getLong(String name) {
+        String v = get(name);
+        try {
+            return Long.parseLong(v);
+        } catch (NumberFormatException | NullPointerException ex) {
+            log.exit("flag %s does not contain a valid Long %s", name, v);
+            return 0; // unreachable
+        }
     }
 
     public boolean getBoolean(String name) {
@@ -190,24 +253,27 @@ public class ArgsParser {
         for (int argumentnumber = 0; argumentnumber < argumentpositions.size(); argumentnumber++) {
             ByteSearchPosition argument = argumentpositions.get(argumentnumber);
             if (argument.pattern == 3) { // flag
-                Parameter f = new Parameter(argumentpositions.get(argumentnumber + 1).pattern, names.get(argumentnumber), names.get(argumentnumber + 1));
+                Parameter f = addFlag(argumentpositions.get(argumentnumber + 1).pattern, names.get(argumentnumber), names.get(argumentnumber + 1));
                 flags.put(f.tag, f);
-                getflags.put(f.name, f);
                 positional.add(f);
                 argumentnumber++;
             } else if (argument.pattern == 4) { // boolean flag
-                Parameter f = new Parameter(argument.pattern, names.get(argumentnumber), names.get(argumentnumber));
-                flags.put(names.get(argumentnumber), f);
-                getflags.put(f.tag, f);
+                Parameter f = addFlag(argument.pattern, names.get(argumentnumber), names.get(argumentnumber).substring(2));
+                flags.put(f.tag, f);
             } else {
                 if (argument.pattern < 2 && argumentnumber != argumentpositions.size() - 1) {
-                    log.fatal("unflagged optional or repeated group can only be in last position");
+                    log.exit("unflagged optional or repeated group can only be in last position");
                 }
-                Parameter f = new Parameter(argument.pattern, names.get(argumentnumber), names.get(argumentnumber));
+                Parameter f = addFlag(argument.pattern, names.get(argumentnumber), names.get(argumentnumber));
                 positional.add(f);
-                getflags.put(f.name, f);
             }
         }
+    }
+
+    public Parameter addFlag(int pattern, String flagname, String argumentname) {
+        Parameter f = new Parameter(pattern, flagname, argumentname);
+        getflags.put(f.name, f);
+        return f;
     }
 
     public class Parameter {
@@ -229,6 +295,10 @@ public class ArgsParser {
 
         public String getName() {
             return name;
+        }
+
+        public String toString() {
+            return tag;
         }
     }
 }

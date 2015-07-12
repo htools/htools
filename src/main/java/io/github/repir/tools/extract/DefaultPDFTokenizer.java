@@ -13,8 +13,10 @@ public class DefaultPDFTokenizer extends AbstractTokenizer {
    public static final Log log = new Log( DefaultPDFTokenizer.class );
 
    public DefaultPDFTokenizer() {
-       super(TokenPDF.class);
+       super();
    }
+   
+   
    
     @Override
     protected void buildPreProcess() {
@@ -23,5 +25,10 @@ public class DefaultPDFTokenizer extends AbstractTokenizer {
 
     @Override
     protected void buildProcess() {
+    }
+
+    @Override
+    public Class getTokenMarker() {
+        return TokenPDF.class;
     }
 }

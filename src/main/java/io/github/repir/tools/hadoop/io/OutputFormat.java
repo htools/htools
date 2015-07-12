@@ -87,7 +87,7 @@ public abstract class OutputFormat<F extends StructuredRecordFile, V extends Fil
         if (filename == null) {
             return new HDFSPath(conf, conf.get(OUTPUTDIR)).getSubdir("_log");
         }
-        return new HDFSPath(conf, filename).getParent().getSubdir("_log_" + filename.substring(filename.lastIndexOf('/') + 1));
+        return new HDFSPath(conf, filename).getParentPath().getSubdir("_log_" + filename.substring(filename.lastIndexOf('/') + 1));
     }
 
     public Datafile getDatafile(TaskAttemptContext context, String folder) throws IOException {

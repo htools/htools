@@ -8,7 +8,8 @@ import java.util.PriorityQueue;
 
 /**
  * This collection retains the TopK objects that are added. Instantiate with any
- * int k > 0, where k is the maximum number of objects to keep, and a inverse 
+ * int k, where a negative value means to retain the BottomK (-k) objects, 
+ * where k is the maximum number of objects to keep, and a inverse 
  * Comparator, i.e. the smallest element should return -1. TopK does not sort
  * the objects.
  * @author Jeroen Vuurens
@@ -32,12 +33,12 @@ public class TopK<T> extends PriorityQueue<T> {
   }
 
   public TopK(int k, Collection<T> collection) {
-     this(k, new StdComparator());
+     this(k);
      this.addAll(collection);
   }
 
   public TopK(int k) {
-     this(k, new StdComparator());
+     this(Math.abs(k), (k > 0)?new StdComparator():new DescComparator());
   }
 
   @Override
@@ -74,6 +75,13 @@ public class TopK<T> extends PriorityQueue<T> {
         @Override
         public int compare(Object o1, Object o2) {
             return ((Comparable)o1).compareTo(o2);
+        }
+  }
+  
+  public static class DescComparator implements Comparator {
+        @Override
+        public int compare(Object o1, Object o2) {
+            return ((Comparable)o2).compareTo(o1);
         }
   }
   

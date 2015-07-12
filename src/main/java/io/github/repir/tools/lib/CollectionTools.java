@@ -6,7 +6,9 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -101,7 +103,7 @@ public enum CollectionTools {;
     public static boolean containsNone(Collection a, Collection b) {
         if (b.size() > a.size()) {
             return containsNone(b, a);
-        } else if (b.size() < 3) {
+        } else if (a.size() <= 3) {
             for (Object o : b) {
                 for (Object oo : a) {
                     if (oo.equals(o))
@@ -114,20 +116,51 @@ public enum CollectionTools {;
         }
     }
     
-    public static boolean containsNone(HashSet a, Collection b) {
+    public static <K> void remove(Collection<K> a, Set<K> b) {
+        Iterator<K> iter = a.iterator();
+        while (iter.hasNext()) {
+            if (b.contains(iter.next()))
+                iter.remove();
+        }
+    }
+    
+    public static boolean containsNone(Set a, Collection b) {
         for (Object o : b)
             if (a.contains(o))
                 return false;
         return true;
     }
     
-    public static boolean containsNone(HashSet a, HashSet b) {
+    public static boolean containsAny(Set a, Collection b) {
+        for (Object o : b)
+            if (a.contains(o))
+                return true;
+        return false;
+    }
+    
+    public static boolean containsNone(Set a, Set b) {
         if (b.size() > a.size())
             return containsNone(b, a);
         for (Object o : b)
             if (a.contains(o))
                 return false;
         return true;
+    }
+    
+    public static boolean containsAll(Set a, Set b) {
+        for (Object o : b)
+            if (!a.contains(o))
+                return false;
+        return true;
+    }
+    
+    public static boolean containsAny(Set a, Set b) {
+        if (b.size() > a.size())
+            return containsNone(b, a);
+        for (Object o : b)
+            if (a.contains(o))
+                return true;
+        return false;
     }
     
     public static <T> ArrayList<T> intersection(Collection<T> a, Collection<T> b) {

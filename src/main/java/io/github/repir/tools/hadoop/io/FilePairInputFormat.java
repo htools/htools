@@ -34,6 +34,7 @@ public class FilePairInputFormat extends KVInputFormat<String, String> {
     }
 
     public static void addDatafiles(Job job, PathModifier modifier, Collection<Datafile> path) {
+        modifier.setConf(job.getConfiguration());
         HashMapList<String, String> distributeFiles = HDFSPath.distributeDatafiles(HDFSPath.getFS(job.getConfiguration()), path);
         for (Map.Entry<String, ArrayList<String>> entry : distributeFiles.entrySet()) {
             for (String file : entry.getValue()) {

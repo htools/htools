@@ -16,7 +16,7 @@ public class WordPunctTokenizer extends AbstractTokenizer {
    public static final Log log = new Log( WordPunctTokenizer.class );
 
    public WordPunctTokenizer() {
-       super(TokenWordPunct.class);
+       super();
    }
    
     @Override
@@ -28,5 +28,10 @@ public class WordPunctTokenizer extends AbstractTokenizer {
     @Override
     protected void buildProcess() {
        this.addProcess("tokenize", ConvertHtmlAmpersand.class);
+    }
+
+    @Override
+    public Class getTokenMarker() {
+        return TokenWordPunct.class;
     }
 }

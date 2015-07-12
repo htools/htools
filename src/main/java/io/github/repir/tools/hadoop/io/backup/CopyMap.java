@@ -30,6 +30,6 @@ public class CopyMap extends Mapper<String, String, NullWritable, NullWritable> 
     
     @Override
     public void map(String key, String value, Context context) throws IOException, InterruptedException {
-        HDFSPath.copy(fs, value, value);
+        HDFSPath.copy(fs, key, value);
     }
 }

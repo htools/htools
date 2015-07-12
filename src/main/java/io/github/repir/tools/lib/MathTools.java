@@ -436,6 +436,10 @@ public enum MathTools {
         return finishHash(combineHash(31, v));
     }
 
+    public static int pairCantor(int i, int j) {
+        return (i + j) * (i + j + 1)/2 + Math.max(i, j);
+    }
+    
     public static final double SQRT2 = Math.sqrt(2);
 
     public static double cumulativeProbability(double x, double mean, double standardDeviation) {

@@ -3,10 +3,12 @@ package io.github.repir.tools.hadoop.io;
 import io.github.repir.tools.io.HDFSPath;
 import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.hadoop.Job;
+import io.github.repir.tools.io.DirComponent;
 import io.github.repir.tools.lib.ClassTools;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Iterator;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -108,5 +110,13 @@ public abstract class FileInputFormat<K, V>
     @Override
     protected boolean isSplitable(JobContext context, Path file) {
         return context.getConfiguration().getBoolean(SPLITABLE, true);
+    }
+    
+        public static void addInputPath(Job job, Iterator<DirComponent> iter) throws IOException {
+        ArrayList<Path> paths = new ArrayList();
+        while (iter.hasNext()) {
+            DirComponent d = iter.next();
+            addInputPath(job, new Path(d.getCanonicalPath()));
+        }
     }
 }

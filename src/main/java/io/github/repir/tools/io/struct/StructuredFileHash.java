@@ -42,7 +42,7 @@ public class StructuredFileHash extends StructuredFile {
          this.offset.write(offset);
          currentbucketindex++;
       } else if (bucketindex < currentbucketindex) {
-         log.info("warning trying to write overdue file %s current %d bucket %d offset %d", getDatafile().getFilename(), currentbucketindex, bucketindex, offset);
+         log.info("warning trying to write overdue file %s current %d bucket %d offset %d", getDatafile().getName(), currentbucketindex, bucketindex, offset);
       }
    }
 }

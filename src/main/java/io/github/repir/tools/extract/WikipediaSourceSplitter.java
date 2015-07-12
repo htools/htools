@@ -56,8 +56,8 @@ public class WikipediaSourceSplitter extends ExtractorConf {
     }
 
     @Override
-    protected void processSectionMarkers(Content entity, int bufferpos, int bufferend) {
-        super.processSectionMarkers(entity, bufferpos, bufferend);
+    protected void processSectionMarkers(Content entity) {
+        super.processSectionMarkers(entity);
         this.createUnmarkedSection(entity, "all", allsections, "text");
     }
 

@@ -13,11 +13,15 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.PathFilter;
+import org.apache.hadoop.mapred.LocatedFileStatusFetcher;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import static org.apache.hadoop.mapreduce.lib.input.FileInputFormat.INPUT_DIR;
+import org.apache.hadoop.mapreduce.security.TokenCache;
 import org.apache.hadoop.util.StringUtils;
 
 /**
@@ -113,7 +117,7 @@ public abstract class InputFormat<W> extends FileInputFormat<LongWritable, W> {
         }
         return result;
     }
-
+    
     public static void setFileFilter(FileFilter filter) {
         filefilter = filter;
     }

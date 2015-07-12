@@ -37,7 +37,7 @@ public class RestoreJob extends CopyJob {
         conf.setMapMemoryMB(1024);
         conf.setMapSpeculativeExecution(false);
         RestoreJob job = new RestoreJob(conf);
-        FilePairInputFormat.addPaths(job, new ConfigurableModifier(search, replace), path);
+        FilePairInputFormat.addPaths(job, new ConfigurableModifier(conf, search, replace), path);
         job.waitForCompletion(true);
     }
     
@@ -45,7 +45,7 @@ public class RestoreJob extends CopyJob {
         conf.setMapMemoryMB(1024);
         conf.setMapSpeculativeExecution(false);
         RestoreJob job = new RestoreJob(conf);
-        FilePairInputFormat.addDatafiles(job, new ConfigurableModifier(search, replace), path);
+        FilePairInputFormat.addDatafiles(job, new ConfigurableModifier(conf, search, replace), path);
         job.waitForCompletion(true);
     }
 }

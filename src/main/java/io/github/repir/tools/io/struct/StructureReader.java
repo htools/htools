@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import io.github.repir.tools.io.ByteSearchReader;
 import io.github.repir.tools.io.DataIn;
 import io.github.repir.tools.io.EOCException;
+import io.github.repir.tools.type.Long128;
 import java.io.DataInput;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -64,6 +65,8 @@ public interface StructureReader extends ByteSearchReader {
    public void skipInt() throws EOCException;
 
    public long readLong() throws EOCException;
+
+   public Long128 readLong128() throws EOCException;
 
    public void skipLong() throws EOCException;
 
@@ -177,9 +180,11 @@ public interface StructureReader extends ByteSearchReader {
 
    public ArrayList<Integer> readCIntArrayList() throws EOCException;
 
-   public ArrayList<Integer> readIntArrayList() throws EOCException;
+   public ArrayList<Integer> readIntList() throws EOCException;
 
-   public ArrayList<String> readStrArrayList() throws EOCException;
+   public ArrayList<Long> readLongList() throws EOCException;
+
+   public ArrayList<String> readStringList() throws EOCException;
 
    public void skipCIntArray() throws EOCException;
 

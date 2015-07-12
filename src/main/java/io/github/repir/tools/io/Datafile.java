@@ -14,6 +14,7 @@ import static io.github.repir.tools.lib.Const.NULLLONG;
 import io.github.repir.tools.lib.Log;
 import io.github.repir.tools.lib.PrintTools;
 import static io.github.repir.tools.lib.PrintTools.sprintf;
+import io.github.repir.tools.type.Long128;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -286,7 +287,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         }
     }
 
-    public String getFilename() {
+    public String getName() {
         return filename.substring(Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\')) + 1);
     }
 
@@ -308,8 +309,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return df;
     }
 
-    public Datafile otherDir(io.github.repir.tools.io.Path dir) {
-        Datafile df = dir.getFile(this.getFilename());
+    public Datafile otherDir(io.github.repir.tools.io.HPath dir) {
+        Datafile df = dir.getFile(this.getName());
         return df;
     }
 
@@ -317,7 +318,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return fs;
     }
 
-    public io.github.repir.tools.io.Path getDir() {
+    public io.github.repir.tools.io.HPath getDir() {
         int dirpos = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
         if (fs != null) {
             if (HDFSPath.isDir(fs, new Path(this.filename))) {
@@ -331,6 +332,14 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
             } else {
                 return new FSPath(filename.substring(0, dirpos));
             }
+        }
+    }
+
+    public io.github.repir.tools.io.HPath toPath() {
+        if (fs != null) {
+            return new HDFSPath(fs, filename);
+        } else {
+            return new FSPath(filename);
         }
     }
 
@@ -724,20 +733,24 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return this.rwbuffer.readCIntArrayList();
     }
 
-    public ArrayList<Integer> readIntArrayList() throws EOCException {
-        return this.rwbuffer.readIntArrayList();
+    public ArrayList<Integer> readIntList() throws EOCException {
+        return this.rwbuffer.readIntList();
     }
 
-    public ArrayList<String> readStrArrayList() throws EOCException {
-        return this.rwbuffer.readStrArrayList();
+    public ArrayList<Long> readLongList() throws EOCException {
+        return this.rwbuffer.readLongList();
+    }
+
+    public ArrayList<String> readStringList() throws EOCException {
+        return this.rwbuffer.readStringList();
     }
 
     public void writeC(ArrayList<Integer> s) {
         rwbuffer.writeC(s);
     }
 
-    public void writeStr(Collection<String> s) {
-        rwbuffer.writeStr(s);
+    public void writeStringList(Collection<String> s) {
+        rwbuffer.writeStringList(s);
     }
 
     public int compareTo(Datafile o) {
@@ -863,6 +876,20 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
             throw new FileClosedOnReadException(this);
         }
         return rwbuffer.readLong();
+    }
+    
+    /**
+     * reads an 16 byte long from the current file position. The file position
+     * advances by 8. If the file was not in buffered reading or random access
+     * mode, the file is closed and opened in buffered reading mode.
+     * <p/>
+     * @return
+     */
+    public Long128 readLong128() throws EOCException {
+        if (status != STATUS.READ) {
+            throw new FileClosedOnReadException(this);
+        }
+        return rwbuffer.readLong128();
     }
 
     public long readCLong() throws EOCException {
@@ -1124,6 +1151,21 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
             log.fatal("DataFile has to be put in a specific write mode before writing");
         }
     }
+    
+    /**
+     * writes an 16 byte long to the file at the current file position. The file
+     * position advances by 8. This only works in buffered writing or random
+     * access mode.
+     * <p/>
+     * @param l
+     */
+    public void write(Long128 l) {
+        if (status == STATUS.WRITE) {
+            rwbuffer.write(l);
+        } else {
+            log.fatal("DataFile has to be put in a specific write mode before writing");
+        }
+    }
 
     public void writeC(double l) {
         if (status == STATUS.WRITE) {
@@ -1237,9 +1279,17 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         }
     }
 
-    public void write(Collection<Integer> al) {
+    public void writeIntList(Collection<Integer> al) {
         if (status == STATUS.WRITE) {
-            rwbuffer.write(al);
+            rwbuffer.writeIntList(al);
+        } else {
+            log.fatal("DataFile has to be put in a specific write mode before writing");
+        }
+    }
+
+    public void writeLongList(Collection<Long> al) {
+        if (status == STATUS.WRITE) {
+            rwbuffer.writeLongList(al);
         } else {
             log.fatal("DataFile has to be put in a specific write mode before writing");
         }

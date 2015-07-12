@@ -34,7 +34,7 @@ public class RemoveHtmlTags extends ExtractorProcessor {
          if (p.start >= tagclose) { // in case a tag isnt properly closed
             tagclose = findQuoteSafeTagEnd(entity, p.start, endpos) + 1;
             for (int a = p.start; a < tagclose; a++) {
-               entity.content[a] = 32;
+               entity.content[a] = 0;
             }
          }
       }

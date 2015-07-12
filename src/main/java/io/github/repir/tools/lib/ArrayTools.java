@@ -262,6 +262,10 @@ public enum ArrayTools {;
        return strings.toArray(new String[strings.size()]);
    }
 
+   public static <K> K[] toArray(Collection<K> strings, K[] array) {
+       return strings.toArray(array);
+   }
+
    public static double[] toDoubleArray(Collection<Double> integers) {
       double[] ret = new double[integers.size()];
       Iterator<Double> iterator = integers.iterator();

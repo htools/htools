@@ -2,6 +2,8 @@
  */
 package io.github.repir.tools.io;
 
+import io.github.repir.tools.collection.ListIterator;
+import io.github.repir.tools.search.ByteSearch;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,7 +12,7 @@ import java.util.Iterator;
  *
  * @author jeroen
  */
-public interface Path extends DirComponent, Iterable<DirComponent> {
+public interface HPath extends DirComponent, Iterable<DirComponent> {
 
    String getCanonicalPath();
 
@@ -22,6 +24,8 @@ public interface Path extends DirComponent, Iterable<DirComponent> {
     */
    String getFilename(String filename);
 
+   String getName();
+
    Datafile getFile(String filename);
 
    /**
@@ -32,7 +36,9 @@ public interface Path extends DirComponent, Iterable<DirComponent> {
     * @param subdir
     * @return
     */
-   Path getSubdir(String subdir);
+   HPath getSubdir(String subdir);
+
+   HPath getParentPath();
 
    public ArrayList<Datafile> getFiles(String regex) throws IOException;
    
@@ -56,6 +62,12 @@ public interface Path extends DirComponent, Iterable<DirComponent> {
 
     public Iterator<DirComponent> iteratorFiles(String regexstring) throws IOException;
 
+    public ListIterator<DirComponent> iteratorDirs(ByteSearch regexstring) throws IOException;
+    
+    public ListIterator<DirComponent> iterator(ByteSearch regex) throws IOException;
+
+    public HPathWildcardIterator wildcardIterator() throws IOException;
+
     public ArrayList<DirComponent> get() throws IOException;
 
     public ArrayList<DirComponent> getRecursive() throws IOException;
@@ -70,11 +82,13 @@ public interface Path extends DirComponent, Iterable<DirComponent> {
 
     public ArrayList<String> getFilepathnames() throws IOException;
 
-    public ArrayList<? extends Path> getDirs() throws IOException;
+    public ArrayList<? extends HPath> getDirs() throws IOException;
 
+    public ArrayList<? extends HPath> getDirs(ByteSearch pattern) throws IOException;
+    
     public ArrayList<String> getDirnames() throws IOException;
 
-    public ArrayList<? extends Path> getDirs(String regexstring) throws IOException;
+    public ArrayList<? extends HPath> getDirs(String regexstring) throws IOException;
     
     public ArrayList<Datafile> getFilesStartingWith(String start) throws IOException;
 

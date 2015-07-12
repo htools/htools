@@ -37,7 +37,7 @@ public class TopKMap<K extends Comparable, V> extends TopK<Map.Entry<K,V>> {
   }
 
   public TopKMap(int k) {
-     this(k, new StdComparator<K,V>());
+     this(Math.abs(k), (k>0)?new StdComparator<K,V>():new DescComparator<K,V>());
   }
 
   public TopKMap(int k, AbstractMap<K, V> map) {
@@ -73,6 +73,13 @@ public class TopKMap<K extends Comparable, V> extends TopK<Map.Entry<K,V>> {
         @Override
         public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
             return o1.getKey().compareTo(o2.getKey());
+        }
+  }
+  
+  private static class DescComparator<K extends Comparable,V> implements Comparator<Map.Entry<K,V>> {
+        @Override
+        public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+            return o2.getKey().compareTo(o1.getKey());
         }
   }
 }

@@ -36,7 +36,7 @@ import org.apache.hadoop.io.IOUtils;
  * <p/>
  * @author jbpvuurens
  */
-public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
+public class HDFSPath extends org.apache.hadoop.fs.Path implements HPath {
 
     public static Log log = new Log(HDFSPath.class);
     public FileSystem fs;
@@ -87,18 +87,8 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         }
     }
 
-    public HDFSPath wildcardIterator() {
-        ArrayDeque<String> components = new ArrayDeque();
-        HDFSPath path = this;
-        while (!path.exists()) {
-            components.addFirst(path.getName());
-            path = path.getParent();
-        }
-        log.info("%s %s", path.toString(), components);
-        if (components.size() == 0) {
-            return this;
-        }
-        return new HDFSPathWildcard(path, components);
+    public HPathWildcardIterator wildcardIterator() {
+        return new HPathWildcardIterator(this);
     }
 
     public FileSystem getFileSystem() {
@@ -149,7 +139,7 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
      * @return parent directory of a file or directory
      */
     @Override
-    public HDFSPath getParent() {
+    public HDFSPath getParentPath() {
         String path = toString();
         int lastSlash = path.lastIndexOf('/');
         if (lastSlash < 1) {
@@ -225,26 +215,20 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         return false;
     }
 
-    public static boolean rename(FileSystem fs, org.apache.hadoop.fs.Path path, org.apache.hadoop.fs.Path dest) {
-        try {
-            return fs.rename(path, dest);
-        } catch (IOException ex) {
-            log.exception(ex, "rename( %s, %s, %s )", fs, path, dest);
-        }
-        return false;
-    }
-
-    public static boolean rename(FileSystem fs, String source, String dest) {
+    public static boolean rename(FileSystem fs, String source, String dest) throws IOException {
         return rename(fs, new org.apache.hadoop.fs.Path(source), new org.apache.hadoop.fs.Path(dest));
     }
 
     public static boolean copy(FileSystem fs, String source, String dest) throws IOException {
-        return FileUtil.copy(fs, new org.apache.hadoop.fs.Path(source), fs, new org.apache.hadoop.fs.Path(dest), false, true, fs.getConf());
+        return copy(fs, new org.apache.hadoop.fs.Path(source), new org.apache.hadoop.fs.Path(dest));
     }
 
     public static boolean copy(FileSystem fs, org.apache.hadoop.fs.Path source, org.apache.hadoop.fs.Path dest) throws IOException {
+        log.info("%s -> %s", source.toString(), dest.toString());
         if (fs.isDirectory(dest)) {
             dest = dest.suffix("/" + source.getName());
+        } else {
+            fs.mkdirs(dest.getParent());
         }
         FileUtil.copy(fs, source, fs, dest.suffix("._COPYING"), false, true, fs.getConf());
         if (fs.exists(dest)) {
@@ -253,11 +237,15 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         return rename(fs, dest.suffix("._COPYING"), dest);
     }
 
-    public static boolean move(FileSystem fs, String source, String dest) throws IOException {
-        org.apache.hadoop.fs.Path path = new org.apache.hadoop.fs.Path(dest);
-        if (fs.exists(path))
-            fs.delete(path, false);
-        return FileUtil.copy(fs, new org.apache.hadoop.fs.Path(source), fs, path, true, true, fs.getConf());
+    public static boolean rename(FileSystem fs, org.apache.hadoop.fs.Path source, org.apache.hadoop.fs.Path dest) throws IOException {
+        if (!fs.isDirectory(dest))
+            if (fs.exists(dest))
+                fs.delete(dest, false);
+            else 
+                fs.mkdirs(dest.getParent());
+        else 
+            dest = dest.suffix("/" + source.getName());
+        return fs.rename(source, dest);
     }
 
     public static boolean copyToLocal(FileSystem fs, String source, String dest) throws IOException {
@@ -356,7 +344,7 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
     public static HashMapList<String, String> distributeDatafiles(FileSystem filesystem, Collection<Datafile> files) {
         HashMapSet<String, String> dirmap = new HashMapSet();
         for (Datafile df : files) {
-            dirmap.add(df.getDir().getCanonicalPath(), df.getFilename());
+            dirmap.add(df.getDir().getCanonicalPath(), df.getName());
         }
         ArrayList<FileStatus> statussen = new ArrayList();
         for (Map.Entry<String, HashSet<String>> entry : dirmap.entrySet()) {
@@ -468,6 +456,12 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         return toString();
     }
 
+    @Override
+    public String getName() {
+        String path = getCanonicalPath();
+        return path.substring(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')) + 1);
+    }
+    
     public static long[] mergeFiles(Datafile out, TreeSet<Datafile> sortedfiles) {
         OutputStream o = out.getOutputStream();
         long offsets[] = new long[sortedfiles.size()];
@@ -558,6 +552,10 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         }
     }
 
+    public static void trash(FileSystem fs, String path) throws IOException {
+        trash(fs, new org.apache.hadoop.fs.Path(path));
+    }
+
     @Override
     public IteratorIterable<DirComponent> iterator() {
         try {
@@ -580,7 +578,7 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         return new ListIterator(get(regexstring));
     }
 
-    protected ListIterator<DirComponent> iterator(ByteSearch regex) throws IOException {
+    public ListIterator<DirComponent> iterator(ByteSearch regex) throws IOException {
         return new ListIterator(get(regex));
     }
 
@@ -596,7 +594,7 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         return new ListIterator(getDirs(regexstring));
     }
 
-    protected ListIterator<DirComponent> iteratorDirs(ByteSearch regexstring) throws IOException {
+    public ListIterator<DirComponent> iteratorDirs(ByteSearch regexstring) throws IOException {
         return new ListIterator(getDirs(regexstring));
     }
 
@@ -783,7 +781,7 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         ArrayList<String> results = new ArrayList();
         for (DirComponent c : iterator()) {
             if (c instanceof Datafile) {
-                results.add(((Datafile) c).getFilename());
+                results.add(((Datafile) c).getName());
             }
         }
         return results;
@@ -800,7 +798,7 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         } else if (isFile(fs, this)) {
             results.add(this.getCanonicalPath());
         } else if (this.getName().contains("*")) {
-            this.getParent().getFilenames(getName());
+            this.getParentPath().getFilenames(getName());
         }
         return results;
     }
@@ -897,7 +895,8 @@ public class HDFSPath extends org.apache.hadoop.fs.Path implements Path {
         return getDirs(ByteSearch.createFilePattern(regexstring));
     }
 
-    private ArrayList<HDFSPath> getDirs(ByteSearch pattern) throws IOException {
+    @Override
+    public ArrayList<HDFSPath> getDirs(ByteSearch pattern) throws IOException {
         ArrayList<HDFSPath> results = new ArrayList();
         if (isDir(fs, this)) {
             for (FileStatus child : fs.listStatus(this)) {

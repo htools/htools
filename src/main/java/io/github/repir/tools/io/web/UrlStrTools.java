@@ -2,6 +2,7 @@ package io.github.repir.tools.io.web;
 
 import io.github.repir.tools.lib.ArrayTools;
 import io.github.repir.tools.lib.Log;
+import io.github.repir.tools.lib.StrTools;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,17 +56,6 @@ public enum UrlStrTools {
         return url;
     }
 
-    public static String host(String url) {
-        int i = url.indexOf(".");
-        if (i > 0) {
-            i = url.indexOf("/", i);
-            if (i > 0) {
-                return url.substring(0, i);
-            }
-        }
-        return "";
-    }
-
     public static String folder(String url) {
         int i = url.lastIndexOf("/");
         if (i > 0) {
@@ -82,19 +72,44 @@ public enum UrlStrTools {
         return url;
     }
 
-    public static String domain(String url) {
-        int i = url.indexOf("://");
-        if (i > 0) {
-            i = url.indexOf(".", i+4);
-            if (i > 0) {
-                int j = url.indexOf("/", i);
-                if (j > 0)
-                    return url.substring(0, j);
-            }
+    public static String host(String url) {
+        int hoststart = url.indexOf("://") + 1;
+        if (hoststart > 0) {
+            hoststart += 3;
         }
-        return url;
+        int hostend = url.indexOf(".", hoststart);
+        if (hostend > 0) {
+            int j = url.indexOf("/", hostend);
+            if (j > hostend) {
+                return url.substring(hoststart, j);
+            } 
+        }
+        return null;
     }
 
+    public static String org(String host) {
+        String parts[] = host.split("\\.");
+        if (parts.length > 1) {
+            switch (parts[parts.length - 2]) {
+                case "co":
+                case "com":
+                case "blogspot":
+                case "tumblr":
+                case "wordpress":
+                case "feedsportal":
+                    if (parts.length > 2) {
+                        parts = ArrayTools.subArray(parts, parts.length - 3);
+                        break;
+                    }
+                default:
+                    parts = ArrayTools.subArray(parts, parts.length - 2);
+            }
+            return StrTools.concat(".", parts);
+        }
+        return null;
+    }
+    
+    
     public static String stripExtension(String url) {
         int i = url.lastIndexOf(".");
         if (i < 0) {
