@@ -1,8 +1,8 @@
 package UnitTest;
 
-import io.github.repir.tools.lib.ArrayTools;
-import io.github.repir.tools.lib.ClassTools;
-import io.github.repir.tools.lib.Log;
+import io.github.htools.lib.ArrayTools;
+import io.github.htools.lib.ClassTools;
+import io.github.htools.lib.Log;
 import java.util.HashMap;
 
 /**

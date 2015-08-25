@@ -15,8 +15,8 @@
  */
 package test;
 
-import io.github.repir.tools.hadoop.Job;
-import io.github.repir.tools.lib.Log;
+import io.github.htools.hadoop.Job;
+import io.github.htools.lib.Log;
 /**
  *
  * @author jeroen

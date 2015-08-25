@@ -15,9 +15,9 @@
  */
 package test;
 
-import io.github.repir.tools.io.DirComponent;
-import io.github.repir.tools.io.HDFSPath;
-import io.github.repir.tools.lib.Log;
+import io.github.htools.io.DirComponent;
+import io.github.htools.io.HDFSPath;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.conf.Configuration;
 /**
  *
