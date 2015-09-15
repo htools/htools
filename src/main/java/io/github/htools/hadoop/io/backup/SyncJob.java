@@ -13,15 +13,6 @@ import java.util.ArrayList;
 public class SyncJob {
 
     private static final Log log = new Log(SyncJob.class);
-
-    public static void main(String[] args) throws Exception {
-
-        Conf conf = new Conf(args, "-s source -d dest");
-        conf.setQueue("express");
-        HDFSPath in = new HDFSPath(conf, conf.get("source"));
-        HDFSPath out = new HDFSPath(conf, conf.get("dest"));
-        backup(conf, in, out);
-    }
     
     public static void backup(Conf conf, HDFSPath source, HDFSPath dest) throws IOException, ClassNotFoundException, InterruptedException {
         ArrayList<Datafile> fileList = fileList(new ArrayList(), source, dest);

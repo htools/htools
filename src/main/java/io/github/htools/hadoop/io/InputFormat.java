@@ -34,6 +34,6 @@ public abstract class InputFormat<F extends StructuredRecordFile, V extends org.
     }
     
     public static int getBufferSize(Configuration conf) {
-        return conf.getInt(BUFFERSIZE, 1000000);
+        return conf.getInt(BUFFERSIZE, 10000000);
     }
 }

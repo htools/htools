@@ -17,6 +17,7 @@ public class StopWordsMultiLang {
     public static StopWordsMultiLang singleton;
     public static HashSet<String> unstemmedfilterset;
     private static HashSet<String> stemmedfilterset;
+    private static HashSet<String> lancasterstemmedfilterset;
 
     protected StopWordsMultiLang(Configuration conf) {
         for (String s : conf.getStrings("retriever.stopword", new String[0])) {
@@ -60,6 +61,17 @@ public class StopWordsMultiLang {
             }
         }
         return stemmedfilterset;
+    }
+
+    public HashSet<String> getLancasterStemmedFilterSet() {
+        if (lancasterstemmedfilterset == null) {
+            LancasterStemmer stemmer = LancasterStemmer.get();
+            lancasterstemmedfilterset = new HashSet<String>();
+            for (String s : this.getUnstemmedFilterSet()) {
+                    lancasterstemmedfilterset.add(stemmer.stem(s));
+            }
+        }
+        return lancasterstemmedfilterset;
     }
 
     public HashSet<String> getUnstemmedFilterSet() {

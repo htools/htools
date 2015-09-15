@@ -1,12 +1,15 @@
 package io.github.htools.type;
 
 import io.github.htools.collection.HashMapInt;
+import io.github.htools.fcollection.FHashMapInt;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.struct.StructureReader;
 import io.github.htools.io.struct.StructureWriter;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.MathTools;
 import io.github.htools.type.TermVectorInt;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,11 +49,23 @@ public class TermVectorEntropy extends TermVectorInt {
         }
     }
 
-    public TermVectorEntropy(ArrayList<? extends HashMapInt> collections) {
-        for (HashMapInt<String> map : collections) {
+    public TermVectorEntropy(ArrayList<? extends FHashMapInt> collections) {
+        for (FHashMapInt<String> map : collections) {
             super.add(map);
         }
         recompute();
+    }
+
+    public TermVectorEntropy(FHashMapInt<String> terms) {
+        total = 0;
+        add(terms);
+    }
+
+    @Override
+    public TermVectorEntropy clone() {
+        TermVectorInt clone = new TermVectorInt(size());
+        clone.add(this);
+        return clone();
     }
 
     protected TermVectorEntropy create() {
@@ -72,19 +87,19 @@ public class TermVectorEntropy extends TermVectorInt {
         return -i * MathTools.log2(i);
     }
 
-    public TermVectorEntropy retainAll(Set<String> keys) {
-        TermVectorEntropy result = new TermVectorEntropy();
-        for (Map.Entry<String, Integer> entry : entrySet()) {
-            if (keys.contains(entry.getKey())) {
-                result.add(entry.getKey(), entry.getValue());
+    public void retainAll(Set<String> keys) {
+        ObjectIterator<Object2IntMap.Entry<String>> fastIterator = this.object2IntEntrySet().fastIterator();
+        while (fastIterator.hasNext()) {
+            Object2IntMap.Entry<String> next = fastIterator.next();
+            if (!keys.contains(next.getKey())) {
+                fastIterator.remove();
             }
         }
-        return result;
     }
 
     @Override
     public void add(String term, int value) {
-        Integer oldvalue = get(term);
+        int oldvalue = getInt(term);
         if (oldvalue > 1) {
             sumflog -= getPLogP(oldvalue);
         }
@@ -104,18 +119,18 @@ public class TermVectorEntropy extends TermVectorInt {
         total = 0;
         sumflog = 0;
         magnitude = null;
-        for (Map.Entry<String, Integer> entry : entrySet()) {
-            if (entry.getValue() > 1) {
-                sumflog += getPLogP(entry.getValue());
+        for (Object2IntMap.Entry<String> entry : object2IntEntrySet()) {
+            if (entry.getIntValue() > 1) {
+                sumflog += getPLogP(entry.getIntValue());
             }
-            total += entry.getValue();
+            total += entry.getIntValue();
         }
     }
 
     @Override
     public void add(Collection<String> terms) {
         for (String t : terms) {
-            int count = get(t);
+            int count = getInt(t);
             if (count == 0) {
                 put(t, 1);
             } else {
@@ -130,42 +145,42 @@ public class TermVectorEntropy extends TermVectorInt {
         magnitude = null;
     }
 
-    public TermVectorInt add(HashMapInt<String> v) {
-        for (Map.Entry<String, Integer> entry : v.entrySet()) {
-            Integer oldfreq = get(entry.getKey());
-            Integer newfreq = entry.getValue() + oldfreq;
+    public TermVectorInt add(FHashMapInt<String> v) {
+        for (Object2IntMap.Entry<String> entry : v.object2IntEntrySet()) {
+            int oldfreq = getInt(entry.getKey());
+            int newfreq = entry.getIntValue() + oldfreq;
             if (oldfreq > 1) {
                 sumflog -= getPLogP(oldfreq);
             }
             put(entry.getKey(), newfreq);
             sumflog += getPLogP(newfreq);
-            total += entry.getValue();
+            total += entry.getIntValue();
         }
         magnitude = null;
         return this;
     }
 
     @Override
-    public void remove(HashMapInt<String> v) {
-        for (Map.Entry<String, Integer> entry : v.entrySet()) {
-            Integer current = get(entry.getKey());
+    public void remove(FHashMapInt<String> v) {
+        for (Object2IntMap.Entry<String> entry : v.object2IntEntrySet()) {
+            int current = getInt(entry.getKey());
             sumflog -= getPLogP(current);
-            if (entry.getValue() > current) {
+            if (entry.getIntValue() > current) {
                 log.fatal("remove cannot remove value greater than current key %s current %d remove %d", entry.getKey(), current, entry.getValue());
-            } else if (entry.getValue() == current) {
+            } else if (entry.getIntValue() == current) {
                 remove(entry.getKey());
             } else {
-                put(entry.getKey(), current - entry.getValue());
-                sumflog += getPLogP(current - entry.getValue());
-                total -= entry.getValue();
+                put(entry.getKey(), current - entry.getIntValue());
+                sumflog += getPLogP(current - entry.getIntValue());
+                total -= entry.getIntValue();
             }
         }
         magnitude = null;
     }
 
     public Integer remove(String key) {
-        Integer value = super.remove(key);
-        if (value != null) {
+        int value = super.removeInt(key);
+        if (value > 0) {
             sumflog -= getPLogP(value);
             total -= value;
         }
@@ -190,10 +205,10 @@ public class TermVectorEntropy extends TermVectorInt {
 
     public double getSumFLogOmit(TermVectorEntropy omit) {
         double sl = getsumflog();
-        for (Map.Entry<String, Integer> o : omit.entrySet()) {
-            Integer f = get(o.getKey());
+        for (Object2IntMap.Entry<String> o : omit.object2IntEntrySet()) {
+            int f = getInt(o.getKey());
             sl -= getPLogP(f);
-            f -= o.getValue();
+            f -= o.getIntValue();
             sl += getPLogP(f);
         }
         return sl;
@@ -230,13 +245,13 @@ public class TermVectorEntropy extends TermVectorInt {
 
     public double combinedEntropy(TermVectorEntropy vector2, int total) {
         double sumflog = 0;
-        for (Map.Entry<String, Integer> entry : entrySet()) {
-            int freq = entry.getValue() + vector2.get(entry.getKey());
+        for (Object2IntMap.Entry<String> entry : this.object2IntEntrySet()) {
+            int freq = entry.getIntValue() + vector2.getInt(entry.getKey());
             sumflog += getPLogP(freq);
         }
-        for (Map.Entry<String, Integer> entry : vector2.entrySet()) {
+        for (Object2IntMap.Entry<String> entry : vector2.object2IntEntrySet()) {
             if (!containsKey(entry.getKey())) {
-                sumflog += getPLogP(entry.getValue());
+                sumflog += getPLogP(entry.getIntValue());
             }
         }
         return sumflog / total + MathTools.log2(total);
@@ -247,10 +262,10 @@ public class TermVectorEntropy extends TermVectorInt {
             return vector2.combinedEntropy3(this, total);
         }
         double sumflog = this.getsumflog() + vector2.getsumflog();
-        for (Map.Entry<String, Integer> entry : vector2.entrySet()) {
+        for (Object2IntMap.Entry<String> entry : vector2.object2IntEntrySet()) {
             if (containsKey(entry.getKey())) {
-                int f = get(entry.getKey());
-                sumflog += getPLogP(f + entry.getValue()) - getPLogP(f) - getPLogP(entry.getValue());
+                int f = getInt(entry.getKey());
+                sumflog += getPLogP(f + entry.getIntValue()) - getPLogP(f) - getPLogP(entry.getIntValue());
             }
         }
         return sumflog / total + MathTools.log2(total);
@@ -259,17 +274,17 @@ public class TermVectorEntropy extends TermVectorInt {
     public double combinedSumFLog(TermVectorEntropy vector2) {
         double sumflog = this.getsumflog() + vector2.getsumflog();
         if (size() < vector2.size()) {
-            for (Map.Entry<String, Integer> entry : entrySet()) {
+            for (Object2IntMap.Entry<String> entry : this.object2IntEntrySet()) {
                 if (vector2.containsKey(entry.getKey())) {
-                    int f = get(entry.getKey());
-                    sumflog += getPLogP(f + entry.getValue()) - getPLogP(f) - getPLogP(entry.getValue());
+                    int f = getInt(entry.getKey());
+                    sumflog += getPLogP(f + entry.getIntValue()) - getPLogP(f) - getPLogP(entry.getIntValue());
                 }
             }
         } else {
-            for (Map.Entry<String, Integer> entry : vector2.entrySet()) {
+            for (Object2IntMap.Entry<String> entry : vector2.object2IntEntrySet()) {
                 if (containsKey(entry.getKey())) {
-                    int f = get(entry.getKey());
-                    sumflog += getPLogP(f + entry.getValue()) - getPLogP(f) - getPLogP(entry.getValue());
+                    int f = getInt(entry.getKey());
+                    sumflog += getPLogP(f + entry.getIntValue()) - getPLogP(f) - getPLogP(entry.getIntValue());
                 }
             }
         }
@@ -277,9 +292,9 @@ public class TermVectorEntropy extends TermVectorInt {
     }
 
     public double updateCombinedSumFLog(double sumflog, TermVectorEntropy vector2, TermVectorEntropy newterms) {
-        for (Map.Entry<String, Integer> entry : newterms.entrySet()) {
-            int newf = entry.getValue();
-            int updf = get(entry.getKey()) + vector2.get(entry.getKey());
+        for (Object2IntMap.Entry<String> entry : newterms.object2IntEntrySet()) {
+            int newf = entry.getIntValue();
+            int updf = getInt(entry.getKey()) + vector2.getInt(entry.getKey());
             int oldf = updf - newf;
             if (oldf > 1)
                 sumflog -= getPLogP(oldf);
@@ -359,10 +374,10 @@ public class TermVectorEntropy extends TermVectorInt {
         return (entropymax > lowentropy) ? ig / (entropymax - lowentropy) : 1;
     }
 
-    public static HashSet<String> purity(Collection<? extends HashMapInt<String>> vectors, double threshold) {
+    public static HashSet<String> purity(Collection<? extends FHashMapInt<String>> vectors, double threshold) {
         HashSet<String> result = new HashSet();
         HashMap<String, TermVectorEntropy> terms = new HashMap();
-        for (HashMapInt<String> vector : vectors) {
+        for (FHashMapInt<String> vector : vectors) {
             for (String t : vector.keySet()) {
                 TermVectorEntropy vectort = terms.get(t);
                 if (vectort == null) {

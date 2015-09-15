@@ -93,13 +93,12 @@ public abstract class OutputFormat<F extends StructuredRecordFile, V extends Fil
     public Datafile getDatafile(TaskAttemptContext context, String folder) throws IOException {
         int task = ContextTools.getTaskID(context);
         Configuration conf = context.getConfiguration();
-        FileSystem fs = HDFSPath.getFS(conf);
         String filename = conf.get(SINGLEFILE);
         if (filename == null || context.getNumReduceTasks() > 1) {
             HDFSPath dir = new HDFSPath(conf, folder);
             filename = dir.getFilename(PrintTools.sprintf("%s.%05d", "part", task));
         }
-        return new Datafile(fs, filename);
+        return new Datafile(conf, filename);
     }
 
     @Override

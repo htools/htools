@@ -1,5 +1,6 @@
 package io.github.htools.hadoop.io;
 
+import io.github.htools.hadoop.ContextTools;
 import io.github.htools.lib.DateTools;
 import io.github.htools.lib.Log;
 import java.text.ParseException;
@@ -8,6 +9,7 @@ import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Partitioner;
+import org.apache.hadoop.mapreduce.Reducer.Context;
 
 /**
  *
@@ -69,7 +71,6 @@ public class DayPartitioner extends Partitioner<LongWritable, Object> implements
         long start = conf.getLong(starttimelabel, 0);
         long end = conf.getLong(endtimelabel, 0);
         int days = 1 + (int) ((end - start) / (secperday));
-        log.info("%d %d %d", start, end, days);
         return days;
     }
     
@@ -80,7 +81,14 @@ public class DayPartitioner extends Partitioner<LongWritable, Object> implements
         return (start < date && date < end + secperday);
     }
     
-    public static String getDate(Configuration conf, int reducer) {
+    /**
+     * @param context Reducer context
+     * @return a YYYY-MM-DD datestring based on the configured startdate, enddates 
+     * and the reducer number.
+     */
+    public static String getDate(Context context) {
+        Configuration conf = context.getConfiguration();
+        int reducer = ContextTools.getTaskID(context);
         long start = conf.getLong(starttimelabel, 0) + reducer * secperday;
         return DateTools.FORMAT.Y_M_D.formatEpoch(start); 
     }

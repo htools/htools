@@ -71,11 +71,10 @@ public class InputFormat extends FileInputFormat<LongWritable, DelayedWritable> 
     }
 
     public static void addDirs(Job job, String dir) throws IOException {
-        FileSystem fs = HDFSPath.getFS(job.getConfiguration());
         ArrayList<HDFSPath> paths = new ArrayList<HDFSPath>();
         ArrayList<Path> files = new ArrayList<Path>();
         if (dir.length() > 0) {
-            HDFSPath d = new HDFSPath(fs, dir);
+            HDFSPath d = new HDFSPath(job.getConfiguration(), dir);
             if (d.isFile()) {
                 addFile(job, new Path(dir));
             } else {

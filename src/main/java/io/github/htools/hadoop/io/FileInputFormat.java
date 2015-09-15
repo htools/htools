@@ -42,6 +42,9 @@ public abstract class FileInputFormat<K, V>
         return singleton;
     }
     
+    /**
+     * Ensures that input files are not split
+     */
     public static void setNonSplitable(Job job) {
         job.getConfiguration().setBoolean(SPLITABLE, false);
         job.getConfiguration().setLong("mapreduce.input.fileinputformat.split.minsize", Long.MAX_VALUE);
@@ -56,7 +59,7 @@ public abstract class FileInputFormat<K, V>
      * @throws IOException
      */
     public static void addDirs(Job job, String dir) throws IOException {
-        ArrayList<String> list = getDirList(job.getFS(), dir);
+        ArrayList<String> list = getDirList(job.getFileSystem(), dir);
         for (String d : list)
             FileInputFormat.addInputPath(job, new Path(d));
     }

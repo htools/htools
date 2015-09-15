@@ -23,8 +23,8 @@ public class DatafileInputFormat extends ConstInputFormat<String, String> {
         return new StringStringInputSplit(key);
     }
 
-    public static void add(Job job, Collection<HDFSPath> path) {
-        HashMapList<String, String> distributeFiles = HDFSPath.distributePath(HDFSPath.getFS(job.getConfiguration()), path);
+    public static void add(Job job, Collection<HDFSPath> path) throws IOException {
+        HashMapList<String, String> distributeFiles = HDFSPath.distributePath(job.getFileSystem(), path);
         for (Map.Entry<String, ArrayList<String>> entry : distributeFiles.entrySet()) {
             for (String file : entry.getValue()) {
                 add(job, entry.getKey(), file);
@@ -33,7 +33,7 @@ public class DatafileInputFormat extends ConstInputFormat<String, String> {
     }
 
     public static void addFiles(Job job, Collection<Datafile> path) throws IOException {
-        HashMapList<String, String> distributeFiles = HDFSPath.distributeDatafiles(HDFSPath.getFS(job.getConfiguration()), path);
+        HashMapList<String, String> distributeFiles = HDFSPath.distributeDatafiles(job.getFileSystem(), path);
         for (Map.Entry<String, ArrayList<String>> entry : distributeFiles.entrySet()) {
             for (String file : entry.getValue()) {
                 add(job, entry.getKey(), file);

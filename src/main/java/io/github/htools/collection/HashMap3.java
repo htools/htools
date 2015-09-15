@@ -16,7 +16,9 @@ public class HashMap3<K, V1, V2> extends HashMap<K, KV<V1, V2>> {
       super();
    }
    
-   public void put(K k, V1 v1, V2 v2) {
-       super.put( k, new KV<V1, V2>(v1, v2));
+   public KV<V1, V2> put(K k, V1 v1, V2 v2) {
+       KV<V1, V2> value = new KV<V1, V2>(v1, v2);
+       super.put( k, value);
+       return value;
    }
 }

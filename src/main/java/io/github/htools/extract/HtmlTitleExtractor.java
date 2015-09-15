@@ -15,6 +15,7 @@ import java.util.ArrayList;
 /**
  * Extracts the literal title from a HTML page. 
  * Whitespaces are converted to a single space
+ * Unicodes are translated to ASCII equivalent or ?
  * @author jeroen
  */
 public class HtmlTitleExtractor extends ExtractorConf {

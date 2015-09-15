@@ -1,6 +1,7 @@
 package io.github.htools.io;
 
 import com.google.gson.JsonObject;
+import io.github.htools.hadoop.Conf;
 import io.github.htools.io.struct.StructureWriter;
 import io.github.htools.io.struct.StructureData;
 import io.github.htools.io.buffer.BufferReaderWriter;
@@ -94,7 +95,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     public Datafile(Configuration conf, String filename) {
-        this(HDFSPath.getFS(conf), filename);
+        this(Conf.getFileSystem(conf), filename);
     }
 
     public Datafile(FileSystem fs, Path path) {
@@ -102,7 +103,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     public Datafile(Configuration conf, Path path) {
-        this(HDFSPath.getFS(conf), path.toString());
+        this(Conf.getFileSystem(conf), path.toString());
     }
 
     public Datafile(DataIn is) {

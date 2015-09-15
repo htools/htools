@@ -15,8 +15,11 @@ import java.util.regex.Pattern;
 import org.apache.hadoop.io.IOUtils;
 
 /**
- * The Dir class represents a directory of files, and contains many methods to
- * access Files within the directory as FSFile
+ * FSPath id a wrapper around File that adds functionality to the
+ * use of paths on local filesystems. Typically a FSPath represents a directory of files (although some
+ * methods also work if FSPath points to a file). The interface through HPath
+ * provides the same operations on HDFSPath which is the equivalent to FSPath for
+ * the HDFS filesystems, to allow the same code to run on both environments.
  * <p>
  * @author jbpvuurens
  */

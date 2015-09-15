@@ -2,10 +2,15 @@ package io.github.htools.type;
 
 import io.github.htools.collection.ArrayMap;
 import io.github.htools.collection.HashMapInt;
+import io.github.htools.fcollection.FHashMapInt;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.buffer.BufferSerializable;
 import io.github.htools.io.struct.StructureReader;
 import io.github.htools.io.struct.StructureWriter;
+import io.github.htools.lib.ArrayTools;
+import it.unimi.dsi.fastutil.HashCommon;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +20,7 @@ import java.util.Map;
  *
  * @author jeroen
  */
-public class TermVectorInt extends HashMapInt<String> implements BufferSerializable {
+public class TermVectorInt extends FHashMapInt<String> implements BufferSerializable {
 
     protected Integer total = null;
     protected Double magnitude = null;
@@ -27,7 +32,7 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
         super(size);
     }
 
-    public TermVectorInt(HashMapInt<String> map) {
+    public TermVectorInt(FHashMapInt<String> map) {
         super(map);
     }
 
@@ -41,15 +46,17 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
 
     @Override
     public TermVectorInt clone() {
-        return (TermVectorInt) super.clone();
+        TermVectorInt clone = new TermVectorInt(size());
+        clone.add(this);
+        return clone();
     }
 
-    public TermVectorInt toBinary() {
-        TermVectorInt clone = (TermVectorInt) super.clone();
-        for (Map.Entry<String, Integer> entry : clone.entrySet()) {
-            entry.setValue(entry.getValue() >= 1 ? 1 : 0);
+    public void toBinary() {
+        for (int i = 0; i < value.length; i++) {
+            if (value[i] > 1) {
+                value[i] = 1;
+            }
         }
-        return clone;
     }
 
     public void add(Collection<String> terms) {
@@ -60,16 +67,16 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
         total = null;
     }
 
-    public TermVectorInt add(HashMapInt<String> v) {
-        for (Map.Entry<String, Integer> entry : v.entrySet()) {
-            super.add(entry.getKey(), entry.getValue());
+    @Override
+    public TermVectorInt add(FHashMapInt<String> v) {
+        for (Object2IntMap.Entry<String> entry : v.object2IntEntrySet()) {
+            super.add(entry.getKey(), entry.getIntValue());
         }
         magnitude = null;
         total = null;
         return this;
     }
 
-    @Override
     public void remove(HashMapInt<String> v) {
         super.remove(v);
         magnitude = null;
@@ -79,7 +86,7 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
     public double magnitude() {
         if (magnitude == null) {
             int sum = 0;
-            for (Integer freq : values()) {
+            for (int freq : values()) {
                 sum += freq * freq;
             }
             magnitude = Math.sqrt(sum);
@@ -90,9 +97,9 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
     public double magnitudeOmit(TermVectorInt v) {
         double magnitude = 0;
         int sum = 0;
-        for (Map.Entry<String, Integer> entry : entrySet()) {
-            Integer omitf = v.get(entry.getKey());
-            int freq = omitf == null ? entry.getValue() : entry.getValue() - omitf;
+        for (Object2IntMap.Entry<String> entry : object2IntEntrySet()) {
+            int omitf = v.getInt(entry.getKey());
+            int freq = entry.getIntValue() - omitf;
             sum += freq * freq;
         }
         magnitude = Math.sqrt(sum);
@@ -101,11 +108,8 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
 
     public double cossim(TermVectorInt v) {
         double dotproduct = 0;
-        for (Map.Entry<String, Integer> entry : entrySet()) {
-            Integer freq = v.get(entry.getKey());
-            if (freq != null) {
-                dotproduct += freq * entry.getValue();
-            }
+        for (Object2IntMap.Entry<String> entry : object2IntEntrySet()) {
+            dotproduct += v.getInt(entry.getKey()) * entry.getIntValue();
         }
         double magnitude = magnitude() * v.magnitude();
         return (magnitude == 0) ? 0 : dotproduct / magnitude;
@@ -113,11 +117,8 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
 
     public double cossimOmit(TermVectorInt v) {
         double dotproduct = 0;
-        for (Map.Entry<String, Integer> entry : entrySet()) {
-            Integer freq = v.get(entry.getKey());
-            if (freq != null) {
-                dotproduct += freq * (entry.getValue() - freq);
-            }
+        for (Object2IntMap.Entry<String> entry : object2IntEntrySet()) {
+            dotproduct += v.getInt(entry.getKey()) * entry.getIntValue();
         }
         double magnitude = magnitudeOmit(v) * v.magnitude();
         return (magnitude == 0) ? 0 : dotproduct / magnitude;
@@ -139,7 +140,7 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
         return intersect.size() / (double) (size() + v.size());
     }
 
-    public double cossim(TermVectorDouble v) {
+    public double cossimDouble(TermVectorDouble v) {
         double dotproduct = 0;
         for (Map.Entry<String, Integer> entry : entrySet()) {
             Double freq = v.get(entry.getKey());
@@ -151,7 +152,7 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
         return (magnitude == 0) ? 0 : dotproduct / magnitude;
     }
 
-    public TermVectorDouble multiply(TermVectorDouble v) {
+    public TermVectorDouble multiplyDouble(TermVectorDouble v) {
         TermVectorDouble result = new TermVectorDouble();
         for (Map.Entry<String, Integer> entry : entrySet()) {
             Double d = v.get(entry.getKey());
@@ -184,7 +185,7 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
     public Integer total() {
         if (total == null) {
             total = 0;
-            for (Integer i : values()) {
+            for (int i : values()) {
                 total += i;
             }
         }
@@ -192,10 +193,10 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
     }
 
     public TermVectorDouble normalize() {
-        TermVectorDouble result = new TermVectorDouble();
+        TermVectorDouble result = new TermVectorDouble(size());
         double total = total();
-        for (Map.Entry<String, Integer> entry : entrySet()) {
-            result.put(entry.getKey(), entry.getValue() / total);
+        for (Object2IntMap.Entry<String> entry : object2IntEntrySet()) {
+            result.put(entry.getKey(), entry.getIntValue() / total);
         }
         return result;
     }
@@ -203,19 +204,19 @@ public class TermVectorInt extends HashMapInt<String> implements BufferSerializa
     @Override
     public void read(StructureReader reader) throws EOCException {
         int size = reader.readInt();
-        HashMap<String, Integer> map = new HashMap(size);
+        int needed = (int)Math.min( 1 << 30, Math.max( 2, HashCommon.nextPowerOfTwo( (long)Math.ceil( (size() + size) / f ) ) ) );
+        rehash(needed);
         for (int i = 0; i < size; i++) {
-            map.put(reader.readString(), reader.readInt());
+            put(reader.readString(), reader.readInt());
         }
-        this.putAll(map);
     }
 
     @Override
     public void write(StructureWriter writer) {
         writer.write(size());
-        for (Map.Entry<String, Integer> entry : entrySet()) {
+        for (Object2IntMap.Entry<String> entry : object2IntEntrySet()) {
             writer.write(entry.getKey());
-            writer.write(entry.getValue());
+            writer.write(entry.getIntValue());
         }
     }
 }

@@ -24,10 +24,17 @@ public class Job extends org.apache.hadoop.mapreduce.Job {
 
     public static Log log = new Log(Job.class);
 
-    public Job(Configuration configuration, Object... params) throws IOException {
+    /**
+     * Creates a job, the value of the parameters are added to the jobname that
+     * is shown in the console and the jobtracker, they have no functionality here.
+     * @param configuration
+     * @param parameters parameters to be added to the jobname
+     * @throws IOException 
+     */
+    public Job(Configuration configuration, Object... parameters) throws IOException {
         // Jars need to be added to the Configuration before construction 
         super(configuration);
-        setJobName(params);
+        setJobName(parameters);
         this.setJarByClass(ClassTools.getMainClass());
         log.info("Job %s", this.getJobName());
     }
@@ -37,13 +44,13 @@ public class Job extends org.apache.hadoop.mapreduce.Job {
         StringBuilder sb = new StringBuilder();
         sb.append(ClassTools.getMainClass().getCanonicalName()).append(" ");
         for (Object o : params) {
-            sb.append("[").append(o.toString()).append("] ");
+            sb.append(PrintTools.sprintf("[%s]", o));
         }
         setJobName(sb.toString());
     }
 
-    public FileSystem getFS() {
-        return HDFSPath.getFS(this.conf);
+    public FileSystem getFileSystem() {
+        return Conf.getFileSystem(conf);
     }
 
     @Override

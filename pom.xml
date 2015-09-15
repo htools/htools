@@ -92,6 +92,7 @@
                         <executions>
                             <execution>
                                 <id>package-sources</id>
+                                <phase>deploy</phase>
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
@@ -101,13 +102,15 @@
                     <plugin>
                         <artifactId>maven-deploy-plugin</artifactId>
                         <version>2.8.2</version>
-                        <configuration>
-                            <file>${maven.compiler.target}</file>
-                            <serverId>oss.sonatype.org</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <description>${project.version}</description>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
+                        <executions> 
+                            <execution> 
+                                <id>deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy</goal>
+                                </goals> 
+                            </execution> 
+                        </executions> 
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -116,13 +119,14 @@
                         <executions>
                             <execution>
                                 <id>package-javadocs</id>
+                                <phase>deploy</phase>
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
                             </execution>
                         </executions>
                     </plugin>
-<!--                    <plugin>
+                    <!--                    <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
                         <version>1.6.2</version>
@@ -180,16 +184,6 @@
             <artifactId>hadoop-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>1.7.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro-ipc</artifactId>
-            <version>1.7.7</version>
-        </dependency>
-        <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
             <version>1.3.1</version>
@@ -200,7 +194,7 @@
             <version>1.9</version>
             <type>jar</type>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>3.9</version>
@@ -209,11 +203,11 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>3.9</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>15.0</version>
+            <version>18.0</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.mojo</groupId>
@@ -224,6 +218,12 @@
             <groupId>org.antlr</groupId>
             <artifactId>antlr4</artifactId>
             <version>4.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr-runtime</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>it.unimi.dsi</groupId>
@@ -252,7 +252,7 @@
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
             <version>1.1.1.7</version>
-        </dependency>        
+        </dependency>
     </dependencies>
     
     <dependencyManagement>
@@ -359,7 +359,63 @@
                         <version>0.1.53</version>
                     </dependency>
                 </dependencies>
-            </plugin>      
+            </plugin> 
+            <plugin>                        
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>package-sources</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <executions> 
+                    <execution> 
+                        <id>deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals> 
+                    </execution> 
+                </executions> 
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <executions>
+                    <execution>
+                        <id>package-javadocs</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+ 
         </plugins>
     </build>  
 </project>

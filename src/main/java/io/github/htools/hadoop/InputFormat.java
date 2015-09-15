@@ -32,8 +32,7 @@ public abstract class InputFormat<W> extends FileInputFormat<LongWritable, W> {
     static FileFilter filefilter;
 
     public static void addDirs(Job job, String dir) throws IOException {
-        FileSystem fs = HDFSPath.getFS(job.getConfiguration());
-        HDFSPath path = new HDFSPath(fs, dir);
+        HDFSPath path = new HDFSPath(job.getConfiguration(), dir);
         addDirs(job, path);
     }
 
@@ -58,9 +57,8 @@ public abstract class InputFormat<W> extends FileInputFormat<LongWritable, W> {
         job.getConfiguration().setLong("mapreduce.input.fileinputformat.split.minsize", Long.MAX_VALUE);
     }
 
-    public static void addFileList(Job job, String file) {
-        FileSystem fs = HDFSPath.getFS(job.getConfiguration());
-        Datafile df = new Datafile(fs, file);
+    public static void addFileList(Job job, String file) throws IOException {
+        Datafile df = new Datafile(job.getConfiguration(), file);
         String contents = df.readAsString();
         String lines[] = contents.split(" ");
         for (String line : lines) {

@@ -23,6 +23,8 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  * cluster (as defined in cluster.nodes), to divide the workload more evenly.
  *
  * @author jeroen
+ * @param <KEY>
+ * @param <VALUE>
  */
 public abstract class ConstInputFormat<KEY, VALUE> extends InputFormat<KEY, VALUE> {
 
@@ -58,6 +60,10 @@ public abstract class ConstInputFormat<KEY, VALUE> extends InputFormat<KEY, VALU
    }
    
    protected abstract MRInputSplit<KEY, VALUE> createSplit(KEY key);
+   
+   public static void clear() {
+       map = new HashMap();
+   }
    
     public static void add(Job job, Object key, Object value) {
         MRInputSplit currentsplit = getSplit(key);

@@ -11,8 +11,6 @@ public class HDFSBackup {
 
    public static void main(String args[]) throws IOException {
       Conf conf = new Conf(args, "-i input -o output");
-      String input = conf.get("input");
-      String output = conf.get("output");
-      HDFSPath.backup(new HDFSPath(conf, input), new HDFSPath(conf, output));
+      HDFSPath.backup(conf.getHDFSPath("input"), conf.getHDFSPath("output"));
    }
 }

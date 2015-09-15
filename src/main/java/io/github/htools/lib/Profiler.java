@@ -136,10 +136,6 @@ public enum Profiler {;
     }
 
     public static void printf(String message, Object... args) {
-        print(sprintf(message, args));
-    }
-
-    public static void printfTime(String message, Object... args) {
         print(System.currentTimeMillis() - startTime + " " + sprintf(message, args));
     }
 

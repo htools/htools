@@ -1,18 +1,17 @@
 package io.github.htools.io;
 
-import io.github.htools.lib.ArgsParser;
+import io.github.htools.hadoop.Conf;
 import io.github.htools.lib.Log;
 import java.io.IOException;
-import org.apache.hadoop.conf.Configuration;
 
 public class HDFSMoveRec {
 
    public static Log log = new Log(HDFSMoveRec.class);
 
    public static void main(String... args) throws IOException {
-      ArgsParser ap = new ArgsParser(args, "-i input -o output");
-      String input = ap.get("input");
-      String output = ap.get("output");
+      Conf conf = new Conf(args, "-i input -o output");
+      String input = conf.get("input");
+      String output = conf.get("output");
       String sourcedir, sourcefile, destdir, destfile;
       if (input.contains("/")) {
          sourcedir = input.substring(0, input.lastIndexOf('/'));
@@ -28,8 +27,8 @@ public class HDFSMoveRec {
          destdir = "";
          destfile = output;
       }
-      HDFSPath sdir = new HDFSPath(new Configuration(), sourcedir);
-      HDFSPath ddir = new HDFSPath(new Configuration(), destdir);
+      HDFSPath sdir = new HDFSPath(conf, sourcedir);
+      HDFSPath ddir = new HDFSPath(conf, destdir);
       move(sdir, ddir, sourcefile, destfile);
    }
 

@@ -16,11 +16,10 @@ public class BackupJob {
     private static final Log log = new Log(BackupJob.class);
 
     public static void main(String[] args) throws Exception {
-
         Conf conf = new Conf(args, "-s source -d dest");
         conf.setQueue("express");
-        HDFSPath in = new HDFSPath(conf, conf.get("source"));
-        HDFSPath out = new HDFSPath(conf, conf.get("dest"));
+        HDFSPath in = conf.getHDFSPath("source");
+        HDFSPath out = conf.getHDFSPath("dest");
         backup(conf, in, out);
     }
     

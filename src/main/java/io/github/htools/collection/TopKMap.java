@@ -60,12 +60,10 @@ public class TopKMap<K extends Comparable, V> extends TopK<Map.Entry<K,V>> {
       return MapTools.toString(this);
   }
   
-    public static <K, V> ArrayMap<K, V> invert(Iterable<? extends Map.Entry> c) {
-        ArrayMap<K, V> map = new ArrayMap();
+    public void addInvert(Iterable<? extends Map.Entry<V, K>> c) {
         for (Map.Entry<V, K> entry : c) {
-            map.add(entry.getValue(), entry.getKey());
+            add(entry.getValue(), entry.getKey());
         }
-        return map;
     }
   
   private static class StdComparator<K extends Comparable,V> implements Comparator<Map.Entry<K,V>> {

@@ -72,11 +72,10 @@ public class ReaderInputFormat extends FileInputFormat<LongWritable, Content> {
     }
 
     public void addDirs(Job job, String dir) throws IOException {
-        FileSystem fs = HDFSPath.getFS(configuration);
         ArrayList<HDFSPath> paths = new ArrayList<HDFSPath>();
         ArrayList<Path> files = new ArrayList<Path>();
         if (dir.length() > 0) {
-            HDFSPath d = new HDFSPath(fs, dir);
+            HDFSPath d = new HDFSPath(configuration, dir);
             if (d.isFile()) {
                 addFile(job, new Path(dir));
             } else {

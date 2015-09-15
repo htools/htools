@@ -22,6 +22,11 @@ public class HashMapSetCount<K, V> extends HashMap<K, HashMapInt<V>> {
        list.add(v);
    }
    
+   public void add(K k, V v, int value) {
+       HashMapInt<V> list = getMap(k);
+       list.add(v, value);
+   }
+   
    public void addIfNotExists(K k, V v) {
        HashMapInt<V> list = getMap(k);
        

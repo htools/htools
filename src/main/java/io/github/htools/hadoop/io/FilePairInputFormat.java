@@ -23,8 +23,8 @@ public class FilePairInputFormat extends KVInputFormat<String, String> {
         return new StringPairInputSplit();
     }
 
-    public static void addPaths(Job job, PathModifier modifier, Collection<HDFSPath> path) {
-        HashMapList<String, String> distributeFiles = HDFSPath.distributePath(HDFSPath.getFS(job.getConfiguration()), path);
+    public static void addPaths(Job job, PathModifier modifier, Collection<HDFSPath> path) throws IOException {
+        HashMapList<String, String> distributeFiles = HDFSPath.distributePath(job.getFileSystem(), path);
         for (Map.Entry<String, ArrayList<String>> entry : distributeFiles.entrySet()) {
             for (String file : entry.getValue()) {
                 //log.info("%s %s", entry.getKey(), file);
@@ -33,9 +33,9 @@ public class FilePairInputFormat extends KVInputFormat<String, String> {
         }
     }
 
-    public static void addDatafiles(Job job, PathModifier modifier, Collection<Datafile> path) {
+    public static void addDatafiles(Job job, PathModifier modifier, Collection<Datafile> path) throws IOException {
         modifier.setConf(job.getConfiguration());
-        HashMapList<String, String> distributeFiles = HDFSPath.distributeDatafiles(HDFSPath.getFS(job.getConfiguration()), path);
+        HashMapList<String, String> distributeFiles = HDFSPath.distributeDatafiles(job.getFileSystem(), path);
         for (Map.Entry<String, ArrayList<String>> entry : distributeFiles.entrySet()) {
             for (String file : entry.getValue()) {
                 add(job, entry.getKey(), file, modifier.modify(file));

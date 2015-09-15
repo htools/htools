@@ -21,7 +21,7 @@ public abstract class RecordReader<W> extends org.apache.hadoop.mapreduce.Record
     protected TaskAttemptContext context;
     protected long start;
     protected long end;
-    protected InputStream inputstream;
+    protected InputStream inputStream;
     protected LongWritable key = new LongWritable();
     protected W record;
     protected FileSystem filesystem;
@@ -60,7 +60,7 @@ public abstract class RecordReader<W> extends org.apache.hadoop.mapreduce.Record
     }
 
     public void initialize(FileSystem fs, FileSplit fileSplit) throws IOException {
-        inputstream = getInputStream(fs, fileSplit);
+        inputStream = getInputStream(fs, fileSplit);
     }
 
     public void setOffsetEnd(FileSplit fileSplit) {
@@ -100,6 +100,6 @@ public abstract class RecordReader<W> extends org.apache.hadoop.mapreduce.Record
 
     @Override
     public void close() throws IOException {
-        inputstream.close();
+        inputStream.close();
     }
 }

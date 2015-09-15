@@ -11,17 +11,17 @@ public class HDFSMove {
    public static Log log = new Log(HDFSMove.class);
    public static boolean verbose = false;
 
-   public static void main(String args[]) throws IOException {
-      Conf ap = new Conf(args, "--v --r -i input -o output");
-      String input = ap.get("input");
-      String output = ap.get("output");
-      if (ap.getBoolean("v", false)) {
+   public static void main(String args[]) throws IOException  {
+      Conf conf = new Conf(args, "--v --r -i input -o output");
+      String input = conf.get("input");
+      String output = conf.get("output");
+      if (conf.getBoolean("v", false)) {
          verbose = true;
       }
-      if (!ap.getBoolean("r", false) && !input.contains("*")) {
+      if (!conf.getBoolean("r", false) && !input.contains("*")) {
          if (!verbose)
-            HDFSPath.rename(HDFSPath.getFS(), input, output);
-      } else if (ap.getBoolean("r", false)) {
+            HDFSPath.rename(Conf.getFileSystem(conf), input, output);
+      } else if (conf.getBoolean("r", false)) {
          if (!verbose)
             HDFSMoveRec.main(input, output);
       } else {
@@ -40,8 +40,8 @@ public class HDFSMove {
             destdir = "";
             destfile = output;
          }
-         HDFSPath sdir = new HDFSPath(new Configuration(), sourcedir);
-         HDFSPath ddir = new HDFSPath(new Configuration(), destdir);
+         HDFSPath sdir = new HDFSPath(conf, sourcedir);
+         HDFSPath ddir = new HDFSPath(conf, destdir);
          sdir.move(ddir, sourcefile, destfile);
       }
    }

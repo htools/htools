@@ -2,12 +2,14 @@ package io.github.htools.lib;
 
 import io.github.htools.type.KV3;
 import io.github.htools.type.Tuple2;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -79,6 +81,13 @@ public enum CollectionTools {;
         return dest;
     }
 
+    public static <K, V> Collection<Map.Entry<K, V>> invert(ObjectSet<? extends Entry<V, K>> c, Collection<Map.Entry<K, V>> dest) {
+        for (Map.Entry<V, K> entry : c) {
+            dest.add(new Tuple2<K, V>(entry.getValue(), entry.getKey()));
+        }
+        return dest;
+    }
+
     public static <K, V, W> Collection<KV3<K, V, W>> invert3(
             Map<V, ? extends Map.Entry<W, K>> c, 
             Collection<KV3<K, V, W>> dest) {
@@ -100,19 +109,19 @@ public enum CollectionTools {;
         return invert(c.entrySet(), dest);
     }
     
-    public static boolean containsNone(Collection a, Collection b) {
+    public static <K> boolean containsNone(Collection<K> a, Collection<K> b) {
         if (b.size() > a.size()) {
             return containsNone(b, a);
         } else if (a.size() <= 3) {
-            for (Object o : b) {
-                for (Object oo : a) {
+            for (K o : b) {
+                for (K oo : a) {
                     if (oo.equals(o))
                         return false;
                 }
             }
             return true;
         } else {
-            return containsNone(new HashSet(a), b);
+            return containsNone(new HashSet<K>(a), b);
         }
     }
     
@@ -124,40 +133,40 @@ public enum CollectionTools {;
         }
     }
     
-    public static boolean containsNone(Set a, Collection b) {
-        for (Object o : b)
+    public static <K> boolean containsNone(Set<K> a, Collection<K> b) {
+        for (K o : b)
             if (a.contains(o))
                 return false;
         return true;
     }
     
-    public static boolean containsAny(Set a, Collection b) {
-        for (Object o : b)
+    public static <K> boolean containsAny(Set<K> a, Collection<K> b) {
+        for (K o : b)
             if (a.contains(o))
                 return true;
         return false;
     }
     
-    public static boolean containsNone(Set a, Set b) {
+    public static <K> boolean containsNone(Set<K> a, Set<K> b) {
         if (b.size() > a.size())
             return containsNone(b, a);
-        for (Object o : b)
+        for (K o : b)
             if (a.contains(o))
                 return false;
         return true;
     }
     
-    public static boolean containsAll(Set a, Set b) {
-        for (Object o : b)
+    public static <K> boolean containsAll(Set<K> a, Collection<K> b) {
+        for (K o : b)
             if (!a.contains(o))
                 return false;
         return true;
     }
     
-    public static boolean containsAny(Set a, Set b) {
+    public static <K> boolean containsAny(Set<K> a, Set<K> b) {
         if (b.size() > a.size())
-            return containsNone(b, a);
-        for (Object o : b)
+            return containsAny(b, a);
+        for (K o : b)
             if (a.contains(o))
                 return true;
         return false;

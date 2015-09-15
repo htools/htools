@@ -1,14 +1,16 @@
 package io.github.htools.type;
 
 import io.github.htools.collection.HashMapDouble;
+import io.github.htools.fcollection.FHashMapDouble;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  *
  * @author jeroen
  */
-public class TermVectorDouble extends HashMapDouble<String> {
+public class TermVectorDouble extends FHashMapDouble<String>{
 
     Double total = null;
     Double magnitude = null;
@@ -16,7 +18,15 @@ public class TermVectorDouble extends HashMapDouble<String> {
     public TermVectorDouble() {
     }
 
-    public TermVectorDouble(HashMapDouble<String> map) {
+    public TermVectorDouble(int size) {
+        super(size);
+    }
+
+    public TermVectorDouble(int size, float loadfactor) {
+        super(size, loadfactor);
+    }
+
+    public TermVectorDouble(FHashMapDouble<String> map) {
         super(map);
     }
 
@@ -32,22 +42,22 @@ public class TermVectorDouble extends HashMapDouble<String> {
     }
 
     public void add(TermVectorDouble v) {
-        for (Map.Entry<String, Double> entry : v.entrySet()) {
-            add(entry.getKey(), entry.getValue());
+        for (Object2DoubleMap.Entry<String> entry : v.object2DoubleEntrySet()) {
+            add(entry.getKey(), entry.getDoubleValue());
         }
         magnitude = null;
     }
 
     public void add(TermVectorInt v) {
-        for (Map.Entry<String, Integer> entry : v.entrySet()) {
-            add(entry.getKey(), entry.getValue());
+        for (Object2IntMap.Entry<String> entry : v.object2IntEntrySet()) {
+            add(entry.getKey(), entry.getIntValue());
         }
         magnitude = null;
     }
 
     public void remove(TermVectorDouble v) {
-        for (Map.Entry<String, Double> entry : v.entrySet()) {
-            add(entry.getKey(), -entry.getValue());
+        for (Object2DoubleMap.Entry<String> entry : v.object2DoubleEntrySet()) {
+            add(entry.getKey(), -entry.getDoubleValue());
         }
         magnitude = null;
     }
@@ -66,11 +76,8 @@ public class TermVectorDouble extends HashMapDouble<String> {
 
     public double cossim(TermVectorDouble v) {
         double dotproduct = 0;
-        for (Map.Entry<String, Double> entry : entrySet()) {
-            Double freq = v.get(entry.getKey());
-            if (freq != null) {
-                dotproduct += freq * entry.getValue();
-            }
+        for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
+            dotproduct += v.getDouble(entry.getKey()) * entry.getValue();
         }
         double magnitude = magnitude() * v.magnitude();
         return (magnitude == 0) ? 0 : dotproduct / magnitude;
@@ -78,11 +85,8 @@ public class TermVectorDouble extends HashMapDouble<String> {
 
     public double cossim(TermVectorInt v) {
         double dotproduct = 0;
-        for (Map.Entry<String, Double> entry : entrySet()) {
-            Integer freq = v.get(entry.getKey());
-            if (freq != null) {
-                dotproduct += freq * entry.getValue();
-            }
+        for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
+            dotproduct += v.getInt(entry.getKey()) * entry.getValue();
         }
         double magnitude = magnitude() * v.magnitude();
         return (magnitude == 0) ? 0 : dotproduct / magnitude;
@@ -90,34 +94,36 @@ public class TermVectorDouble extends HashMapDouble<String> {
 
     public TermVectorDouble multiply(TermVectorDouble v) {
         TermVectorDouble result = new TermVectorDouble();
-        for (Map.Entry<String, Double> entry : entrySet()) {
-            Double d = v.get(entry.getKey());
-            if (d != null)
+        for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
+            double d = v.getDouble(entry.getKey());
+            if (d != 0) {
                 result.put(entry.getKey(), entry.getValue() * d);
+            }
         }
         return result;
     }
 
     public TermVectorDouble multiply(TermVectorInt v) {
         TermVectorDouble result = new TermVectorDouble();
-        for (Map.Entry<String, Double> entry : entrySet()) {
-            Integer d = v.get(entry.getKey());
-            if (d != null)
+        for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
+            int d = v.getInt(entry.getKey());
+            if (d != 0) {
                 result.put(entry.getKey(), entry.getValue() * d);
+            }
         }
         return result;
     }
 
     public TermVectorDouble divide(double div) {
-        return (TermVectorDouble)super.divide(new TermVectorDouble(), div);
+        return (TermVectorDouble) super.divide(new TermVectorDouble(), div);
     }
 
     public String getMax() {
         double max = Double.MIN_VALUE;
         String maxterm = null;
-        for (Map.Entry<String, Double> entry : entrySet()) {
-            if (max < entry.getValue()) {
-                max = entry.getValue();
+        for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
+            if (max < entry.getDoubleValue()) {
+                max = entry.getDoubleValue();
                 maxterm = entry.getKey();
             }
         }
@@ -142,8 +148,8 @@ public class TermVectorDouble extends HashMapDouble<String> {
     public TermVectorDouble normalize() {
         double total = total();
         if (total != 1) {
-            for (Map.Entry<String, Double> entry : entrySet()) {
-                entry.setValue(entry.getValue() / total);
+            for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
+                entry.setValue(entry.getDoubleValue() / total);
             }
         }
         magnitude = null;

@@ -40,7 +40,7 @@ public abstract class ParamFileInputFormat<F extends StructuredRecordFile, K ext
     
     public static <K extends BufferSerializable> void add(Job job, K key, Path path) throws IOException {
         log.info("add(%s)", path.toString());
-        FileSystem fs = job.getFS();
+        FileSystem fs = job.getFileSystem();
         FileStatus file = fs.getFileStatus(path);
         path = file.getPath();
         long length = file.getLen();

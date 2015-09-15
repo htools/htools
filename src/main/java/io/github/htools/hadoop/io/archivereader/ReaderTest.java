@@ -22,8 +22,8 @@ public class ReaderTest {
    public static void main(String[] args) throws IOException, InterruptedException {
       Conf conf = new Conf(args, "source");
       Path p = new Path(conf.get("source"));
-      long length = HDFSIn.getLength(HDFSPath.getFS(conf), p);
-      String[] locations = HDFSPath.getLocations(HDFSPath.getFS(conf), conf.get("source"), 0);
+      long length = HDFSIn.getLength(Conf.getFileSystem(conf), p);
+      String[] locations = HDFSPath.getLocations(Conf.getFileSystem(conf), conf.get("source"), 0);
       FileSplit fs = new FileSplit(p, 0, length, locations);
       Reader er = new ReaderTREC();
       ExtractorConf extractor = new ExtractorConf(conf);

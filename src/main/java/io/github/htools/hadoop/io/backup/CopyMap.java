@@ -1,5 +1,6 @@
 package io.github.htools.hadoop.io.backup;
 
+import io.github.htools.hadoop.ContextTools;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.ClassTools;
 import io.github.htools.lib.Log;
@@ -22,9 +23,9 @@ public class CopyMap extends Mapper<String, String, NullWritable, NullWritable> 
     FileSystem fs;
     
     @Override
-    public void setup(Context context) {
+    public void setup(Context context) throws IOException {
         if (fs == null) {
-            fs = HDFSPath.getFS(context.getConfiguration());
+            fs = ContextTools.getFileSystem(context);
         }
     }
     
