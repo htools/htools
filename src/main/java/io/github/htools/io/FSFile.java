@@ -118,6 +118,30 @@ public class FSFile extends FileGeneric {
       return new File(filename).isFile();
    }
 
+   public static boolean canRead(String filename) {
+      return new File(filename).canRead();
+   }
+
+   public boolean canRead() {
+      return file.canRead();
+   }
+
+   public static boolean canWrite(String filename) {
+      return new File(filename).canWrite();
+   }
+
+   public boolean canWrite() {
+      return file.canRead();
+   }
+
+   public static boolean canExecute(String filename) {
+      return new File(filename).canRead();
+   }
+
+   public boolean canExecute() {
+      return file.canRead();
+   }
+
    /**
     * @return name of the last component of the path
     */
