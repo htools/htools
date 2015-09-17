@@ -23,12 +23,6 @@
         </license>
     </licenses>    
     
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
-    
     <developers>
         <developer>
             <id>jeroenvuurens</id>
@@ -197,12 +191,6 @@
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
             <version>1.1.1.7</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.htools</groupId>
-            <artifactId>htools</artifactId>
-            <version>0.27-SNAPSHOT</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
     
