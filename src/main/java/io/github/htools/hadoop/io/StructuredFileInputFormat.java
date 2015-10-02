@@ -10,7 +10,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  * @author jeroen
  */
 public abstract class StructuredFileInputFormat<F extends StructuredRecordFile, W extends org.apache.hadoop.io.Writable>
-        extends FileInputFormat<LongWritable, W> {
+        extends FileClassInputFormat<LongWritable, W> {
 
     public StructuredFileInputFormat(Class fileclass) {
         super(fileclass);

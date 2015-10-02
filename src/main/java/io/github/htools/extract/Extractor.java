@@ -70,13 +70,13 @@ public class Extractor {
      *
      * @param clazz
      */
-    public ExtractorProcessor createUnboundProcessor(String identifier, Class clazz) throws ClassNotFoundException {
+    public <T extends ExtractorProcessor> T createUnboundProcessor(String identifier, Class<T> clazz) throws ClassNotFoundException {
         Constructor c = ClassTools.getAssignableConstructor(clazz, ExtractorProcessor.class, Extractor.class, String.class);
-        return (ExtractorProcessor) ClassTools.construct(c, this, identifier);
+        return (T) ClassTools.construct(c, this, identifier);
     }
 
-    public ExtractorProcessor createUnboundProcessor(String identifier, String clazzname) throws ClassNotFoundException {
-        Class clazz = stringToClass(clazzname);
+    public <T extends ExtractorProcessor> T createUnboundProcessor(String identifier, String clazzname) throws ClassNotFoundException {
+        Class<T> clazz = stringToClass(clazzname);
         return createUnboundProcessor(identifier, clazz);
     }
 
@@ -164,8 +164,8 @@ public class Extractor {
      * @param process
      * @param processor
      */
-    public ExtractorProcessor addProcess(String process, Class processor) {
-        ExtractorProcessor p = null;
+    public <T extends ExtractorProcessor> T addProcess(String process, Class<T> processor) {
+        T p = null;
         try {
             p = createUnboundProcessor(process, processor);
             addProcess(process, p);
@@ -192,10 +192,10 @@ public class Extractor {
         list.add(processor);
     }
 
-    public ExtractorProcessor findProcessor(String process, Class clazz) {
+    public <T extends ExtractorProcessor> T findProcessor(String process, Class<T> clazz) {
         for (ExtractorProcessor p : processor.get(process)) {
             if (clazz.equals(p.getClass())) {
-                return p;
+                return (T)p;
             }
         }
         return null;

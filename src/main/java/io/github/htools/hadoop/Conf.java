@@ -1,5 +1,8 @@
 package io.github.htools.hadoop;
 
+import io.github.htools.fcollection.FHashSet;
+import io.github.htools.fcollection.FHashSetInt;
+import io.github.htools.fcollection.FHashSetLong;
 import io.github.htools.search.ByteRegex;
 import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.io.Datafile;
@@ -13,16 +16,18 @@ import static io.github.htools.lib.PrintTools.sprintf;
 import io.github.htools.hadoop.io.OutputFormat;
 import io.github.htools.io.FSFile;
 import io.github.htools.io.HDFSPath;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.util.GenericOptionsParser;
@@ -66,11 +71,13 @@ public class Conf extends JobConf {
     static ByteRegex valueregex = ByteRegex.combine(emptylineregex, longregex, doubleregex, intregex, boolregex, stringregex);
 
     public Conf(String args[], String template) {
+        this();
         parseArgs(args, template);
     }
 
     public Conf() {
         super();
+        HBaseConfiguration.addHbaseResources(this);
     }
 
     protected Conf(org.apache.hadoop.conf.Configuration other) {
@@ -102,8 +109,9 @@ public class Conf extends JobConf {
                     dir = dir + "/";
                 }
                 for (String lib : new FSPath(dir).getFilenames()) {
-                    if ((lib.endsWith(".jar") || lib.endsWith(".xml")) && FSFile.canRead(dir + lib))
-                       sb.append(",").append(dir).append(lib);
+                    if ((lib.endsWith(".jar") || lib.endsWith(".xml")) && FSFile.canRead(dir + lib)) {
+                        sb.append(",").append(dir).append(lib);
+                    }
                 }
             } else if (FSFile.exists(dir) && FSFile.canRead(dir)
                     && (dir.endsWith(".jar") || dir.endsWith(".xml"))) {
@@ -502,12 +510,30 @@ public class Conf extends JobConf {
     }
 
     public static ArrayList<String> getStringList(Configuration conf, String key) {
-        ArrayList<String> values = new ArrayList<String>();
-        String value[] = conf.getStrings(key);
-        if (value != null) {
-            values.addAll(Arrays.asList(value));
+        String values[] = conf.getStrings(key);
+        ArrayList<String> set = new ArrayList<String>(values.length);
+        for (String value : values) {
+            set.add(value);
         }
-        return values;
+        return set;
+    }
+    
+    public static void addToStringList(Configuration conf, String key, String value) {
+        String existingValue = conf.get(key);
+        if (existingValue == null || existingValue.length() == 0) {
+            conf.set(key, value);
+        } else {
+            conf.set(key, existingValue + "," + value);
+        }
+    }
+
+    public static FHashSet<String> getStringSet(Configuration conf, String key) {
+        String values[] = conf.getStrings(key);
+        FHashSet<String> set = new FHashSet<String>(values.length);
+        for (String value : values) {
+            set.add(value);
+        }
+        return set;
     }
 
     public ArrayList<String> getStringList(Enum<?> key) {
@@ -518,38 +544,68 @@ public class Conf extends JobConf {
         return getIntList(this, key);
     }
 
-    public static ArrayList<Integer> getIntList(Configuration conf, String key) {
-        ArrayList<Integer> values = new ArrayList<Integer>();
-        String value[] = conf.getStrings(key, new String[0]);
-        if (value != null) {
-            for (int i = 0; i < value.length; i++) {
-                values.add(Integer.parseInt(value[i]));
-            }
-        }
-        return values;
-    }
-
     public ArrayList<Integer> getIntList(Enum<?> key) {
         return getIntList(this, key.toString());
     }
 
-    public ArrayList<Long> getLongList(String key) {
-        return getLongList(this, key);
+    public static ArrayList<Integer> getIntList(Configuration conf, String key) {
+        String values[] = conf.getStrings(key);
+        ArrayList<Integer> list = new ArrayList<Integer>(values.length);
+        try {
+            for (String value : values) {
+                list.add(Integer.parseInt(value));
+            }
+        } catch (NumberFormatException ex) {
+            log.fatalexception(ex, "getIntList(%s)", key);
+        }
+        return list;
+    }
+
+    public static FHashSetInt getIntSet(Configuration conf, String key) {
+        String values[] = conf.getStrings(key);
+        FHashSetInt set = new FHashSetInt(values.length);
+        try {
+            for (String value : values) {
+                set.add(Integer.parseInt(value));
+            }
+        } catch (NumberFormatException ex) {
+            log.fatalexception(ex, "getIntSet(%s)", key);
+        }
+        return set;
     }
 
     public static ArrayList<Long> getLongList(Configuration conf, String key) {
-        ArrayList<Long> values = new ArrayList<Long>();
-        String value[] = conf.getStrings(key, new String[0]);
-        if (value != null) {
-            for (int i = 0; i < value.length; i++) {
-                values.add(Long.parseLong(value[i]));
+        String values[] = conf.getStrings(key);
+        ArrayList<Long> list = new ArrayList<Long>(values.length);
+        try {
+            for (String value : values) {
+                list.add(Long.parseLong(value));
             }
+        } catch (NumberFormatException ex) {
+            log.fatalexception(ex, "getLongList(%s)", key);
         }
-        return values;
+        return list;
+    }
+
+    public static FHashSetLong getLongSet(Configuration conf, String key) {
+        String values[] = conf.getStrings(key);
+        FHashSetLong set = new FHashSetLong(values.length);
+        try {
+            for (String value : values) {
+                set.add(Long.parseLong(value));
+            }
+        } catch (NumberFormatException ex) {
+            log.fatalexception(ex, "getLongSet(%s)", key);
+        }
+        return set;
     }
 
     public ArrayList<Long> getLongList(Enum<?> key) {
         return getLongList(this, key.toString());
+    }
+
+    public ArrayList<Long> getLongList(String key) {
+        return getLongList(this, key);
     }
 
     public void setIntList(String key, Collection<Integer> list) {
@@ -679,6 +735,10 @@ public class Conf extends JobConf {
         this.set(ConfSetting.MAP_JAVA_OPTS, sprintf("-server -Xmx%dm", mem - 512));
     }
 
+    /**
+     * Set the output buffer size
+     * @param mem 
+     */
     public void setSortMB(int mem) {
         this.setInt(ConfSetting.IO_SORT_MB, mem);
     }

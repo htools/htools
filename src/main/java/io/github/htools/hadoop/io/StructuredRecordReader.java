@@ -51,7 +51,7 @@ public abstract class StructuredRecordReader<F extends StructuredRecordFile, K, 
             end = start + fileSplit.getLength();
             structuredRecordFile = getFile(new Datafile(filesystem, file));
             structuredRecordFile.setOffset(start);
-            structuredRecordFile.setBufferSize(InputFormat.getBufferSize(conf));
+            structuredRecordFile.setBufferSize(FileInputFormat.getBufferSize(conf));
             structuredRecordFile.openRead();
             structuredRecordFile.findFirstRecord();
             structuredRecordFile.setCeiling(end);

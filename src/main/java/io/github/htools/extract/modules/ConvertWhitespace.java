@@ -18,7 +18,7 @@ public class ConvertWhitespace extends ExtractorProcessor {
 
    public ConvertWhitespace(Extractor extractor, String process) {
       super(extractor, process);
-      whitespace[32] = false;
+      //whitespace[32] = false;
    }
 
    @Override
@@ -31,8 +31,8 @@ public class ConvertWhitespace extends ExtractorProcessor {
                buffer[p] = ' ';
             else {
                 buffer[p] = '\0';
-                contiguouswhitespace = true;
             } 
+            contiguouswhitespace = true;
          } else if (buffer[p] != 0) {
             contiguouswhitespace = false;
          }

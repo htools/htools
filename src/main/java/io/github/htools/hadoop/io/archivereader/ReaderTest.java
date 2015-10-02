@@ -25,7 +25,7 @@ public class ReaderTest {
       long length = HDFSIn.getLength(Conf.getFileSystem(conf), p);
       String[] locations = HDFSPath.getLocations(Conf.getFileSystem(conf), conf.get("source"), 0);
       FileSplit fs = new FileSplit(p, 0, length, locations);
-      Reader er = new ReaderTREC();
+      ArchiveReader er = new ReaderTREC();
       ExtractorConf extractor = new ExtractorConf(conf);
       er.initialize(fs, conf);
       er.nextKeyValue();

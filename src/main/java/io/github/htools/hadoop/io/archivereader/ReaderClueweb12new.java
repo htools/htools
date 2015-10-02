@@ -17,7 +17,7 @@ import java.io.ByteArrayOutputStream;
  * <p>
  * @author jeroen
  */
-public class ReaderClueweb12new extends Reader {
+public class ReaderClueweb12new extends ArchiveReader {
 
    public static Log log = new Log(ReaderClueweb12new.class);
    private byte[] warcTag = "WARC/1.0".getBytes();

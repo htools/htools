@@ -31,9 +31,9 @@ public class BufferDelayedWriter implements StructureWriter {
    private static Log log = new Log(BufferDelayedWriter.class);
    private static Gson gson = new Gson();
    protected BufferReaderWriter writer = new BufferReaderWriter();
-   public ArrayList<Object> list = new ArrayList<Object>();
-   public boolean[] whitespace = io.github.htools.lib.ByteTools.getByteArray(" \n\t\r");
-   public int size = 0;
+   private ArrayList<Object> list = new ArrayList<Object>();
+   private boolean[] whitespace = io.github.htools.lib.ByteTools.getByteArray(" \n\t\r");
+   private int size = 0;
 
    public BufferDelayedWriter() {
    }
@@ -76,6 +76,10 @@ public class BufferDelayedWriter implements StructureWriter {
       size = 0;
    }
 
+   public int getSize() {
+       return size;
+   }
+   
    @Override
    public void writeBuffer(DataOutput out) {
       try {

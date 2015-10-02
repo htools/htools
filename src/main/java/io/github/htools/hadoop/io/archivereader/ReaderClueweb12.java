@@ -13,11 +13,11 @@ import java.io.ByteArrayOutputStream;
 
 /**
  * An implementation of Reader that reads the ClueWeb12 collection, 
- * similar to {@link ReaderClueweb9}, just some differences in Record structure.
+ * similar to {@link ReaderClueweb9}, with some differences in Record structure.
  * <p>
  * @author jeroen
  */
-public class ReaderClueweb12 extends Reader {
+public class ReaderClueweb12 extends ArchiveReader {
 
    public static Log log = new Log(ReaderClueweb12.class);
    private byte[] warcTag = "WARC/1.0".getBytes();

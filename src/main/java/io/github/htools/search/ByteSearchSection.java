@@ -253,6 +253,10 @@ public class ByteSearchSection extends ByteSearchPosition implements ByteSearchR
         return ByteTools.toString(haystack, innerstart, innerend);
     }
 
+    public byte[] toBytes() {
+        return ByteTools.toBytes(haystack, innerstart, innerend);
+    }
+
     public String toOuterString() {
         return ByteTools.toString(haystack, start, end);
     }

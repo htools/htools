@@ -11,9 +11,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
  * An implementation of EntityReader that scans the input for TREC style
- * documents, that are enclosed in &lt;DOC&gt; tags. The used tags may be
- * overridden by setting different tags in entityreader.entitystart and
- * entityreader.entityend.
+ * documents, that are enclosed in &lt;DOC&gt; tags.
  * <p>
  * NOTE that the original TREC disks contain .z files, which cannot be
  * decompressed by Java. The files must therefore be decompressed outside this
@@ -21,7 +19,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
  * <p>
  * @author jeroen
  */
-public class ReaderTREC extends Reader {
+public class ReaderTREC extends ArchiveReader {
 
    public static Log log = new Log(ReaderTREC.class);
    private byte[] startTag;
@@ -29,15 +27,21 @@ public class ReaderTREC extends Reader {
 
    @Override
    public void initialize(FileSplit fileSplit) {
-      startTag = conf.get("entityreader.entitystart", "<DOC>").getBytes();
-      endTag = conf.get("entityreader.entityend", "</DOC>").getBytes();
+      startTag = getDocStartTag().getBytes();
+      endTag = getDocEndTag().getBytes();
       Path file = fileSplit.getPath();
       if (end < HDFSIn.getLengthNoExc(filesystem, file)) { // only works for uncompressed files
          fsin.setCeiling(end);
       }
    }
-
-   ByteSearch einstein = ByteSearch.create("Einstein");
+   
+   public String getDocStartTag() {
+       return "<DOC>";
+   }
+   
+   public String getDocEndTag() {
+       return "</DOC>";
+   }
    
    @Override
    public boolean nextKeyValue() {
@@ -45,11 +49,13 @@ public class ReaderTREC extends Reader {
          if (readUntilStart() && fsin.getOffset() - startTag.length < fsin.getCeiling()) {
             key.set(fsin.getOffset());
             if (readEntity()) {
-               //if (einstein.exists(entitywritable.entity.content, 0, entitywritable.entity.content.length)) {
                entitywritable.addSectionPos("all", 
-                                entitywritable.content, 0, 0, entitywritable.content.length, entitywritable.content.length);
+                                entitywritable.content, 
+                                0, 
+                                0, 
+                                entitywritable.content.length, 
+                                entitywritable.content.length);
                return true;
-               //}
             }
          }
       }
@@ -77,10 +83,6 @@ public class ReaderTREC extends Reader {
                }
             } else {
                buffer.write(b);
-
-//               if (needleposition == 0 && !fsin.hasMore()) {  // see if we've passed the stop point:
-//                  return false;
-//               }
             }
          } catch (EOCException ex) {
             return false;

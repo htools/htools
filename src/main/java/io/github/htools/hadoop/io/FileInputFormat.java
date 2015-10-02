@@ -1,5 +1,6 @@
 package io.github.htools.hadoop.io;
 
+import io.github.htools.hadoop.FileFilter;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.Log;
 import io.github.htools.hadoop.Job;
@@ -9,9 +10,12 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.JobContext;
 
 /**
@@ -22,11 +26,25 @@ public abstract class FileInputFormat<K, V>
 
     public static Log log = new Log(FileInputFormat.class);
     public static org.apache.hadoop.mapreduce.InputFormat singleton;
-    private static final String SPLITABLE = "structuredinputformat.issplitable";
-    protected final Class fileclass;
+    public static final String TESTINPUT = FileInputFormat.class.getCanonicalName().toLowerCase() + "testinput";
+    private static final String SPLITABLE = FileInputFormat.class.getCanonicalName() + ".issplitable";
+    public static final String BUFFERSIZE = FileInputFormat.class.getCanonicalName() + ".buffersize";
+    public static FileFilter fileFilter;
 
-    public FileInputFormat(Class fileclass) {
-        this.fileclass = fileclass;
+    public static void setBufferSize(Configuration conf, int buffersize) {
+        conf.setInt(BUFFERSIZE, buffersize);
+    }
+
+    public static int getBufferSize(Configuration conf) {
+        return conf.getInt(BUFFERSIZE, 10000000);
+    }
+
+    public static void setTest(Configuration conf) {
+        conf.setBoolean(TESTINPUT, true);
+    }
+
+    public static void setFilter(FileFilter filter) {
+        fileFilter = filter;
     }
 
     public static org.apache.hadoop.mapreduce.InputFormat getInputFormat(Job job) {
@@ -34,12 +52,24 @@ public abstract class FileInputFormat<K, V>
             try {
                 Constructor cons = ClassTools.getAssignableConstructor(
                         job.getInputFormatClass(), org.apache.hadoop.mapreduce.InputFormat.class);
-                singleton = (org.apache.hadoop.mapreduce.InputFormat)ClassTools.construct(cons);
+                singleton = (org.apache.hadoop.mapreduce.InputFormat) ClassTools.construct(cons);
             } catch (ClassNotFoundException ex) {
                 log.fatalexception(ex, "getInputFormat() InputFormat either not set or not constructable");
             }
         }
         return singleton;
+    }
+
+    @Override
+    public List<InputSplit> getSplits(JobContext job) throws IOException {
+        boolean test = job.getConfiguration().getBoolean(TESTINPUT, false);
+        List<InputSplit> splits = super.getSplits(job);
+        if (test) {
+            ArrayList<InputSplit> single = new ArrayList();
+            single.add(splits.get(0));
+            return single;
+        }
+        return splits;
     }
     
     /**
@@ -60,8 +90,24 @@ public abstract class FileInputFormat<K, V>
      */
     public static void addDirs(Job job, String dir) throws IOException {
         ArrayList<String> list = getDirList(job.getFileSystem(), dir);
-        for (String d : list)
+        for (String d : list) {
             FileInputFormat.addInputPath(job, new Path(d));
+        }
+    }
+
+    @Override
+    protected List<FileStatus> listStatus(JobContext job) throws IOException {
+        List<FileStatus> list = super.listStatus(job);
+        if (fileFilter != null) {
+            Iterator<FileStatus> iter = list.iterator();
+            while (iter.hasNext()) {
+                FileStatus file = iter.next();
+                if (file.isFile() && !fileFilter.acceptFile(file.getPath())) {
+                    iter.remove();
+                }
+            }
+        }
+        return list;
     }
 
     public static ArrayList<String> getDirList(FileSystem fs, String dir) throws IOException {
@@ -114,8 +160,8 @@ public abstract class FileInputFormat<K, V>
     protected boolean isSplitable(JobContext context, Path file) {
         return context.getConfiguration().getBoolean(SPLITABLE, true);
     }
-    
-        public static void addInputPath(Job job, Iterator<DirComponent> iter) throws IOException {
+
+    public static void addInputPath(Job job, Iterator<DirComponent> iter) throws IOException {
         ArrayList<Path> paths = new ArrayList();
         while (iter.hasNext()) {
             DirComponent d = iter.next();

@@ -1,6 +1,5 @@
 package io.github.htools.hadoop;
 
-import java.io.IOException;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.TaskAttemptID;
@@ -68,11 +67,7 @@ public enum ContextTools {
         return getInputFileSplit(context).getPath();
     }
 
-    public static FileSystem getFileSystem(org.apache.hadoop.mapreduce.Mapper.Context context) {
-        return Conf.getFileSystem(context.getConfiguration());
-    }
-
-    public static FileSystem getFileSystem(org.apache.hadoop.mapreduce.Reducer.Context context) {
+    public static FileSystem getFileSystem(TaskAttemptContext context) {
         return Conf.getFileSystem(context.getConfiguration());
     }
 

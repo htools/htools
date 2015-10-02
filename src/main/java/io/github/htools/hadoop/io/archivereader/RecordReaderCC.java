@@ -18,7 +18,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
  * <p>
  * @author jeroen
  */
-public class RecordReaderCC extends Reader {
+public class RecordReaderCC extends ArchiveReader {
 
    public static Log log = new Log(RecordReaderCC.class);
    private byte[] warcTag = "WARC/1.0".getBytes();

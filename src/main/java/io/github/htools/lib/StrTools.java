@@ -3,14 +3,11 @@ package io.github.htools.lib;
 import static io.github.htools.lib.Const.*;
 import static io.github.htools.lib.PrintTools.*;
 import io.github.htools.search.ByteSearch;
-import io.github.htools.search.ByteSearchPosition;
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.TreeMap;
-import java.util.UUID;
 
 /**
  *
@@ -315,9 +312,15 @@ public enum StrTools {
         return haystack;
     }
 
-    public static String stripUntilLast(String haystack, String needles) {
-        int pos = haystack.lastIndexOf(needles);
-        return (pos < 0) ? haystack : haystack.substring(pos + needles.length());
+    /**
+     * @param haystack
+     * @param needle
+     * @return if needle is not found haystack is returned, otherwise the 
+     * substring after the last occurrence of needle is returned
+     */
+    public static String stripPastLast(String haystack, String needle) {
+        int pos = haystack.lastIndexOf(needle);
+        return (pos < 0) ? haystack : haystack.substring(pos + needle.length());
     }
 
     /**

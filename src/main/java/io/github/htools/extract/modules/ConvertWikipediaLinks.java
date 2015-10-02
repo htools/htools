@@ -4,30 +4,34 @@ import io.github.htools.search.ByteSearchSection;
 import io.github.htools.lib.Log;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
+import io.github.htools.lib.ByteTools;
 import java.util.ArrayDeque;
+import java.util.HashSet;
 
 /**
  * Convert references in Wikipedia XML source, keeping only the label part in
  * "[[label part]]" and [[Something|label part]], removing he remaining
- * characters.
+ * characters. Additionally the target of the references is captured, including
+ * [[Category:category]] and [[Category:category|label]] patterns, which can be
+ * retrieved with the getReferences() method.
  *
  * @author jbpvuurens
  */
-public class ConvertWikipediaReferences extends ExtractorProcessor {
+public class ConvertWikipediaLinks extends ExtractorProcessor {
 
-    public static Log log = new Log(ConvertWikipediaReferences.class);
+    public static Log log = new Log(ConvertWikipediaLinks.class);
     ArrayDeque<Integer> open = new ArrayDeque<Integer>();
     ArrayDeque<Integer> colon = new ArrayDeque<Integer>();
     ArrayDeque<Integer> bar = new ArrayDeque<Integer>();
     boolean suffix[] = new boolean[256];
 
-    public ConvertWikipediaReferences(Extractor extractor, String process) {
+    public ConvertWikipediaLinks(Extractor extractor, String process) {
         super(extractor, process);
         for (int i = '\''; i < 'z'; i++) {
             suffix[i] = (i == '\'' || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z'));
         }
     }
-
+    
     @Override
     public void process(Content entity, ByteSearchSection section, String attribute) {
         if (open.size() > 0) {
@@ -64,7 +68,7 @@ public class ConvertWikipediaReferences extends ExtractorProcessor {
                             int lastbar = (bar.size() == 0) ? -1 : bar.getFirst();
 
                             if (lastcolon < prevopen) { // no file reference
-                                if (lastbar > lastopen) { // take abel/caption
+                                if (lastbar > lastopen) { // take label/caption
                                     for (int i = prevopen; i <= lastbar; i++) {
                                         buffer[i] = 32;
                                     }
@@ -76,7 +80,8 @@ public class ConvertWikipediaReferences extends ExtractorProcessor {
                                     buffer[p] = 0;
                                     buffer[++p] = 0;
                                 }
-                            } else { // could be file or category if no space behind :, then better remove all
+                            } else {
+                                // could be file or category if no space behind :, then better remove all
                                 for (lastcolon++; lastcolon < section.innerend && buffer[lastcolon] == 0; lastcolon++);
                                 if (lastcolon >= section.innerend || buffer[lastcolon] > ' ') {
                                     for (int i = p + 1; i >= prevopen; i--) {
@@ -86,13 +91,13 @@ public class ConvertWikipediaReferences extends ExtractorProcessor {
                                         buffer[p + 1] = 32; // remove any suffix, as in "[[train]]s"
                                     }
                                 } else {
-                                    if (lastbar > lastopen) { // take abel/caption
+                                    if (lastbar > lastopen) { 
                                         for (int i = prevopen; i <= lastbar; i++) {
                                             buffer[i] = 32;
                                         }
                                         buffer[p] = 0;
                                         buffer[++p] = 0;
-                                    } else if (prevopen == lastopen - 1) { //simple internal reference
+                                    } else if (prevopen == lastopen - 1) { 
                                         buffer[prevopen] = 32;
                                         buffer[lastopen] = 32;
                                         buffer[p] = 0;

@@ -28,7 +28,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
  * @author jeroen
  */
 public abstract class ParamFileInputFormat<F extends StructuredRecordFile, K extends BufferSerializable, V extends org.apache.hadoop.io.Writable>
-        extends FileInputFormat<K, V> {
+        extends FileClassInputFormat<K, V> {
 
     public static List<InputSplit> splits = new ArrayList();
 

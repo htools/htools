@@ -30,6 +30,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.Trash;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.IOUtils;
 
 /**
@@ -118,6 +119,20 @@ public class HDFSPath extends Path implements HPath {
 
     public long getModificationTime() throws IOException {
         return fs.getFileStatus(this).getModificationTime();
+    }
+
+    public void setOwner(String username, String groupname) throws IOException {
+        fs.setOwner(this, username, groupname);
+    }
+
+    public void setPermissions(String umask) throws IOException {
+        FsPermission permission = new FsPermission(umask);
+        fs.setPermission(this, permission);
+    }
+
+    public static void setPermissions(Configuration conf, String path, String umask) throws IOException {
+        FsPermission permission = new FsPermission(umask);
+        Conf.getFileSystem(conf).setPermission(new Path(path), permission);
     }
 
     public FileStatus[] listFileStatus() throws IOException {

@@ -2,8 +2,14 @@ package io.github.htools.hadoop.io.archivereader;
 
 import io.github.htools.io.Datafile;
 import io.github.htools.extract.Content;
+import io.github.htools.fcollection.FHashSet;
+import io.github.htools.fcollection.FHashSetInt;
+import io.github.htools.fcollection.FHashSetLong;
+import io.github.htools.hadoop.Conf;
 import io.github.htools.lib.Log;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -33,9 +39,9 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
  *
  * @author jeroen
  */
-public abstract class Reader extends RecordReader<LongWritable, Content> {
+public abstract class ArchiveReader extends RecordReader<LongWritable, Content> {
 
-   public static Log log = new Log(Reader.class);
+   public static Log log = new Log(ArchiveReader.class);
    protected TaskAttemptContext context;
    protected long start;
    protected long end;
@@ -44,8 +50,6 @@ public abstract class Reader extends RecordReader<LongWritable, Content> {
    protected Content entitywritable;
    protected FileSystem filesystem;
    protected Configuration conf;
-   protected int onlypartition;
-   protected int partitions;
 
    @Override
    public void initialize(InputSplit is, TaskAttemptContext tac) {
@@ -53,7 +57,7 @@ public abstract class Reader extends RecordReader<LongWritable, Content> {
          initialize( is, tac.getConfiguration() );
    }
 
-   public void initialize(InputSplit is, Configuration conf) {
+   public final void initialize(InputSplit is, Configuration conf) {
       //log.info("initialize");
       try {
          this.conf = conf;
@@ -66,8 +70,6 @@ public abstract class Reader extends RecordReader<LongWritable, Content> {
          fsin.setOffset(start);
          fsin.setBufferSize(10000000);
          fsin.openRead();
-         onlypartition = conf.getInt("repository.onlypartition", -1);
-         partitions = conf.getInt("repository.partitions", 1);
          initialize(fileSplit);
       } catch (IOException ex) {
          log.exception(ex, "initialize( %s ) conf %s filesystem %s fsin %s", is, conf, filesystem, fsin);
@@ -94,7 +96,7 @@ public abstract class Reader extends RecordReader<LongWritable, Content> {
    public Content getCurrentValue() throws IOException, InterruptedException {
       return entitywritable;
    }
-
+   
    /**
     * NB this indicates progress as the data that has been read, for some
     * MapReduce tasks processing the data continues for some startTime, causing

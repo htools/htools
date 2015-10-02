@@ -1,4 +1,5 @@
 package io.github.htools.search;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.PrintTools; 
 import io.github.htools.lib.StrTools;
 import java.util.Comparator;
@@ -72,7 +73,11 @@ public class ByteSearchPosition implements Comparator<ByteSearchPosition>, Compa
 
    @Override
    public String toString() {
-      return new String(haystack, start, end - start);
+      return ByteTools.toString(haystack, start, end);
+   }
+
+   public byte[] toBytes() {
+      return ByteTools.toBytes(haystack, start, end);
    }
 
    public int length() {

@@ -33,7 +33,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
  * <p>
  * @author jeroen
  */
-public class ReaderClueweb9 extends Reader {
+public class ReaderClueweb9 extends ArchiveReader {
 
    public static Log log = new Log(ReaderClueweb9.class);
    private byte[] warcTag = "WARC/0.18".getBytes();

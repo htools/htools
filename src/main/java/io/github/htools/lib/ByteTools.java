@@ -3,6 +3,7 @@ package io.github.htools.lib;
 import io.github.htools.type.Tuple2Comparable;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -16,31 +17,34 @@ public enum ByteTools {
     private static final boolean identifier[] = getIdentifier();
     private static final boolean whitespace[] = getByteArray(" \n\t\r");
     private static final boolean whitespacezero[] = getByteArray(" \n\t\r\0");
+    private static final String UTF8_ENCODING = "UTF-8";
+    private static final Charset UTF8_CHARSET = Charset.forName(UTF8_ENCODING);
 
     /**
      * returns a String constructed with the content that is marked by start
      * (inclusive) and end (exclusive) in the byte array, omitting \0 bytes.
      */
     public static String toString(byte array[], int start, int end) {
-        byte c[];
+        byte[] c = toBytes(array, start, end);
+        return new String(c, 0, c.length, UTF8_CHARSET);
+    }
+
+    public static byte[] toBytes(byte array[], int start, int end) {
         int realchars = 0;
         for (int p = start; p < end; p++) {
             if (array[p] != 0) {
                 realchars++;
             }
         }
+        byte[] c = new byte[realchars];
         if (realchars > 0) {
-            c = new byte[realchars];
             for (int cnr = 0, p = start; p < end; p++) {
                 if (array[p] != 0) {
                     c[cnr++] = array[p];
                 }
             }
-            try {
-                return new String(c, 0, c.length, "UTF-8");
-            } catch (UnsupportedEncodingException ex) {  }
         }
-        return "";
+        return c;
     }
 
     public static String toTrimmedString(byte b[], int pos, int end) {
@@ -56,12 +60,11 @@ public enum ByteTools {
         if (realchars > 0) {
             c = new byte[realchars];
             for (int cnr = 0, p = pos; p < end; p++) {
-                if (b[p] != 0)
+                if (b[p] != 0) {
                     c[cnr++] = b[p];
+                }
             }
-            try {
-                return new String(c, "UTF-8");
-            } catch (UnsupportedEncodingException ex) { }
+            return new String(c, UTF8_CHARSET);
         }
         return "";
     }
@@ -91,19 +94,27 @@ public enum ByteTools {
                 if (b[p] != 0) {
                     c[cnr++] = b[p];
                     if (whitespace[b[p] & 0xFF]) {
-                       for (; p + 1 < end && whitespace[b[p + 1] & 0xFF]; p++);
+                        for (; p + 1 < end && whitespace[b[p + 1] & 0xFF]; p++);
                     }
                 }
             }
-            try {
-                return new String(c, "UTF-8");
-            } catch (UnsupportedEncodingException ex) { }
+            return new String(c, UTF8_CHARSET);
         }
         return "";
     }
 
     public static String toString(byte b[]) {
         return toString(b, 0, b.length);
+    }
+
+    /**
+     * Converts a string to a UTF-8 byte array.
+     *
+     * @param s string
+     * @return the byte array
+     */
+    public static byte[] toBytes(String s) {
+        return s.getBytes(UTF8_CHARSET);
     }
 
     public static String listBytesAsString(byte b[]) {
@@ -179,7 +190,7 @@ public enum ByteTools {
     public static int skipIgnoreWS(byte[] haystack, byte[] needle, int startpos, int endpos, boolean ignorecase) {
         int match = 0;
         for (; startpos < endpos;) {
-         //log.info("skipIgnoreWS() needle %s startpos %d endpos %d match %d",
+            //log.info("skipIgnoreWS() needle %s startpos %d endpos %d match %d",
             //        new String(needle), startpos, endpos, match);
             if (match == needle.length) {
                 return startpos;
@@ -285,7 +296,7 @@ public enum ByteTools {
         boolean escape = false;
         for (int p = startpos; p < endpos; p++) {
             if (haystack[p] > 0) {
-            //if (!omitquotes && haystack[p] == '\'')
+                //if (!omitquotes && haystack[p] == '\'')
                 //   log.info("singlequote %s %s", new String(needle), new String(haystack, startpos, 100));
                 if (omitquotes && quotes[haystack[p]]) {
                     p = findEndQuote(haystack, p, endpos);
@@ -416,10 +427,16 @@ public enum ByteTools {
         return c;
     }
 
-    public static byte[] concatenate(byte a[], byte b[]) {
-        byte c[] = new byte[a.length + b.length];
-        System.arraycopy(a, 0, c, 0, a.length);
-        System.arraycopy(b, 0, c, a.length, b.length);
+    public static byte[] concatenate(byte[]... arrays) {
+        int length = 0;
+        for (byte[] array : arrays) {
+            length += array.length;
+        }
+        byte c[] = new byte[length];
+        for (int pos = 0, i = 0; i < arrays.length; i++) {
+            System.arraycopy(arrays[i], 0, c, pos, arrays[i].length);
+            pos += arrays[i].length;
+        }
         return c;
     }
 

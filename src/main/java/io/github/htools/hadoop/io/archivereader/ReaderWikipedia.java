@@ -2,7 +2,6 @@ package io.github.htools.hadoop.io.archivereader;
 
 import io.github.htools.extract.Content;
 import io.github.htools.io.EOCException;
-import io.github.htools.io.HDFSIn;
 import io.github.htools.lib.Log;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
@@ -15,11 +14,11 @@ import java.io.ByteArrayOutputStream;
  * <p>
  * @author jeroen
  */
-public class ReaderWikipedia extends Reader {
+public class ReaderWikipedia extends ArchiveReader {
 
     public static Log log = new Log(ReaderWikipedia.class);
-    private byte[] startTag;
-    private byte[] endTag;
+    private byte[] startTag = "<page>".getBytes();
+    private byte[] endTag = "</page>".getBytes();
     private byte[] idStart = "<id>".getBytes();
     private byte[] idEnd = "</id>".getBytes();
     private byte[] titleStart = "<title>".getBytes();
@@ -33,8 +32,6 @@ public class ReaderWikipedia extends Reader {
 
     @Override
     public void initialize(FileSplit fileSplit) {
-        startTag = conf.get("entityreader.entitystart", "<page>").getBytes();
-        endTag = conf.get("entityreader.entityend", "</page>").getBytes();
         Path file = fileSplit.getPath();
     }
 

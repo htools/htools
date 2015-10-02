@@ -140,6 +140,10 @@ public abstract class ByteSearch {
         return match(b, 0, b.length);
     }
 
+    public boolean match(byte[] haystack) {
+        return match(haystack, 0, haystack.length);
+    }
+
     public boolean match(ByteSearchSection section) {
         return match(section.haystack, section.innerstart, section.innerend);
     }
@@ -264,6 +268,11 @@ public abstract class ByteSearch {
         return findPos.found() ? findPos.toString() : null;
     }
 
+    public byte[] extractBytes(ByteSearchSection section) {
+        ByteSearchPosition findPos = findPos(section.haystack, section.innerstart, section.innerend);
+        return findPos.found() ? findPos.toBytes() : null;
+    }
+
     public String extractOuter(ByteSearchSection section) {
         ByteSearchPosition findPos = findPos(section.haystack, section.start, section.end);
         return findPos.found() ? findPos.toString() : null;
@@ -281,6 +290,11 @@ public abstract class ByteSearch {
     public String extract(byte haystack[]) {
         ByteSearchPosition findPos = findPos(haystack, 0, haystack.length);
         return findPos.found() ? findPos.toString() : null;
+    }
+
+    public byte[] extractBytes(byte haystack[]) {
+        ByteSearchPosition findPos = findPos(haystack, 0, haystack.length);
+        return findPos.found() ? findPos.toBytes() : null;
     }
 
     public boolean exists(byte haystack[], int start, int end) {

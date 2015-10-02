@@ -247,9 +247,11 @@ public class ArgsParser {
     private void setFlags(String message) {
         byte bmessage[] = message.getBytes();
         ArrayList<ByteSearchPosition> argumentpositions = combi.findAllPos(bmessage, 0, bmessage.length);
+        log.info("arguments %d", argumentpositions.size());
         ArrayList<String> names = this.getArgumentNames(bmessage, argumentpositions);
         for (int argumentnumber = 0; argumentnumber < argumentpositions.size(); argumentnumber++) {
             ByteSearchPosition argument = argumentpositions.get(argumentnumber);
+            log.info("%d %d %s", argumentnumber, argument.pattern, names.get(argumentnumber));
             if (argument.pattern == 3) { // flag
                 Parameter f = addFlag(argumentpositions.get(argumentnumber + 1).pattern, names.get(argumentnumber), names.get(argumentnumber + 1));
                 flags.put(f.tag, f);
@@ -266,6 +268,7 @@ public class ArgsParser {
                 positional.add(f);
             }
         }
+        log.info("%s", flags);
     }
 
     public Parameter addFlag(int pattern, String flagname, String argumentname) {
