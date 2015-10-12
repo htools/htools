@@ -4,6 +4,7 @@ import io.github.htools.io.struct.StructuredTextTSV;
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
+import java.io.IOException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class StructuredTextTSVTest {
     }
 
     @Test
-    public void testSomeMethod() {
+    public void testSomeMethod() throws IOException {
         file.openWrite();
         for (int i = 0; i < names.length; i++) {
             file.name.set( names[i] );

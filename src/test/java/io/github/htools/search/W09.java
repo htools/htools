@@ -3,6 +3,7 @@ import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.struct.StructuredTextCSV;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 /**
  *
@@ -80,7 +81,7 @@ public class W09 extends StructuredTextCSV {
      return new W09(new BufferReaderWriter(sb.toString().getBytes()));
   }
   
-   public static void main(String[] args) {
+   public static void main(String[] args) throws IOException {
       W09 f = setup();
       //log.info("%b %d", f.datafile.exists(), f.datafile.getLength());
       f.openRead();

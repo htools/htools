@@ -25,6 +25,9 @@ import io.github.htools.io.struct.StructuredFileCollisionRecord;
 import io.github.htools.io.struct.StructuredFileSortRecord;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.RandomTools;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -34,7 +37,7 @@ public class StructuredFileCollisionTest extends StructuredFileCollision {
    String0Field name = this.addString0("name");
    IntField count = this.addInt("count");
    
-   public static void main(String[] args) {
+   public static void main(String[] args) throws IOException {
       StructuredFileCollisionTest table = new StructuredFileCollisionTest( new Datafile("C:/users/Jeroen/Desktop/test"));
       String names[] = new String[10];
       table.setTableSize(names.length);
@@ -58,15 +61,18 @@ public class StructuredFileCollisionTest extends StructuredFileCollision {
       table.closeRead();
    }
    
-   public StructuredFileCollisionTest(Datafile df) {
+   public StructuredFileCollisionTest(Datafile df) throws IOException {
       super(df);
    }
 
    @Override
    public StructuredFile clone() {
-         StructuredFileCollisionTest f = new StructuredFileCollisionTest(new Datafile(getDatafile()));
-         f.setTableSize(this.getTableSize());
-         return f;
+       try {
+           StructuredFileCollisionTest f = new StructuredFileCollisionTest(new Datafile(getDatafile()));
+           f.setTableSize(this.getTableSize());
+           return f;
+       } catch (IOException ex) { }
+       return null;
    }
 
    @Override
@@ -137,14 +143,22 @@ public class StructuredFileCollisionTest extends StructuredFileCollision {
          
          @Override
          protected void writeRecordData() {
-            ((StructuredFileCollisionTest) file).name.write(name);
-            ((StructuredFileCollisionTest) file).count.write(count);
+             try {
+                 ((StructuredFileCollisionTest) file).name.write(name);
+                 ((StructuredFileCollisionTest) file).count.write(count);
+             } catch (IOException ex) {
+                 Logger.getLogger(StructuredFileCollisionTest.class.getName()).log(Level.SEVERE, null, ex);
+             }
          }
 
          @Override
          protected void writeTempRecordData() {
-            ((StructuredFileCollisionTest) file).name.write(name);
-            ((StructuredFileCollisionTest) file).count.write(count);
+             try {
+                 ((StructuredFileCollisionTest) file).name.write(name);
+                 ((StructuredFileCollisionTest) file).count.write(count);
+             } catch (IOException ex) {
+                 Logger.getLogger(StructuredFileCollisionTest.class.getName()).log(Level.SEVERE, null, ex);
+             }
          }
 
          @Override

@@ -14,7 +14,7 @@ public abstract class FileGeneric {
    public static Log log = new Log(FileGeneric.class);
    public static String ln = "\r\n";                // newline encoding, should be changed to \n for linux
 
-   public abstract InputStream getInputStream();
+   public abstract InputStream getInputStream() throws IOException;
 
    public abstract void close();
 
@@ -26,7 +26,7 @@ public abstract class FileGeneric {
     * <p>
     * @return
     */
-   public String read() {
+   public String read() throws IOException {
       String out = "";
       String lineseperator = System.getProperty("line.seperator");
       Scanner scanner = new Scanner(getInputStream());
@@ -45,7 +45,7 @@ public abstract class FileGeneric {
     * <p>
     * @return line read, or null if there are no more lines.
     */
-   public String readLine() {
+   public String readLine() throws IOException {
       Scanner scanner = new Scanner(getInputStream());
       if (scanner == null || !scanner.hasNext()) {
          close();
@@ -60,7 +60,7 @@ public abstract class FileGeneric {
     * <p>
     * @return whole content.
     */
-   public String readCSV() {
+   public String readCSV() throws IOException {
       log.info("readCSV");
       String tekst = "";
       close();
@@ -80,7 +80,7 @@ public abstract class FileGeneric {
     * <p>
     * @return
     */
-   public byte[] readBytes() {
+   public byte[] readBytes() throws IOException {
       InputStream in = getInputStream();
       ArrayList<byte[]> blocks = new ArrayList<byte[]>();
       int maxblocksize = 1024 * 1024;                          // read 1MB at a startTime

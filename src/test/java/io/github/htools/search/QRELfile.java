@@ -3,6 +3,7 @@ import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.struct.StructuredTextCSV;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 /**
  *
@@ -38,7 +39,7 @@ public class QRELfile extends StructuredTextCSV {
      return new QRELfile(new BufferReaderWriter(sb.toString().getBytes()));
   }
   
-   public static void main(String[] args) {
+   public static void main(String[] args) throws IOException {
       QRELfile f = setup();
      while (f.nextRecord()) {
         log.info("%s, %d", f.docid.get(), f.relevance.get());

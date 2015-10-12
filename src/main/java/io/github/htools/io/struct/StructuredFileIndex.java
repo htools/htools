@@ -2,6 +2,7 @@ package io.github.htools.io.struct;
 
 import io.github.htools.io.Datafile;
 import io.github.htools.io.Datafile;
+import io.github.htools.io.FileIntegrityException;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.Log;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
    IntKey intkeys[];
    StringKey stringkeys[];
 
-   public StructuredFileIndex(StructuredFile tuple) {
+   public StructuredFileIndex(StructuredFile tuple) throws IOException {
       super(tuple.getDatafile());
       valuetuple = tuple;
       initKeys();
@@ -35,7 +36,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
       setIndexFile();
    }
 
-   public StructuredFileIndex(StructuredFile tuple, StructuredFileIndex index) {
+   public StructuredFileIndex(StructuredFile tuple, StructuredFileIndex index) throws IOException {
       super(tuple.getDatafile());
       secondindex = index;
       valuetuple = tuple;
@@ -112,7 +113,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
       return t;
    }
 
-   public void extract() {
+   public void extract() throws IOException {
       openWrite();
       valuetuple.openRead();
       while (valuetuple.hasNext()) {
@@ -128,7 +129,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
 
    public abstract void initKeys();
 
-   public void writeTuple() {
+   public void writeTuple() throws IOException {
       IndexKey k = new IndexKey();
       k.intkey = new int[intkeyarray.size()];
       k.stringkey = new String[stringkeyarray.size()];
@@ -146,7 +147,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
       flushKey(k);
    }
 
-   public void flushKey(IndexKey k) {
+   public void flushKey(IndexKey k) throws IOException {
       //log.info("flsuhKey %s %d", k.stringkey[0], this.getOffsetTupleStart());
       for (int i = 0; i < intkeyarray.size(); i++) {
          intkeyarray.get(i).key.write(k.intkey[i]);
@@ -161,7 +162,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
       length.write(k.length);
    }
 
-   private void setIndexFile() {
+   private void setIndexFile() throws IOException {
       StringBuilder sb = new StringBuilder();
       String filename = this.getFilename(valuetuple.getDatafile().getName());
       setDatafile(new Datafile(getDatafile().getFileSystem(), getDatafile().getDir().getFilename(filename)));
@@ -183,7 +184,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
       return key.key;
    }
 
-   protected void readTuple() {
+   protected void readTuple() throws IOException {
       if (valuetuple.hasNext()) {
          if (!valuetuple.isAtStart()) {
             log.fatal("Have to make sure value is at start of tuple");
@@ -198,7 +199,7 @@ public abstract class StructuredFileIndex extends StructuredFile {
       return new TupleIterator(this, key);
    }
 
-   protected void writeKeys() {
+   protected void writeKeys() throws IOException {
       //log.info("writeKeys %d %d", intkeyarray.size(), stringkeyarray.size());
       for (IntKey entry : intkeyarray) {
          entry.key.write(entry.value.value);

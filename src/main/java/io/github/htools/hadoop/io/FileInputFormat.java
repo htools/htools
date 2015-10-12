@@ -26,10 +26,11 @@ public abstract class FileInputFormat<K, V>
 
     public static Log log = new Log(FileInputFormat.class);
     public static org.apache.hadoop.mapreduce.InputFormat singleton;
-    public static final String TESTINPUT = FileInputFormat.class.getCanonicalName().toLowerCase() + "testinput";
-    private static final String SPLITABLE = FileInputFormat.class.getCanonicalName() + ".issplitable";
-    public static final String BUFFERSIZE = FileInputFormat.class.getCanonicalName() + ".buffersize";
+    public static final String TESTINPUT = FileInputFormat.class.getCanonicalName().toLowerCase() + ".testinput";
+    private static final String SPLITABLE = FileInputFormat.class.getCanonicalName().toLowerCase() + ".issplitable";
+    public static final String BUFFERSIZE = FileInputFormat.class.getCanonicalName().toLowerCase() + ".buffersize";
     public static FileFilter fileFilter;
+    public static FileFilter splitableFiles = new SplitableFiles();
 
     public static void setBufferSize(Configuration conf, int buffersize) {
         conf.setInt(BUFFERSIZE, buffersize);
@@ -71,13 +72,18 @@ public abstract class FileInputFormat<K, V>
         }
         return splits;
     }
-    
+
     /**
      * Ensures that input files are not split
      */
     public static void setNonSplitable(Job job) {
         job.getConfiguration().setBoolean(SPLITABLE, false);
-        job.getConfiguration().setLong("mapreduce.input.fileinputformat.split.minsize", Long.MAX_VALUE);
+        //job.getConfiguration().setLong("mapreduce.input.fileinputformat.split.minsize", Long.MAX_VALUE);
+    }
+
+    @Override
+    protected boolean isSplitable(JobContext context, Path filename) {
+        return context.getConfiguration().getBoolean(SPLITABLE, true) && splitableFiles.acceptFile(filename);
     }
 
     /**
@@ -126,7 +132,7 @@ public abstract class FileInputFormat<K, V>
 
     protected static void getDirList(ArrayList<String> list, HDFSPath d) throws IOException {
         if (!d.getName().startsWith("_")) {
-            if (d.isFile()) {
+            if (d.existsFile()) {
                 list.add(d.getCanonicalPath());
             } else {
                 for (String f : d.getFilepathnames()) {
@@ -156,16 +162,18 @@ public abstract class FileInputFormat<K, V>
         }
     }
 
-    @Override
-    protected boolean isSplitable(JobContext context, Path file) {
-        return context.getConfiguration().getBoolean(SPLITABLE, true);
-    }
-
     public static void addInputPath(Job job, Iterator<DirComponent> iter) throws IOException {
         ArrayList<Path> paths = new ArrayList();
         while (iter.hasNext()) {
             DirComponent d = iter.next();
             addInputPath(job, new Path(d.getCanonicalPath()));
+        }
+    }
+
+    protected static class SplitableFiles extends FileFilter {
+
+        public SplitableFiles() {
+            this.setInvalidFileNameEnd(".tar", ".tar.lz4", ".lz4");
         }
     }
 }

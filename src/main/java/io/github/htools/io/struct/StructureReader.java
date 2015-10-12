@@ -19,7 +19,7 @@ public interface StructureReader extends ByteSearchReader {
 
    public long getOffset();
 
-   public void setOffset(long l);
+   public void setOffset(long l) throws IOException;
 
    public void setCeiling(long s);
 
@@ -46,7 +46,7 @@ public interface StructureReader extends ByteSearchReader {
     * read several times, and typically needs the buffer size to be set to
     * at least the amount of data being reread.
     */
-   public void reuseBuffer();
+   public void reuseBuffer() throws IOException;
 
    /**
     * @return The allocated number of bytes for the buffer (can be greater than

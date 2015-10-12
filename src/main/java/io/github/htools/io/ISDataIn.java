@@ -16,6 +16,7 @@ public class ISDataIn implements DataIn {
     public static Log log = new Log(ISDataIn.class);
     protected InputStream inputstream;
     private BufferReaderWriter buffer;
+    protected boolean isCompressed = false;
     private long offset = 0;
 
     protected ISDataIn() {
@@ -140,7 +141,13 @@ public class ISDataIn implements DataIn {
         }
     }
     
+    @Override
     public InputStream getInputStream() throws IOException {
         return inputstream;
+    }
+
+    @Override
+    public boolean isCompressed() {
+       return isCompressed;
     }
 }

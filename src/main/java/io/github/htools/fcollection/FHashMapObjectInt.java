@@ -14,33 +14,33 @@ import java.util.Map;
  *
  * @author jeroen
  */
-public class FHashMapInt<K> extends Object2IntOpenHashMap<K> implements java.util.Map<K, Integer> {
+public class FHashMapObjectInt<K> extends Object2IntOpenHashMap<K> implements java.util.Map<K, Integer> {
 
-    public static final Log log = new Log(FHashMapInt.class);
+    public static final Log log = new Log(FHashMapObjectInt.class);
 
-    public FHashMapInt() {
+    public FHashMapObjectInt() {
         super();
     }
 
-    public FHashMapInt(int size) {
+    public FHashMapObjectInt(int size) {
         super(size);
     }
 
-    public FHashMapInt(Map<K, Integer> map) {
+    public FHashMapObjectInt(Map<K, Integer> map) {
         super(map);
     }
 
     @Override
-    public FHashMapInt clone() {
-        FHashMapInt clone = new FHashMapInt(size());
+    public FHashMapObjectInt clone() {
+        FHashMapObjectInt clone = new FHashMapObjectInt(size());
         for (Object2IntMap.Entry<K> entry : object2IntEntrySet()) {
             add(entry.getKey(), entry.getIntValue());
         }
         return clone;
     }
 
-    protected FHashMapInt create() {
-        return new FHashMapInt();
+    protected FHashMapObjectInt create() {
+        return new FHashMapObjectInt();
     }
 
     public void add(K key, int value) {
@@ -52,7 +52,7 @@ public class FHashMapInt<K> extends Object2IntOpenHashMap<K> implements java.uti
         }
     }
 
-    public FHashMapInt add(FHashMapInt<K> map) {
+    public FHashMapObjectInt add(FHashMapObjectInt<K> map) {
         for (Object2IntMap.Entry<K> entry : map.object2IntEntrySet()) {
             add(entry.getKey(), entry.getIntValue());
         }
@@ -75,8 +75,8 @@ public class FHashMapInt<K> extends Object2IntOpenHashMap<K> implements java.uti
      *
      * @param value
      */
-    public FHashMapInt<K> subtract(FHashMapInt<K> value) {
-        FHashMapInt<K> result = create();
+    public FHashMapObjectInt<K> subtract(FHashMapObjectInt<K> value) {
+        FHashMapObjectInt<K> result = create();
         for (Object2IntMap.Entry<K> entry : object2IntEntrySet()) {
             int v = entry.getIntValue() - value.getInt(entry.getKey());
             if (v > 0) {
@@ -92,7 +92,7 @@ public class FHashMapInt<K> extends Object2IntOpenHashMap<K> implements java.uti
      *
      * @param v
      */
-    public void remove(FHashMapInt<K> v) {
+    public void remove(FHashMapObjectInt<K> v) {
         for (Object2IntMap.Entry<K> entry : v.object2IntEntrySet()) {
             add(entry.getKey(), -entry.getIntValue());
         }
@@ -128,7 +128,7 @@ public class FHashMapInt<K> extends Object2IntOpenHashMap<K> implements java.uti
         return sum;
     }
 
-    public <S extends FHashMapDouble<K>> S divide(S result, double div) {
+    public <S extends FHashMapObjectDouble<K>> S divide(S result, double div) {
         for (Object2IntMap.Entry<K> entry : this.object2IntEntrySet()) {
             result.put(entry.getKey(), entry.getIntValue() / div);
         }
@@ -154,15 +154,15 @@ public class FHashMapInt<K> extends Object2IntOpenHashMap<K> implements java.uti
         }
     }
 
-    public <S extends FHashMapInt<K>> S getTop(S result, int k) {
+    public <S extends FHashMapObjectInt<K>> S getTop(S result, int k) {
         TopKMap<Integer, K> topk = new TopKMap(k);
         CollectionTools.invert(this.entrySet(), topk);
         CollectionTools.invert(topk, result);
         return result;
     }
 
-    public FHashMapInt getTop(int k) {
-        return getTop(new FHashMapInt(), k);
+    public FHashMapObjectInt getTop(int k) {
+        return getTop(new FHashMapObjectInt(), k);
     }
 
     public void cutBelow(int k) {

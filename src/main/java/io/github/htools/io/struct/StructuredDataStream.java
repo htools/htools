@@ -3,6 +3,7 @@ package io.github.htools.io.struct;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.struct.StructureData;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -489,7 +490,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readInt();
         }
 
-        public void write(int i) {
+        public void write(int i) throws IOException {
             checkWrite(this);
             value = i;
             if (writer != null) {
@@ -498,7 +499,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write() {
+        public void write() throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(value);
@@ -544,7 +545,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readBoolean();
         }
 
-        public void write(boolean i) {
+        public void write(boolean i) throws IOException {
             checkWrite(this);
             value = i;
             if (writer != null) {
@@ -553,7 +554,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write() {
+        public void write() throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(value);
@@ -597,7 +598,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readInt2();
         }
 
-        public void write(int i) {
+        public void write(int i) throws IOException {
             checkWrite(this);
             value = i;
             if (writer != null) {
@@ -630,7 +631,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readInt3();
         }
 
-        public void write(int i) {
+        public void write(int i) throws IOException {
             checkWrite(this);
             value = i;
             if (writer != null) {
@@ -666,7 +667,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readCInt();
         }
 
-        public void write(int i) {
+        public void write(int i) throws IOException {
             checkWrite(this);
             value = i;
             if (writer != null) {
@@ -705,7 +706,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readDouble();
         }
 
-        public void write(double d) {
+        public void write(double d) throws IOException {
             checkWrite(this);
             value = d;
             if (writer != null) {
@@ -714,7 +715,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write() {
+        public void write() throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(value);
@@ -758,7 +759,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readCDouble();
         }
 
-        public void write(double d) {
+        public void write(double d) throws IOException {
             checkWrite(this);
             value = d;
             if (writer != null) {
@@ -791,7 +792,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readByte();
         }
 
-        public void write(byte b) {
+        public void write(byte b) throws IOException {
             checkWrite(this);
             value = b;
             if (writer != null) {
@@ -828,7 +829,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readBytes(length);
         }
 
-        public void write(byte b[]) {
+        public void write(byte b[]) throws IOException {
             checkWrite(this);
             value = b;
             if (writer != null) {
@@ -837,7 +838,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write() {
+        public void write() throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.writeRaw(value);
@@ -880,13 +881,13 @@ public abstract class StructuredDataStream extends StructuredStream {
 
         public abstract O read() throws EOCException;
 
-        public abstract void write(O value);
+        public abstract void write(O value) throws IOException;
 
         public final void readNoReturn() throws EOCException {
             read();
         }
 
-        public void write() {
+        public void write() throws IOException {
             write(value);
         }
 
@@ -912,7 +913,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readByteArray();
         }
 
-        public void write(byte b[]) {
+        public void write(byte b[]) throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(value = b);
@@ -920,7 +921,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
         
-        public void write() {
+        public void write() throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(value);
@@ -952,7 +953,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readByte();
         }
 
-        public void write(int b) {
+        public void write(int b) throws IOException {
             checkWrite(this);
             value = b;
             if (writer != null) {
@@ -994,7 +995,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readString();
         }
 
-        public void write(String s) {
+        public void write(String s) throws IOException {
             checkWrite(this);
             value = s;
             if (writer != null) {
@@ -1003,7 +1004,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write(byte b[]) {
+        public void write(byte b[]) throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(b);
@@ -1011,7 +1012,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write() {
+        public void write() throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(value);
@@ -1044,7 +1045,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readString0();
         }
 
-        public void write(String s) {
+        public void write(String s) throws IOException {
             checkWrite(this);
             value = s;
             if (writer != null) {
@@ -1078,7 +1079,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readStringArray();
         }
 
-        public void write(String array[]) {
+        public void write(String array[]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1087,7 +1088,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write() {
+        public void write() throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(value);
@@ -1119,7 +1120,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readStringPairMap();
         }
 
-        public void write(Map<String, String> map) {
+        public void write(Map<String, String> map) throws IOException {
             checkWrite(this);
             value = map;
             if (writer != null) {
@@ -1152,7 +1153,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readLongArray();
         }
 
-        public void write(long array[]) {
+        public void write(long array[]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1185,7 +1186,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readDoubleArray();
         }
 
-        public void write(double array[]) {
+        public void write(double array[]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1218,7 +1219,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readCLongArray2();
         }
 
-        public void write(long array[][]) {
+        public void write(long array[][]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1252,7 +1253,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readLongSparse2();
         }
 
-        public void write(long array[][]) {
+        public void write(long array[][]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1287,7 +1288,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readIntArray();
         }
 
-        public void write(int array[]) {
+        public void write(int array[]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1296,7 +1297,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write(ArrayList<Integer> list) {
+        public void write(ArrayList<Integer> list) throws IOException {
             checkRead(this);
             if (writer != null) {
                 writer.writeIntList(list);
@@ -1330,7 +1331,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readBoolArray();
         }
 
-        public void write(boolean array[]) {
+        public void write(boolean array[]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1365,7 +1366,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readSquaredIntArray2();
         }
 
-        public void write(int array[][]) {
+        public void write(int array[][]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1398,7 +1399,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readCIntArray2();
         }
 
-        public void write(int array[][]) {
+        public void write(int array[][]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1432,7 +1433,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readIntSparse2();
         }
 
-        public void write(int array[][]) {
+        public void write(int array[][]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1467,7 +1468,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readSquaredIntArray3();
         }
 
-        public void write(int array[][][]) {
+        public void write(int array[][][]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1500,7 +1501,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readCIntArray3();
         }
 
-        public void write(int array[][][]) {
+        public void write(int array[][][]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1534,7 +1535,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readIntSparse3();
         }
 
-        public void write(int array[][][]) {
+        public void write(int array[][][]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1573,7 +1574,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return reader.readCIntArrayList();
         }
 
-        public void write(int array[]) {
+        public void write(int array[]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1584,7 +1585,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             }
         }
 
-        public void write(ArrayList<Integer> array) {
+        public void write(ArrayList<Integer> array) throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.writeC(array);
@@ -1618,7 +1619,7 @@ public abstract class StructuredDataStream extends StructuredStream {
         }
 
         /* warning destructs array */
-        public void write(int array[]) {
+        public void write(int array[]) throws IOException {
             checkWrite(this);
             value = array;
             if (writer != null) {
@@ -1627,7 +1628,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write(ArrayList<Integer> al) {
+        public void write(ArrayList<Integer> al) throws IOException {
             write(io.github.htools.lib.ArrayTools.toIntArray(al));
         }
 
@@ -1661,7 +1662,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readLong();
         }
 
-        public void write(long l) {
+        public void write(long l) throws IOException {
             checkWrite(this);
             value = l;
             if (writer != null) {
@@ -1670,7 +1671,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write() {
+        public void write() throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(value);
@@ -1716,7 +1717,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readCLong();
         }
 
-        public void write(long l) {
+        public void write(long l) throws IOException {
             checkWrite(this);
             value = l;
             if (writer != null) {
@@ -1750,7 +1751,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readCLongArray();
         }
 
-        public void write(long l[]) {
+        public void write(long l[]) throws IOException {
             checkWrite(this);
             value = l;
             if (writer != null) {
@@ -1789,7 +1790,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return reader.readSparseLongMap();
         }
 
-        public void write(long l[]) {
+        public void write(long l[]) throws IOException {
             checkWrite(this);
             value = l;
             if (writer != null) {
@@ -1798,7 +1799,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             writeDone(this);
         }
 
-        public void write(Map<Integer, Long> l) {
+        public void write(Map<Integer, Long> l) throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.writeSparseLong(l);
@@ -1836,7 +1837,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return reader.readSparseIntMap();
         }
 
-        public void write(int l[]) {
+        public void write(int l[]) throws IOException {
             if (writer != null) {
                 checkWrite(this);
                 value = l;
@@ -1847,7 +1848,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             }
         }
 
-        public void write(Map<Integer, Integer> l) {
+        public void write(Map<Integer, Integer> l) throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.writeSparseInt(l);
@@ -1880,7 +1881,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value = reader.readDoubleSparse();
         }
 
-        public void write(double l[]) {
+        public void write(double l[]) throws IOException {
             checkWrite(this);
             value = l;
             if (writer != null) {
@@ -1931,7 +1932,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value;
         }
 
-        public void write(int iter) {
+        public void write(int iter) throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(counter = value = iter);
@@ -1996,7 +1997,7 @@ public abstract class StructuredDataStream extends StructuredStream {
             return value;
         }
 
-        public void write(long iter) {
+        public void write(long iter) throws IOException {
             checkWrite(this);
             if (writer != null) {
                 writer.write(iter);

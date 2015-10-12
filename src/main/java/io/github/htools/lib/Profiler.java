@@ -2,6 +2,7 @@ package io.github.htools.lib;
 
 import io.github.htools.io.Datafile;
 import static io.github.htools.lib.PrintTools.*;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 
@@ -41,7 +42,7 @@ public enum Profiler {;
         trace = false;
     }
 
-    public static void startTime(String name) {
+    public static void startTime(String name) throws IOException {
         if (trace) {
            out("startTime %s", name);
         }
@@ -54,7 +55,7 @@ public enum Profiler {;
         p.count++;
     }
 
-    public static void addTime(String name) {
+    public static void addTime(String name) throws IOException {
         Profile p = profiles.get(name);
         if (p == null) {
             p = new Profile(name);
@@ -103,7 +104,7 @@ public enum Profiler {;
         out = file;
     }
 
-    public final static void reportProfile() {
+    public final static void reportProfile() throws IOException {
         for (Profile p : profiles.values()) {
             out("%s( count=%d sec=%f )", p.name, p.count, p.time / 1000.0);
         }
@@ -117,7 +118,7 @@ public enum Profiler {;
         return sb.toString();
     }
 
-    protected static void out(String s, Object... args) {
+    protected static void out(String s, Object... args) throws IOException {
         if (out == null) {
             systemout.println(sprintf(s, args));
         } else {
@@ -126,7 +127,7 @@ public enum Profiler {;
         }
     }
 
-    public static void print(String s) {
+    public static void print(String s) throws IOException {
         if (out == null) {
             systemout.println(s);
         } else {
@@ -135,7 +136,7 @@ public enum Profiler {;
         }
     }
 
-    public static void printf(String message, Object... args) {
+    public static void printf(String message, Object... args) throws IOException {
         print(System.currentTimeMillis() - startTime + " " + sprintf(message, args));
     }
 

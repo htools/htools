@@ -1,18 +1,14 @@
 package io.github.htools.type;
 
-import io.github.htools.collection.ArrayMap;
 import io.github.htools.collection.HashMapInt;
-import io.github.htools.fcollection.FHashMapInt;
+import io.github.htools.fcollection.FHashMapObjectInt;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.buffer.BufferSerializable;
 import io.github.htools.io.struct.StructureReader;
 import io.github.htools.io.struct.StructureWriter;
-import io.github.htools.lib.ArrayTools;
 import it.unimi.dsi.fastutil.HashCommon;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -20,7 +16,7 @@ import java.util.Map;
  *
  * @author jeroen
  */
-public class TermVectorInt extends FHashMapInt<String> implements BufferSerializable {
+public class TermVectorInt extends FHashMapObjectInt<String> implements BufferSerializable {
 
     protected Integer total = null;
     protected Double magnitude = null;
@@ -32,7 +28,7 @@ public class TermVectorInt extends FHashMapInt<String> implements BufferSerializ
         super(size);
     }
 
-    public TermVectorInt(FHashMapInt<String> map) {
+    public TermVectorInt(FHashMapObjectInt<String> map) {
         super(map);
     }
 
@@ -68,7 +64,7 @@ public class TermVectorInt extends FHashMapInt<String> implements BufferSerializ
     }
 
     @Override
-    public TermVectorInt add(FHashMapInt<String> v) {
+    public TermVectorInt add(FHashMapObjectInt<String> v) {
         for (Object2IntMap.Entry<String> entry : v.object2IntEntrySet()) {
             super.add(entry.getKey(), entry.getIntValue());
         }

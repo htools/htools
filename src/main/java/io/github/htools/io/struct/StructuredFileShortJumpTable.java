@@ -4,6 +4,7 @@ import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 public abstract class StructuredFileShortJumpTable extends StructuredFile implements StructuredFileIntID {
 
@@ -12,12 +13,12 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    boolean loaded = false;
    private int id = 0;
 
-   public StructuredFileShortJumpTable(Datafile df) {
+   public StructuredFileShortJumpTable(Datafile df) throws IOException {
       super(df);
    }
 
    @Override
-   public void closeWrite() {
+   public void closeWrite() throws IOException {
       super.closeWrite();
       if (jumparray != null) {
          jumparray.closeWrite();
@@ -25,7 +26,7 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    }
 
    @Override
-   public void setDatafile(Datafile df) {
+   public void setDatafile(Datafile df) throws IOException {
       super.setDatafile(df);
       jumparray = new StructuredFileShortJumptableInternal(new Datafile(this.getDatafile().getSubFile(".jumparray")));
       id = 0;
@@ -33,7 +34,7 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    }
 
    @Override
-   public void openWrite() {
+   public void openWrite() throws IOException {
       super.openWrite();
       //log.info("openWrite()");
       id = 0;
@@ -41,12 +42,12 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    }
 
    @Override
-   public void hookRecordWritten() {
+   public void hookRecordWritten() throws IOException {
       jumparray.write(id++, this);
    }
 
    @Override
-   public void openRead() {
+   public void openRead() throws IOException {
       super.openRead();
       jumparray.openRead();
    }
@@ -59,14 +60,14 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    }
 
    @Override
-   public void read(int id) {
+   public void read(int id) throws IOException {
       find(id);
       //log.info("read offset %d", this.datafile.getOffset());
       nextRecord();
    }
 
    @Override
-   public void find(int id) {
+   public void find(int id) throws IOException {
       jumparray.openRead();
       long offset = jumparray.getOffset(id);
       //log.info("find id %d offset %d", id, offset);

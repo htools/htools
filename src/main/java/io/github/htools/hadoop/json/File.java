@@ -5,6 +5,7 @@ import io.github.htools.lib.Log;
 import io.github.htools.io.struct.StructuredRecordFile;
 import io.github.htools.io.struct.StructuredRecordFileIterator;
 import io.github.htools.io.struct.StructuredTextTSV;
+import java.io.IOException;
 
 /**
  * Supports Hadoop access to file storage in a tab separated values file, while
@@ -23,7 +24,7 @@ public abstract class File<J extends Writable> extends StructuredTextTSV impleme
     }
 
     @Override
-    public J readRecord() {
+    public J readRecord() throws IOException {
         J u = newRecord();
         u.read(this);
         return u;
@@ -35,7 +36,7 @@ public abstract class File<J extends Writable> extends StructuredTextTSV impleme
     }
 
     @Override
-    public void write(J record) {
+    public void write(J record) throws IOException {
         record.write(this);
     }
 }

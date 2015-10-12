@@ -45,7 +45,8 @@ public class DefaultTokenizer extends AbstractTokenizer {
         //this.addEndPipeline(new RemoveFilteredWords(this, unstemmedFilterSet));
     }
     
-    public void removeStopWords() {
+    public DefaultTokenizer removeStopWords() {
         addEndPipeline(new RemoveFilteredWords(this, unstemmedFilterSet));
+        return this;
     }
 }

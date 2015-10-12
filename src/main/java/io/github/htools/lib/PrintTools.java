@@ -5,9 +5,9 @@ import java.io.PrintStream;
 import java.util.Formatter;
 
 /**
- * Abstract class for making lazy C-like printf() statements. Put <i>import
- * static Lib.PrintTools.*;</i> in your script and you can printf() whenever you
- * need it.
+ * Supports making C-like printf() statements, using a format string that 
+ * contains % format specifiers (e.g. %d, %s, %5.2f), with the arguments
+ * that are to take their place.
  * <p>
  * @author jbpvuurens
  */

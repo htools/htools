@@ -115,7 +115,7 @@ public abstract class OutputFormat<F extends StructuredRecordFile, V extends Fil
     public static void setSingleOutput(Job job, Path file) throws IOException {
         job.getConfiguration().set(SINGLEFILE, file.toString());
         HDFSPath tempDirectorySingle = getTempDirectorySingle(job.getConfiguration());
-        if (tempDirectorySingle.exists()) {
+        if (tempDirectorySingle.existsDir()) {
             tempDirectorySingle.remove();
         }
         TextOutputFormat.setOutputPath(job, getTempDirectorySingle(job.getConfiguration()));
@@ -157,7 +157,7 @@ public abstract class OutputFormat<F extends StructuredRecordFile, V extends Fil
 
         F fsout;
 
-        public StructuredRecordWriter(F file) {
+        public StructuredRecordWriter(F file) throws IOException {
             log.info("StructuredRecordWriter %s %s", file.getClass().getCanonicalName(), file.getDatafile().getCanonicalPath());
             this.fsout = file;
             fsout.openWrite();

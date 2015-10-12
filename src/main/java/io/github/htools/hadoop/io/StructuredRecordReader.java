@@ -71,7 +71,7 @@ public abstract class StructuredRecordReader<F extends StructuredRecordFile, K, 
      * @return true if a next document was read
      */
     @Override
-    public boolean nextKeyValue() {
+    public boolean nextKeyValue() throws IOException {
         //log.info("nextKeyValue() hasMore %b", structuredRecordFile.hasMore());
         if (structuredRecordFile.hasMore()) {
             //log.info("nextKeyValue() offset %d ceiling %d",

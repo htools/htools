@@ -13,29 +13,29 @@ import java.util.Iterator;
  * A HashMap with a Double value, that supports adding values to existing keys
  * @author jeroen
  */
-public class FHashMapDouble<K> extends Object2DoubleOpenHashMap<K> implements java.util.Map<K, Double> {
+public class FHashMapObjectDouble<K> extends Object2DoubleOpenHashMap<K> implements java.util.Map<K, Double> {
 
-    public static final Log log = new Log(FHashMapDouble.class);
+    public static final Log log = new Log(FHashMapObjectDouble.class);
 
-    public FHashMapDouble() {
+    public FHashMapObjectDouble() {
         super();
     }
 
-    public FHashMapDouble(int size) {
+    public FHashMapObjectDouble(int size) {
         super(size);
     }
 
-    public FHashMapDouble(int size, float loadfactor) {
+    public FHashMapObjectDouble(int size, float loadfactor) {
         super(size, loadfactor);
     }
 
-    public FHashMapDouble(java.util.Map<K, Double> map) {
+    public FHashMapObjectDouble(java.util.Map<K, Double> map) {
         super(map);
     }
     
    @Override
-    public FHashMapDouble clone() {
-        FHashMapDouble clone = new FHashMapDouble(size());
+    public FHashMapObjectDouble clone() {
+        FHashMapObjectDouble clone = new FHashMapObjectDouble(size());
         for (Object2DoubleMap.Entry<K> entry : object2DoubleEntrySet()) {
             clone.put(entry.getKey(), entry.getDoubleValue());
         }
@@ -46,22 +46,22 @@ public class FHashMapDouble<K> extends Object2DoubleOpenHashMap<K> implements ja
         put(key, this.getDouble(key) + value);
     }
 
-    public <S extends FHashMapDouble<K>> S divide(S result, double div) {
+    public <S extends FHashMapObjectDouble<K>> S divide(S result, double div) {
         for (Object2DoubleMap.Entry<K> entry : object2DoubleEntrySet()) {
             result.put(entry.getKey(), entry.getDoubleValue() / div);
         }
         return result;
     }
     
-   public <S extends FHashMapDouble<K>> S getTop(S result, int k) {
+   public <S extends FHashMapObjectDouble<K>> S getTop(S result, int k) {
        TopKMap<Double, K> topk = new TopKMap(k);
        CollectionTools.invert(this.entrySet(), topk);
        CollectionTools.invert(topk, result);
        return result;
    }
    
-   public FHashMapDouble getTop(int k) {
-       return getTop(new FHashMapDouble(), k);
+   public FHashMapObjectDouble getTop(int k) {
+       return getTop(new FHashMapObjectDouble(), k);
    }
     
    public void cutBelow(double k) {

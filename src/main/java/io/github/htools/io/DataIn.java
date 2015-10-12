@@ -25,9 +25,11 @@ public interface DataIn {
 
    int readBytes(long offset, byte b[], int pos, int length);
 
-   void mustMoveBack();
+   void mustMoveBack() throws IOException;
 
    void openRead() throws IOException;
 
    InputStream getInputStream() throws IOException;
+   
+   boolean isCompressed();
 }

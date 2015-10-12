@@ -2,8 +2,8 @@ package io.github.htools.io;
 
 import io.github.htools.search.ByteSearch;
 import io.github.htools.collection.ListIterator;
-import static io.github.htools.lib.Const.NULLINT;
 import static io.github.htools.lib.Const.NULLLONG;
+import io.github.htools.lib.IteratorIterable;
 import io.github.htools.lib.Log;
 import java.io.File;
 import java.io.IOException;
@@ -15,11 +15,12 @@ import java.util.regex.Pattern;
 import org.apache.hadoop.io.IOUtils;
 
 /**
- * FSPath id a wrapper around File that adds functionality to the
- * use of paths on local filesystems. Typically a FSPath represents a directory of files (although some
- * methods also work if FSPath points to a file). The interface through HPath
- * provides the same operations on HDFSPath which is the equivalent to FSPath for
- * the HDFS filesystems, to allow the same code to run on both environments.
+ * FSPath id a wrapper around File that adds functionality to the use of paths
+ * on local filesystems. Typically a FSPath represents a directory of files
+ * (although some methods also work if FSPath points to a file). The interface
+ * through HPath provides the same operations on HDFSPath which is the
+ * equivalent to FSPath for the HDFS filesystems, to allow the same code to run
+ * on both environments.
  * <p>
  * @author jbpvuurens
  */
@@ -37,7 +38,7 @@ public class FSPath extends File implements HPath {
     }
 
     @Override
-    public boolean exists() {
+    public boolean existsDir() {
         return (super.exists() && super.isDirectory());
     }
 
@@ -46,12 +47,17 @@ public class FSPath extends File implements HPath {
         return (f.exists() && f.isFile());
     }
 
+    @Override
+    public boolean existsFile() {
+        return (exists() && isFile());
+    }
+
     public static boolean exists(String filename) {
         File f = new File(filename);
         return f.exists();
     }
 
-    public static boolean isDir(String filename) {
+    public static boolean existsDir(String filename) {
         File f = new File(filename);
         return f.exists() && f.isDirectory();
     }
@@ -71,16 +77,16 @@ public class FSPath extends File implements HPath {
         String path = getCanonicalPath();
         return path.substring(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')) + 1);
     }
-    
+
     public static void copy(String path1, String path2) throws IOException {
-        java.nio.file.Files.copy( 
+        java.nio.file.Files.copy(
                 new java.io.File(path1).toPath(),
                 new java.io.File(path2).toPath(),
                 java.nio.file.StandardCopyOption.REPLACE_EXISTING,
                 java.nio.file.StandardCopyOption.COPY_ATTRIBUTES,
-                java.nio.file.LinkOption.NOFOLLOW_LINKS );
+                java.nio.file.LinkOption.NOFOLLOW_LINKS);
     }
-    
+
     /**
      * @return last Modification time of the path
      */
@@ -92,13 +98,13 @@ public class FSPath extends File implements HPath {
             return NULLLONG;
         }
     }
-    
+
     public static boolean setLastModified(String filename, long time) {
         File file = new File(filename);
         if (file.exists()) {
             file.setLastModified(time);
             return true;
-        } 
+        }
         return false;
     }
 
@@ -158,7 +164,7 @@ public class FSPath extends File implements HPath {
         return new FSFileOutBuffer(getFilename(filename));
     }
 
-    public static void mergeFiles(Datafile out, Iterator<Datafile> files) {
+    public static void mergeFiles(Datafile out, Iterator<Datafile> files) throws IOException {
         OutputStream o = out.getOutputStream();
         while (files.hasNext()) {
             Datafile df = files.next();
@@ -206,8 +212,12 @@ public class FSPath extends File implements HPath {
     }
 
     @Override
-    public ListIterator<DirComponent> iterator() {
-        return new ListIterator(get());
+    public IteratorIterable<DirComponent> iterator() {
+        if (exists()) {
+            return new ListIterator(get());
+        } else {
+            return wildcardIterator();
+        }
     }
 
     public ListIterator<DirComponent> iteratorRecursive() {
@@ -233,28 +243,32 @@ public class FSPath extends File implements HPath {
     public ListIterator<DirComponent> iteratorDirs(ByteSearch regexstring) throws IOException {
         return new ListIterator(getDirs(regexstring));
     }
-    
+
     public ListIterator<DirComponent> iterator(ByteSearch regex) throws IOException {
         return new ListIterator(get(regex));
     }
-    
-    public ListIterator<DirComponent> iteratorFiles(String regexstring) {
+
+    public Iterator<DirComponent> iteratorFiles(String regexstring) {
         return new ListIterator(FSPath.this.getFiles(regexstring));
     }
 
-    public HPathWildcardIterator wildcardIterator() {
+    public IteratorIterable<DirComponent> wildcardIterator() {
         return new HPathWildcardIterator(this);
     }
-    
+
     public ArrayList<DirComponent> get() {
         ArrayList<DirComponent> results = new ArrayList();
-        for (String f : list()) {
-            String fullname = getFilename(f);
-            File file = new File(fullname);
-            if (file.isDirectory()) {
-                results.add(new FSPath(fullname));
-            } else {
-                results.add(new Datafile(fullname));
+        if (this.isFile()) {
+            results.add(new Datafile(this.getCanonicalPath()));
+        } else {
+            for (String f : list()) {
+                String fullname = getFilename(f);
+                File file = new File(fullname);
+                if (file.isDirectory()) {
+                    results.add(new FSPath(fullname));
+                } else {
+                    results.add(new Datafile(fullname));
+                }
             }
         }
         return results;
@@ -300,7 +314,7 @@ public class FSPath extends File implements HPath {
         }
         return results;
     }
-    
+
     @Override
     public ArrayList<Datafile> getFiles() {
         ArrayList<Datafile> results = new ArrayList();
@@ -395,12 +409,12 @@ public class FSPath extends File implements HPath {
             if (path.startsWith("/")) {
                 return new FSPath("/");
             }
-            return new FSPath("");
+            return new FSPath("~");
         }
         String parent = path.substring(0, lastSlash);
         return new FSPath(parent);
     }
-    
+
     public ArrayList<HPath> getDirs() {
         ArrayList<HPath> results = new ArrayList();
         for (String f : list()) {
@@ -442,8 +456,8 @@ public class FSPath extends File implements HPath {
 
     public ArrayList<FSPath> getDirs(ByteSearch pattern) throws IOException {
         ArrayList<FSPath> results = new ArrayList();
-            for (String name : list()) {
-                if (pattern.exists(name)) {
+        for (String name : list()) {
+            if (pattern.exists(name)) {
                 String fullname = getFilename(name);
                 File file = new File(fullname);
                 if (file.isDirectory()) {
@@ -453,7 +467,7 @@ public class FSPath extends File implements HPath {
         }
         return results;
     }
-    
+
     @Override
     public ArrayList<Datafile> getFilesStartingWith(String start) {
         ArrayList<Datafile> results = new ArrayList();
@@ -494,7 +508,7 @@ public class FSPath extends File implements HPath {
 
     @Override
     public void remove() throws IOException {
-       this.delete();
+        this.delete();
     }
 
 }

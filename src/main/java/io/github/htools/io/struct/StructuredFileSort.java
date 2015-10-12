@@ -1,7 +1,9 @@
 package io.github.htools.io.struct;
 
 import io.github.htools.io.Datafile;
+import io.github.htools.io.FileIntegrityException;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
@@ -20,14 +22,14 @@ public abstract class StructuredFileSort<R extends StructuredFileSortRecord> ext
    protected TreeSet<R> records;
    protected ArrayList<StructuredFileSortReader> readers = new ArrayList<StructuredFileSortReader>();
 
-   public StructuredFileSort(Datafile df) {
+   public StructuredFileSort(Datafile df) throws IOException {
       super(df);
       spillThreshold = spillThreshold();
       destfile = df;
    }
 
    @Override
-   public void hookRecordWritten() {
+   public void hookRecordWritten() throws IOException {
       if (writer == null) {
          //log.info("hookRecordWritten %s %d", writer, records.size());
          records.add(createRecord());
@@ -35,7 +37,7 @@ public abstract class StructuredFileSort<R extends StructuredFileSortRecord> ext
       }
    }
 
-   private void checkSpill() {
+   private void checkSpill() throws IOException {
       if (records.size() >= spillThreshold) {
          spillSegment();
       }
@@ -46,7 +48,7 @@ public abstract class StructuredFileSort<R extends StructuredFileSortRecord> ext
    public abstract R createRecord();
 
    @Override
-   public void openWrite() {
+   public void openWrite() throws IOException {
       records = new TreeSet<R>();
       tempfile = this.getTempfile();
       tempfile.openWrite();
@@ -55,25 +57,25 @@ public abstract class StructuredFileSort<R extends StructuredFileSortRecord> ext
       super.openWrite();
    }
 
-   public void openWriteFinal() {
+   public void openWriteFinal() throws IOException {
       this.setDatafile(destfile);
       this.setBufferSize(10000000);
       super.openWrite();
    }
 
-   public void openReadTemp() {
+   public void openReadTemp() throws IOException {
       super.openRead();
    }
 
    @Override
-   public void closeWrite() {
+   public void closeWrite() throws IOException {
       spillSegment();
       setDatafile(tempfile);
       super.closeWrite();
       merge();
    }
 
-   public void spillSegment() {
+   public void spillSegment() throws IOException {
       if (records.size() > 0) {
          setDatafile(tempfile);
          long segmentoffset = getOffset();
@@ -91,7 +93,7 @@ public abstract class StructuredFileSort<R extends StructuredFileSortRecord> ext
       }
    }
 
-   public final void merge() {
+   public final void merge() throws IOException {
       this.openWriteFinal();
       TreeSet<StructuredFileSortReader> orderedreaders = new TreeSet<StructuredFileSortReader>();
       int show = 0;
@@ -125,7 +127,7 @@ public abstract class StructuredFileSort<R extends StructuredFileSortRecord> ext
       //tempfile.delete();
    }
 
-   public boolean initSearchKey() {
+   public boolean initSearchKey() throws FileIntegrityException, IOException {
       this.openRead();
       return true;
    }

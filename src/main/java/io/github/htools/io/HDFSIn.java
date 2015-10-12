@@ -1,8 +1,11 @@
 package io.github.htools.io;
 
+import io.github.htools.hadoop.Conf;
+import io.github.htools.io.compressed.LZ4FrameInputStream;
 import io.github.htools.lib.Log;
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.compress.CompressionCodec;
@@ -27,17 +30,17 @@ public class HDFSIn extends ISDataIn {
     public FileSystem fs;
     public Path path;
 
-    public HDFSIn(FileSystem fs, Path path, boolean open) {
+    public HDFSIn(FileSystem fs, Path path) {
         this.path = path;
         this.fs = fs;
     }
 
-    public HDFSIn(FileSystem fs, Path path) {
-        this(fs, path, true);
-    }
-
     public HDFSIn(FileSystem fs, String filename) {
         this(fs, new Path(filename));
+    }
+
+    public HDFSIn(Configuration conf, String filename) {
+        this(Conf.getFileSystem(conf), new Path(filename));
     }
 
     @Override
@@ -71,11 +74,17 @@ public class HDFSIn extends ISDataIn {
     @Override
     public InputStream getInputStream() throws IOException {
         if (inputstream == null) {
-            inputstream = fs.open(path, 4096);
-            CompressionCodecFactory compressionCodecs = new CompressionCodecFactory(fs.getConf());
-            CompressionCodec codec = compressionCodecs.getCodec(path);
-            if (codec != null) {
-                inputstream = codec.createInputStream(inputstream);
+            inputstream = fs.open(path, 1000000);
+            if (path.getName().endsWith(".lz4")) {
+                inputstream = new LZ4FrameInputStream(inputstream);
+                isCompressed = true;
+            } else {
+                CompressionCodecFactory compressionCodecs = new CompressionCodecFactory(fs.getConf());
+                CompressionCodec codec = compressionCodecs.getCodec(path);
+                if (codec != null) {
+                    inputstream = codec.createInputStream(inputstream);
+                    isCompressed = true;
+                }
             }
         }
         return inputstream;

@@ -1,6 +1,8 @@
 package io.github.htools.hbase;
 
 import io.github.htools.lib.Log;
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.util.Bytes;
 
 /**
@@ -10,8 +12,8 @@ import org.apache.hadoop.hbase.util.Bytes;
 public abstract class TableF extends Table {
     public static Log log = new Log(TableF.class);
 
-    public TableF(String tablename, String[] regions) {
-        super(tablename, regions);
+    public TableF(Configuration conf, String tablename, String[] regions) throws IOException {
+        super(conf, tablename, regions);
         addColumnFamily("f");
     }
     

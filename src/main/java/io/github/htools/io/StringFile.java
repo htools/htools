@@ -153,7 +153,7 @@ public class StringFile extends FileGeneric {
     * <p>
     * @return
     */
-   public String getSHA1() {
+   public String getSHA1() throws IOException {
       try {
          MessageDigest md = MessageDigest.getInstance("SHA"); // SHA or MD5
          String hash = "";

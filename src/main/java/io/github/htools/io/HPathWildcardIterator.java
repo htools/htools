@@ -33,15 +33,16 @@ public class HPathWildcardIterator implements IteratorIterable<DirComponent> {
         components = new ArrayDeque();
         components.addFirst(path.getName());
         path = path.getParentPath();
-        while (!path.exists()) {
+        while (!path.toString().equals("~") && !path.existsDir()) {
             components.addFirst(path.getName());
             path = path.getParentPath();
+            log.info("component %s %s", path.getName(), path.toString());
         }
         hpath = path;
     }
 
     @Override
-    public IteratorIterable<DirComponent> iterator() {
+    public Iterator<DirComponent> iterator() {
         for (String component : components) {
             regex.add(ByteSearch.createFilePattern(component));
         }
@@ -71,10 +72,10 @@ public class HPathWildcardIterator implements IteratorIterable<DirComponent> {
                 if (i == regex.size() - 1) {
                     lastcomponent = next;
                     return true;
-                }
+               }
             }
         } catch (IOException ex) {
-            Logger.getLogger(HPathWildcardIterator.class.getName()).log(Level.SEVERE, null, ex);
+            log.exception(ex, "setupIterator [%s] [%d]", p.getCanonicalPath(), i);
         }
         return false;
     }

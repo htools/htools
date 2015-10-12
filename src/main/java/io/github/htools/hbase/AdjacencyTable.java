@@ -2,6 +2,8 @@ package io.github.htools.hbase;
 
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.util.Bytes;
 
 /**
@@ -11,8 +13,8 @@ import org.apache.hadoop.hbase.util.Bytes;
 public abstract class AdjacencyTable extends TableF {
     public static Log log = new Log(AdjacencyTable.class);
 
-    public AdjacencyTable(String tablename, String[] regions) {
-        super(tablename, regions);
+    public AdjacencyTable(Configuration conf, String tablename, String[] regions) throws IOException {
+        super(conf, tablename, regions);
     }
     
     public void addRow(byte[] source, byte[] destination, byte[] value) {
@@ -22,6 +24,14 @@ public abstract class AdjacencyTable extends TableF {
     
     public void addRow(String source, String destination, byte[] value) {
         addRow(source.getBytes(), destination.getBytes(), value);
+    }
+    
+    public void addRow(byte[] source, String destination, byte[] value) {
+        addRow(source, destination.getBytes(), value);
+    }
+    
+    public void addRow(byte[] source, String destination, int value) {
+        addRow(source, destination.getBytes(), value);
     }
     
     public void addRow(String source, String destination, int value) {

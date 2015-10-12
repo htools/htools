@@ -318,13 +318,13 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public void reuseBuffer() {
+    public void reuseBuffer() throws IOException {
         setOffset(offset);
         hasmore = true;
     }
 
     @Override
-    public void setOffset(long offset) {
+    public void setOffset(long offset) throws IOException {
         //log.info("setOffset off %d end %d pos %d newoff %d", this.offset, end, bufferpos, offset);
         if (offset >= this.offset && offset < this.offset + end) {
             bufferpos = (int) (offset - this.offset);

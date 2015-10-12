@@ -16,11 +16,13 @@ import org.apache.hadoop.fs.Path;
 public class FileFilter {
 
    public static final String[] empty = new String[0];
-   String[] validFilenameStart;
-   String[] validFilenameEnd;
-   String[] invalidFilenameStart;
-   String[] invalidFilenameEnd;
+   String[] validFilenameStart = empty;
+   String[] validFilenameEnd = empty;
+   String[] invalidFilenameStart = empty;
+   String[] invalidFilenameEnd = empty;
 
+   protected FileFilter() {}
+   
    public FileFilter(Configuration conf) {
       validFilenameStart = conf.getStrings("entityreader.validfilenamestart", empty);
       validFilenameEnd = conf.getStrings("entityreader.validfilenameend", empty);
@@ -28,6 +30,22 @@ public class FileFilter {
       invalidFilenameEnd = conf.getStrings("entityreader.invalidfilenameend", empty);
    }
 
+   protected void setValidFileNameStart(String ... validFileNameStart) {
+       this.validFilenameStart = validFileNameStart;
+   }
+   
+   protected void setInvalidFileNameStart(String ... invalidFileNameStart) {
+       this.invalidFilenameStart = invalidFileNameStart;
+   }
+   
+   protected void setValidFileNameEnd(String ... validFileNameEnd) {
+       this.validFilenameEnd = validFileNameEnd;
+   }
+   
+   protected void setInvalidFileNameEnd(String ... invalidFileNameEnd) {
+       this.invalidFilenameEnd = invalidFileNameEnd;
+   }
+   
    public boolean acceptFile(Path path) {
       String file = path.getName();
       return startWith(file) && endWith(file) && omitStart(file) && omitEnd(file);

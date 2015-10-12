@@ -2,6 +2,7 @@ package io.github.htools.io.struct;
 
 import io.github.htools.io.DataIn;
 import io.github.htools.io.DataOut;
+import java.io.IOException;
 
 /**
  *
@@ -9,7 +10,7 @@ import io.github.htools.io.DataOut;
  */
 public interface StructureData extends StructureReader, StructureWriter {
 
-   public void openWrite();
+   public void openWrite() throws IOException;
 
    @Override
    public void closeRead();

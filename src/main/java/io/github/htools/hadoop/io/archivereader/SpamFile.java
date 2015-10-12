@@ -3,6 +3,7 @@ package io.github.htools.hadoop.io.archivereader;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.struct.StructuredFile;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 /**
  * A file containing the document ID's and Waterloo Fusion Spam index, to allow
@@ -17,13 +18,13 @@ public class SpamFile extends StructuredFile {
     * <p>
     * @param datafile
     */
-   public SpamFile(Datafile datafile) {
+   public SpamFile(Datafile datafile) throws IOException {
       super(datafile);
    }
    public StringField cluewebid = this.addString("cluewebid");
    public IntField spamindex = this.addInt("spamindex");
 
-   public static idlist getIdList(Datafile df, int spamthreshold) {
+   public static idlist getIdList(Datafile df, int spamthreshold) throws IOException {
       idlist sl = new idlist();
       SpamFile sf = new SpamFile(df);
       sf.setBufferSize(10000000);

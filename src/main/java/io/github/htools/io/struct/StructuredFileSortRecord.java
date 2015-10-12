@@ -1,5 +1,6 @@
 package io.github.htools.io.struct;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 public abstract class StructuredFileSortRecord implements Comparable<StructuredFileSortRecord> {
    protected StructuredFileSort file;
@@ -17,7 +18,7 @@ public abstract class StructuredFileSortRecord implements Comparable<StructuredF
       return file.compareKeys(this, o);
    }
 
-   public abstract void write();
+   public abstract void write() throws IOException;
 
-   protected abstract void writeFinal();
+   protected abstract void writeFinal() throws IOException;
 }

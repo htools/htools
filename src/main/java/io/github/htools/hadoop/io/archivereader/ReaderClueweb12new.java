@@ -10,6 +10,7 @@ import io.github.htools.search.ByteSearch;
 import io.github.htools.io.EOCException;
 import io.github.htools.search.ByteSection;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * An implementation of Reader that reads the ClueWeb12 collection, 
@@ -30,7 +31,7 @@ public class ReaderClueweb12new extends ArchiveReader {
    private idlist ids;
 
    @Override
-   public void initialize(FileSplit fileSplit) {
+   public void initialize(FileSplit fileSplit) throws IOException {
       Path file = fileSplit.getPath();
       String directory = getDir(file);
       String idlist = conf.get("repository.idlist", null);
@@ -41,7 +42,7 @@ public class ReaderClueweb12new extends ArchiveReader {
    }
 
    @Override
-   public boolean nextKeyValue() {
+   public boolean nextKeyValue() throws IOException {
       while (fsin.hasMore()) {
          readEntity();
          Position pos = new Position();
@@ -85,7 +86,7 @@ public class ReaderClueweb12new extends ArchiveReader {
       return -1;
    }
 
-   private void readEntity() {
+   private void readEntity() throws IOException {
       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       entitywritable = new Content();
       key.set(fsin.getOffset());

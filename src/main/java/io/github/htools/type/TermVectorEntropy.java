@@ -1,7 +1,7 @@
 package io.github.htools.type;
 
 import io.github.htools.collection.HashMapInt;
-import io.github.htools.fcollection.FHashMapInt;
+import io.github.htools.fcollection.FHashMapObjectInt;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.struct.StructureReader;
 import io.github.htools.io.struct.StructureWriter;
@@ -49,14 +49,14 @@ public class TermVectorEntropy extends TermVectorInt {
         }
     }
 
-    public TermVectorEntropy(ArrayList<? extends FHashMapInt> collections) {
-        for (FHashMapInt<String> map : collections) {
+    public TermVectorEntropy(ArrayList<? extends FHashMapObjectInt> collections) {
+        for (FHashMapObjectInt<String> map : collections) {
             super.add(map);
         }
         recompute();
     }
 
-    public TermVectorEntropy(FHashMapInt<String> terms) {
+    public TermVectorEntropy(FHashMapObjectInt<String> terms) {
         total = 0;
         add(terms);
     }
@@ -145,7 +145,7 @@ public class TermVectorEntropy extends TermVectorInt {
         magnitude = null;
     }
 
-    public TermVectorInt add(FHashMapInt<String> v) {
+    public TermVectorInt add(FHashMapObjectInt<String> v) {
         for (Object2IntMap.Entry<String> entry : v.object2IntEntrySet()) {
             int oldfreq = getInt(entry.getKey());
             int newfreq = entry.getIntValue() + oldfreq;
@@ -161,7 +161,7 @@ public class TermVectorEntropy extends TermVectorInt {
     }
 
     @Override
-    public void remove(FHashMapInt<String> v) {
+    public void remove(FHashMapObjectInt<String> v) {
         for (Object2IntMap.Entry<String> entry : v.object2IntEntrySet()) {
             int current = getInt(entry.getKey());
             sumflog -= getPLogP(current);
@@ -374,10 +374,10 @@ public class TermVectorEntropy extends TermVectorInt {
         return (entropymax > lowentropy) ? ig / (entropymax - lowentropy) : 1;
     }
 
-    public static HashSet<String> purity(Collection<? extends FHashMapInt<String>> vectors, double threshold) {
+    public static HashSet<String> purity(Collection<? extends FHashMapObjectInt<String>> vectors, double threshold) {
         HashSet<String> result = new HashSet();
         HashMap<String, TermVectorEntropy> terms = new HashMap();
-        for (FHashMapInt<String> vector : vectors) {
+        for (FHashMapObjectInt<String> vector : vectors) {
             for (String t : vector.keySet()) {
                 TermVectorEntropy vectort = terms.get(t);
                 if (vectort == null) {

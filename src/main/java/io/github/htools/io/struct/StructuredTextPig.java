@@ -6,10 +6,11 @@ import io.github.htools.search.ByteSearchSection;
 import io.github.htools.search.ByteSection;
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Strcutures data in a tab-delimited file for processing with Pig.
+ * Structures data in a tab-delimited file for processing with Pig.
  * <p>
  * @author jeroen
  */
@@ -91,7 +92,7 @@ public abstract class StructuredTextPig extends StructuredTextCSV {
         }
 
         @Override
-        protected void write(ArrayList list) {
+        protected void write(ArrayList list) throws IOException {
             if (list != null && list.size() > 0) {
                 if (openlabel.length() > 0) {
                     datafile.printf("%s", openlabel);

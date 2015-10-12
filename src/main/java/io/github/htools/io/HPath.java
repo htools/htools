@@ -44,6 +44,12 @@ public interface HPath extends DirComponent, Iterable<DirComponent> {
    
    boolean mkdirs();
 
+   @Override
+   boolean existsDir();
+   
+   @Override
+   boolean existsFile();
+   
    boolean exists();
    
    void remove() throws IOException;
@@ -62,11 +68,11 @@ public interface HPath extends DirComponent, Iterable<DirComponent> {
 
     public Iterator<DirComponent> iteratorFiles(String regexstring) throws IOException;
 
-    public ListIterator<DirComponent> iteratorDirs(ByteSearch regexstring) throws IOException;
+    public Iterator<DirComponent> iteratorDirs(ByteSearch regexstring) throws IOException;
     
-    public ListIterator<DirComponent> iterator(ByteSearch regex) throws IOException;
+    public Iterator<DirComponent> iterator(ByteSearch regex) throws IOException;
 
-    public HPathWildcardIterator wildcardIterator() throws IOException;
+    public Iterator<DirComponent> wildcardIterator() throws IOException;
 
     public ArrayList<DirComponent> get() throws IOException;
 

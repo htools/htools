@@ -6,6 +6,8 @@ import io.github.htools.fcollection.FHashSet;
 import io.github.htools.fcollection.FHashSetInt;
 import io.github.htools.fcollection.FHashSetLong;
 import io.github.htools.hadoop.Conf;
+import io.github.htools.io.ByteReader;
+import io.github.htools.io.compressed.ArchiveByteFile;
 import io.github.htools.lib.Log;
 import java.io.IOException;
 import java.util.Collection;
@@ -33,85 +35,114 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
  * offset and searches from that point until the first start of document tag.
  * This way no documents are processed twice or get lost.
  * <p>
- * EntityReader is used internally by {@link ReaderInputFormat}, to read
- * the next entity from a source archive, for processing by a Mapper as
+ * EntityReader is used internally by {@link ReaderInputFormat}, to read the
+ * next entity from a source archive, for processing by a Mapper as
  * {@link Content}.
  *
  * @author jeroen
  */
 public abstract class ArchiveReader extends RecordReader<LongWritable, Content> {
 
-   public static Log log = new Log(ArchiveReader.class);
-   protected TaskAttemptContext context;
-   protected long start;
-   protected long end;
-   protected Datafile fsin;
-   protected LongWritable key = new LongWritable();
-   protected Content entitywritable;
-   protected FileSystem filesystem;
-   protected Configuration conf;
+    public static Log log = new Log(ArchiveReader.class);
+    protected String inputPath;
+    protected TaskAttemptContext context;
+    protected long start;
+    protected long end;
+    protected long estimatedEnd;
+    protected boolean isCompressed = false;
+    protected ByteReader fsin;
+    protected LongWritable key = new LongWritable();
+    protected Content entitywritable;
+    protected FileSystem filesystem;
+    protected Configuration conf;
 
-   @Override
-   public void initialize(InputSplit is, TaskAttemptContext tac) {
-         context = tac;
-         initialize( is, tac.getConfiguration() );
-   }
+    @Override
+    public void initialize(InputSplit is, TaskAttemptContext tac) {
+        context = tac;
+        initialize(is, tac.getConfiguration());
+    }
 
-   public final void initialize(InputSplit is, Configuration conf) {
-      //log.info("initialize");
-      try {
-         this.conf = conf;
-         filesystem = FileSystem.get(conf);
-         FileSplit fileSplit = (FileSplit) is;
-         Path file = fileSplit.getPath();
-         start = fileSplit.getStart();
-         end = start + fileSplit.getLength();
-         fsin = new Datafile(filesystem, file);
-         fsin.setOffset(start);
-         fsin.setBufferSize(10000000);
-         fsin.openRead();
-         initialize(fileSplit);
-      } catch (IOException ex) {
-         log.exception(ex, "initialize( %s ) conf %s filesystem %s fsin %s", is, conf, filesystem, fsin);
-      }
-   }
+    public final void initialize(InputSplit is, Configuration conf) {
+        //log.info("initialize");
+        try {
+            this.conf = conf;
+            filesystem = FileSystem.get(conf);
+            FileSplit fileSplit = (FileSplit) is;
+            Path file = fileSplit.getPath();
+            start = fileSplit.getStart();
+            fsin = getByteReader(file);
+            initialize(fileSplit);
+            end = (isCompressed)?Long.MAX_VALUE:start + fileSplit.getLength();
+            log.info("compressed %b end %d", isCompressed, end);
+            estimatedEnd = start + (long)((isCompressed)?2.5 * fileSplit.getLength():fileSplit.getLength());
+        } catch (IOException ex) {
+            log.exception(ex, "initialize( %s ) conf %s filesystem %s fsin %s", is, conf, filesystem, fsin);
+        }
+    }
 
-   public abstract void initialize(FileSplit fileSplit);
+    public boolean isCompressed() {
+        return isCompressed;
+    }
+    
+    public String getInputFile() {
+        if (fsin instanceof ArchiveByteFile) {
+            return ((ArchiveByteFile)fsin).getCurrentFilename();
+        }
+        return inputPath;
+    }
+    
+    protected ByteReader getByteReader(Path file) throws IOException {
+        ArchiveByteFile archiveFile = io.github.htools.io.compressed.ArchiveFile.getReader(conf, file);
+        if (archiveFile == null) {
+            inputPath = file.toString();
+            Datafile df = new Datafile(filesystem, file);
+            df.setOffset(start);
+            df.setBufferSize(10000000);
+            df.openRead();
+            df.rwbuffer.checkIn(1);
+            isCompressed = df.rwbuffer.datain.isCompressed();
+            return df;
+        }
+        isCompressed = true;
+        return archiveFile;
+    }
 
-   /**
-    * Reads the input file, scanning for the next document, setting key and
-    * entitywritable with the offset and byte contents of the document read.
-    * <p>
-    * @return true if a next document was read
-    */
-   @Override
-   public abstract boolean nextKeyValue();
+    public abstract void initialize(FileSplit fileSplit) throws IOException;
 
-   @Override
-   public LongWritable getCurrentKey() throws IOException, InterruptedException {
-      return key;
-   }
+    /**
+     * Reads the input file, scanning for the next document, setting key and
+     * entitywritable with the offset and byte contents of the document read.
+     * <p>
+     * @return true if a next document was read
+     */
+    @Override
+    public abstract boolean nextKeyValue() throws IOException ;
 
-   @Override
-   public Content getCurrentValue() throws IOException, InterruptedException {
-      return entitywritable;
-   }
-   
-   /**
-    * NB this indicates progress as the data that has been read, for some
-    * MapReduce tasks processing the data continues for some startTime, causing
-    * the progress indicator to halt at 100%.
-    * <p>
-    * @return @throws IOException
-    * @throws InterruptedException
-    */
-   @Override
-   public float getProgress() throws IOException, InterruptedException {
-      return (fsin.getOffset() - start) / (float) (end - start);
-   }
+    @Override
+    public LongWritable getCurrentKey() throws IOException, InterruptedException {
+        return key;
+    }
 
-   @Override
-   public void close() throws IOException {
-      fsin.close();
-   }
+    @Override
+    public Content getCurrentValue() throws IOException, InterruptedException {
+        return entitywritable;
+    }
+
+    /**
+     * NB this indicates progress as the data that has been read, for some
+     * MapReduce tasks processing the data continues for some startTime, causing
+     * the progress indicator to halt at 100%.
+     * <p>
+     * @return @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    public float getProgress() throws IOException, InterruptedException {
+        return (fsin.getOffset() - start) / (float) (estimatedEnd - start);
+    }
+
+    @Override
+    public void close() throws IOException {
+        fsin.closeRead();
+    }
 }

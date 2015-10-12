@@ -7,6 +7,7 @@ import io.github.htools.io.EOCException;
 import io.github.htools.search.ByteSection;
 import io.github.htools.lib.Log;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
@@ -45,7 +46,7 @@ public class ReaderClueweb9 extends ArchiveReader {
    private int spamthreshold;
 
    @Override
-   public void initialize(FileSplit fileSplit) {
+   public void initialize(FileSplit fileSplit) throws IOException {
       Path file = fileSplit.getPath();
       String directory = getDir(file);
       spamthreshold = conf.getInt("repository.spamthreshold", 0);
@@ -60,7 +61,7 @@ public class ReaderClueweb9 extends ArchiveReader {
    }
 
    @Override
-   public boolean nextKeyValue() {
+   public boolean nextKeyValue() throws IOException {
       while (fsin.hasMore()) {
          readEntity();
          String id = warcID.getFirstString(entitywritable.content, 0, entitywritable.content.length);
@@ -89,7 +90,7 @@ public class ReaderClueweb9 extends ArchiveReader {
       return false;
    }
 
-   private void readEntity() {
+   private void readEntity() throws IOException {
       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       entitywritable = new Content();
       key.set(fsin.getOffset());

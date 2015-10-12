@@ -16,7 +16,7 @@ public abstract class StructuredFileSortedByteJumptable extends StructuredFileSo
     StructuredFileByteJumptableInternal idfile;
     protected int id = 0;
 
-    public StructuredFileSortedByteJumptable(Datafile df) {
+    public StructuredFileSortedByteJumptable(Datafile df) throws IOException {
         super(df);
     }
 
@@ -25,7 +25,7 @@ public abstract class StructuredFileSortedByteJumptable extends StructuredFileSo
     }
 
     @Override
-    public void closeWrite() {
+    public void closeWrite() throws IOException {
         super.closeWrite();
         if (idfile != null) {
             idfile.closeWrite();
@@ -33,7 +33,7 @@ public abstract class StructuredFileSortedByteJumptable extends StructuredFileSo
     }
 
     @Override
-    public void openWriteFinal() {
+    public void openWriteFinal() throws IOException {
         log.info("openWriteFinal()");
         id = 0;
         idfile = new StructuredFileByteJumptableInternal(new Datafile(this.destfile.getSubFile(".jumparray")));
@@ -43,7 +43,7 @@ public abstract class StructuredFileSortedByteJumptable extends StructuredFileSo
     }
 
     @Override
-    public void openRead() {
+    public void openRead() throws IOException {
         try {
             super.openRead();
             residenttable = new BufferReaderWriter(this.getDatafile().readFully());
@@ -56,7 +56,7 @@ public abstract class StructuredFileSortedByteJumptable extends StructuredFileSo
         }
     }
 
-    public StructuredFileSortJumptableRecord find(int id) {
+    public StructuredFileSortJumptableRecord find(int id) throws IOException {
         //log.info("bucketindex %d", r.bucketindex);
         StructuredFileSortJumptableRecord record = (StructuredFileSortJumptableRecord) this.createRecord();
         long offset = idfile.getOffset(id);

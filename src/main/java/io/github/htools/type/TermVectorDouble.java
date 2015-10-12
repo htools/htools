@@ -1,7 +1,7 @@
 package io.github.htools.type;
 
 import io.github.htools.collection.HashMapDouble;
-import io.github.htools.fcollection.FHashMapDouble;
+import io.github.htools.fcollection.FHashMapObjectDouble;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import java.util.Collection;
  *
  * @author jeroen
  */
-public class TermVectorDouble extends FHashMapDouble<String>{
+public class TermVectorDouble extends FHashMapObjectDouble<String>{
 
     Double total = null;
     Double magnitude = null;
@@ -26,7 +26,7 @@ public class TermVectorDouble extends FHashMapDouble<String>{
         super(size, loadfactor);
     }
 
-    public TermVectorDouble(FHashMapDouble<String> map) {
+    public TermVectorDouble(FHashMapObjectDouble<String> map) {
         super(map);
     }
 

@@ -3,6 +3,7 @@ package io.github.htools.io.struct;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.FileIntegrityException;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 
 /**
@@ -22,14 +23,14 @@ public abstract class StructuredFileWriteLock extends StructuredFile {
    public long mylock = 0;
    public long otherlock = 0;
 
-   public StructuredFileWriteLock(Datafile basefile, Configuration conf) {
+   public StructuredFileWriteLock(Datafile basefile, Configuration conf) throws IOException {
       super(basefile.getSubFile(".lock"));
       this.configuration = conf;
       jobid = conf.get("mapreduce.job.id");
    }
 
-   public boolean obtainLock() throws FileIntegrityException {
-      if (getDatafile().exists()) {
+   public boolean obtainLock() throws FileIntegrityException, IOException {
+      if (getDatafile().existsDir()) {
          super.openRead();
          if (isReadOpen()) {
             setOffset(0);
@@ -48,7 +49,7 @@ public abstract class StructuredFileWriteLock extends StructuredFile {
       }
    }
 
-   public boolean checkLockValidity() {
+   public boolean checkLockValidity() throws IOException {
       boolean valid=false;
       if (mylock > 0) {
          setOffset(0);

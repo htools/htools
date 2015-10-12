@@ -108,6 +108,7 @@ public class BulkOutputFormat extends FileOutputFormat<ImmutableBytesWritable, C
      * @return String array containing table and row
      */
     protected static String[] getTableAndRow(ImmutableBytesWritable bytes) {
+        //log.info("getTableAndRow %s", ByteTools.toString(bytes.get()));
         String keyWithPrefix = Bytes.toString(bytes.get());
         int index = keyWithPrefix.indexOf("#");
         if (index == -1) {

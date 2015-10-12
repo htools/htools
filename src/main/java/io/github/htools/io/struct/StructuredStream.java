@@ -3,6 +3,7 @@ package io.github.htools.io.struct;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.struct.StructureData;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 /**
  * Provides streamed data access by iterative read/write actions of records/rows
@@ -195,7 +196,7 @@ public abstract class StructuredStream {
     /**
      * provides a hook after a field was written
      */
-    public void writeDone(Field f) {
+    public void writeDone(Field f) throws IOException {
     }
 
 //   @Override
@@ -322,9 +323,9 @@ public abstract class StructuredStream {
          * <p>
          * @throws EOCException when EOF or ceiling is encountered
          */
-        public abstract void readNoReturn() throws EOCException;
+        public abstract void readNoReturn() throws EOCException, IOException;
 
-        public abstract void write() throws EOCException;
+        public abstract void write() throws EOCException, IOException;
 
         /**
          * skips reading this field and moves the offset to the next Field
@@ -361,6 +362,7 @@ public abstract class StructuredStream {
             throw new EOCException("StartField should never be read");
         }
 
+        @Override
         public void write() {
             throw new UnsupportedOperationException();
         }

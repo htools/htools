@@ -17,6 +17,7 @@ package io.github.htools.io.buffer;
 
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -28,7 +29,7 @@ public class BufferReaderWriterTest {
     public static Log log = new Log(BufferReaderWriterTest.class);
 
     @Test
-    public void testReadBytes() {
+    public void testReadBytes() throws IOException {
         Datafile df = new Datafile("/Users/jeroen/bufferreaderwritertest");
         df.openWrite();
         for (int i = 0; i < 10; i++)

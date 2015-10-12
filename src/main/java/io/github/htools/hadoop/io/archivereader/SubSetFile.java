@@ -3,6 +3,7 @@ package io.github.htools.hadoop.io.archivereader;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.struct.StructuredFile;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 /**
  * Contains a list of document ID's for selective indexing. 
@@ -16,12 +17,12 @@ public class SubSetFile extends StructuredFile {
     * <p>
     * @param datafile
     */
-   public SubSetFile(Datafile datafile) {
+   public SubSetFile(Datafile datafile) throws IOException {
       super(datafile);
    }
    public StringField documentid = this.addString("documentid");
 
-   public static idlist getIdList(Datafile df) {
+   public static idlist getIdList(Datafile df) throws IOException {
       idlist sl = new idlist();
       SubSetFile sf = new SubSetFile(df);
       sf.setBufferSize(10000000);

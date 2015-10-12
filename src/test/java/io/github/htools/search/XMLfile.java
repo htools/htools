@@ -5,6 +5,7 @@ import io.github.htools.io.Datafile;
 import io.github.htools.io.struct.StructuredTextFile;
 import io.github.htools.io.struct.StructuredTextXML;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 /**
  *
@@ -54,7 +55,7 @@ public class XMLfile extends StructuredTextXML {
       return addNode(null, "session");
    }
 
-   public static void main(String[] args) {
+   public static void main(String[] args) throws IOException {
       XMLfile f = new XMLfile(new Datafile("/home/jer/Desktop/st11.topics.txt"));
       f.datafile.setBufferSize((int) f.datafile.getLength());
       f.openRead();

@@ -21,12 +21,12 @@ public class LogFile extends LogFileAbstract {
         super(outputfile);
     }
     
-    public void write(String message) {
+    public void write(String message) throws IOException {
         this.message.set(message);
         this.write();
     }
     
-    public void write(String message, Object ... params) {
+    public void write(String message, Object ... params) throws IOException {
         this.message.set(PrintTools.sprintf(message, params));
         this.write();
     }

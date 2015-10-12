@@ -47,6 +47,10 @@ public class TopKMap<K extends Comparable, V> extends TopK<Map.Entry<K,V>> {
      return super.add(new KV<K,V>(key, value));
   }
    
+  public boolean wouldBeAdded(K key) {
+     return super.wouldBeAdded(new KV<K,V>(key, null));
+  }
+   
   public Collection<V> values() {
       ArrayList<V> values = new ArrayList();
       for (Map.Entry<K, V> entry : this) {

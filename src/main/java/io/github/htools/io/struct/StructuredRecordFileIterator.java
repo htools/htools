@@ -1,7 +1,10 @@
 package io.github.htools.io.struct;
 
 import io.github.htools.lib.Log;
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Iterates over a StructuredRecordFile, returning the generic Record. 
@@ -17,9 +20,11 @@ public class StructuredRecordFileIterator<F extends StructuredRecordFile, R exte
     R next;
 
     public StructuredRecordFileIterator(F file) {
-        this.file = file;
-        file.openRead();
-        next();
+        try {
+            this.file = file;
+            file.openRead();
+            next();
+        } catch (IOException ex) { }
     }
 
     @Override
@@ -30,12 +35,18 @@ public class StructuredRecordFileIterator<F extends StructuredRecordFile, R exte
     @Override
     public R next() {
         R current = next;
-        if (file.nextRecord()) {
-            next = (R) file.readRecord();
-        } else
+        try {
+            if (file.nextRecord()) {
+                next = (R) file.readRecord();
+            } else
+                next = null;
+        } catch (IOException ex) {
             next = null;
+        }
         if (next == null) {
-            file.closeRead();
+            try {
+                file.closeRead();
+            } catch (IOException ex) {}
         }
         return current;
     }

@@ -138,6 +138,7 @@ public enum ArrayTools {;
 
    private static Object[] nullarray = new Object[0];
    public static <K> K[] createArray( Class<? extends K> datatype, int size) {
+       log.info("%s", datatype);
       //return (K[])Arrays.copyOf(nullarray, size, datatype);
       return (K[]) java.lang.reflect.Array.newInstance(datatype, size);
    }

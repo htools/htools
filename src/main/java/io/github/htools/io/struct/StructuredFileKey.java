@@ -6,6 +6,7 @@ import java.util.Collection;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
 import io.github.htools.lib.RandomTools;
+import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -22,7 +23,7 @@ public abstract class StructuredFileKey<R extends StructuredFileKeyRecord, D ext
    public IntField length = this.addInt("length");
    public HashMap<R, R> residenttable;
 
-   public StructuredFileKey(Datafile basefile) {
+   public StructuredFileKey(Datafile basefile) throws IOException {
       super(basefile);
    }
 
@@ -32,7 +33,7 @@ public abstract class StructuredFileKey<R extends StructuredFileKeyRecord, D ext
    public abstract R newRecord();
 
    @Override
-   public void openRead() throws FileIntegrityException {
+   public void openRead() throws IOException {
       if (residenttable == null) {
          if (super.getLength() > 0) {
             R closingrecord = closingRecord();
@@ -125,7 +126,7 @@ public abstract class StructuredFileKey<R extends StructuredFileKeyRecord, D ext
    }
 
    @Override
-   public Collection<R> getKeys() {
+   public Collection<R> getKeys() throws IOException {
       if (residenttable == null) {
          openRead();
       }
@@ -133,7 +134,7 @@ public abstract class StructuredFileKey<R extends StructuredFileKeyRecord, D ext
    }
 
    @Override
-   public R find(R r) {
+   public R find(R r) throws IOException {
       r = residenttable.get(r);
       if (r != null) {
          read(r);
@@ -147,14 +148,14 @@ public abstract class StructuredFileKey<R extends StructuredFileKeyRecord, D ext
       return (r != null);
    }
 
-   protected void read(R r) {
+   protected void read(R r) throws IOException {
       datastorage.setOffset(r.offset);
       datastorage.setCeiling(r.offset + r.length);
       datastorage.openRead();
       r.getData(datastorage);
    }
 
-   public D setPos(R r) {
+   public D setPos(R r) throws IOException {
       datastorage.setOffset(r.offset);
       datastorage.setCeiling(r.offset + r.length);
       datastorage.openRead();
@@ -167,7 +168,7 @@ public abstract class StructuredFileKey<R extends StructuredFileKeyRecord, D ext
    }
 
    @Override
-   public void closeWrite() {
+   public void closeWrite() throws IOException {
       datastorage.closeWrite();
       datastorage.getDatafile().setReplication(1);
       super.openWrite();
@@ -180,7 +181,7 @@ public abstract class StructuredFileKey<R extends StructuredFileKeyRecord, D ext
    }
 
    @Override
-   public void openAppend() {
+   public void openAppend() throws IOException {
       if (!getDatafile().hasLock())
          throw new RuntimeException(PrintTools.sprintf("Should lock file before append: %s", getDatafile().getName()));
       if (residenttable == null) {
@@ -191,14 +192,14 @@ public abstract class StructuredFileKey<R extends StructuredFileKeyRecord, D ext
    }
 
    @Override
-   public void openWrite() {
+   public void openWrite() throws IOException {
       residenttable = new HashMap<R, R>();
       this.resetNextField();
       datastorage.openAppend();
    }
 
    @Override
-   public void remove(Iterable<R> records) {
+   public void remove(Iterable<R> records) throws IOException {
       openAppend();
       for (R r : records) {
          residenttable.remove(r);

@@ -75,7 +75,7 @@ public class InputFormat extends FileInputFormat<LongWritable, DelayedWritable> 
         ArrayList<Path> files = new ArrayList<Path>();
         if (dir.length() > 0) {
             HDFSPath d = new HDFSPath(job.getConfiguration(), dir);
-            if (d.isFile()) {
+            if (d.existsFile()) {
                 addFile(job, new Path(dir));
             } else {
                 for (String f : d.getFilepathnames()) {
@@ -180,7 +180,7 @@ public class InputFormat extends FileInputFormat<LongWritable, DelayedWritable> 
          * @return true if a next document was read
          */
         @Override
-        public boolean nextKeyValue() {
+        public boolean nextKeyValue() throws IOException {
             if (structuredRecordFile.hasMore()) {
                 if (structuredRecordFile.getOffset() <= structuredRecordFile.getCeiling()) {
                     key.set(structuredRecordFile.getOffset());

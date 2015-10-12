@@ -1,5 +1,6 @@
 package io.github.htools.io.struct;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 public abstract class StructuredFileCollisionRecord extends StructuredFileSortRecord {
    public static Log log = new Log(StructuredFileCollisionRecord.class);
@@ -18,13 +19,13 @@ public abstract class StructuredFileCollisionRecord extends StructuredFileSortRe
    public abstract int hashCode();
    
    @Override
-   public void write() {
+   public void write() throws IOException {
       ((StructuredFileCollision)file).bucketindex.write(getBucketIndex());
       writeTempRecordData();
    }
 
    @Override
-   protected void writeFinal() {
+   protected void writeFinal() throws IOException {
       int oldoffset = (int) file.getOffset();
       ((StructuredFileCollision)file).hashfile.writeHash(getBucketIndex(), oldoffset, (int) file.getOffset());
       writeRecordData();

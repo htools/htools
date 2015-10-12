@@ -3,7 +3,9 @@ package io.github.htools.io.struct;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
+import io.github.htools.io.FileIntegrityException;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 /**
  * Stores an array of variable size records, so that a record can be found
@@ -25,12 +27,12 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
    private int id;
    private boolean loaded;
 
-   public StructuredFileByteJumpTable(Datafile df) {
+   public StructuredFileByteJumpTable(Datafile df) throws IOException {
       super(df);
    }
 
    @Override
-   public void closeWrite() {
+   public void closeWrite() throws IOException {
       super.closeWrite();
       if (jumparray != null) {
          jumparray.closeWrite();
@@ -38,7 +40,7 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
    }
 
    @Override
-   public void setDatafile(Datafile df) {
+   public void setDatafile(Datafile df) throws IOException {
       super.setDatafile(df);
       jumparray = new StructuredFileByteJumptableInternal(new Datafile(this.getDatafile().getSubFile(".jumparray")));
       id = 0;
@@ -46,7 +48,7 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
    }
 
    @Override
-   public void openWrite() {
+   public void openWrite() throws IOException {
       super.openWrite();
       //log.info("openWrite()");
       id = 0;
@@ -54,13 +56,13 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
    }
 
    @Override
-   public void hookRecordWritten() {
+   public void hookRecordWritten() throws IOException {
       //log.info("hookRecordWrittern id %d offset %d", id, getOffset());
       jumparray.write(id++, this);
    }
 
    @Override
-   public void openRead() {
+   public void openRead() throws FileIntegrityException, IOException {
       super.openRead();
       jumparray.openRead();
    }
@@ -95,13 +97,14 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
       jumparray.closeRead();
    }
 
-   public void read(int id) {
+   public void read(int id) throws IOException {
       find(id);
       //log.info("read offset %d", this.datafile.getOffset());
       nextRecord();
    }
 
-   public void find(int id) {
+   @Override
+   public void find(int id) throws IOException {
       jumparray.openRead();
       long offset = jumparray.getOffset(id);
       //log.info("find id %d offset %d", id, offset);

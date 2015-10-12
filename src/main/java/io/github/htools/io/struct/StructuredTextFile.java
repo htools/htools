@@ -16,6 +16,7 @@ import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
 import io.github.htools.lib.StrTools;
 import io.github.htools.type.Long128;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public abstract class StructuredTextFile {
      */
     public abstract FolderNode createRoot();
 
-    public void openRead() {
+    public void openRead() throws IOException {
         checkFirstUse();
         if (datafile != null) {
             if (reader == null) {
@@ -87,7 +88,7 @@ public abstract class StructuredTextFile {
         log.trace("%s", root.dumpStructure());
     }
     
-    public void openWrite() {
+    public void openWrite() throws IOException {
         checkFirstUse();
         if (root.writeenabled() && datafile != null) {
             datafile.openWrite();
@@ -143,7 +144,7 @@ public abstract class StructuredTextFile {
     }
 
     public boolean exists() {
-        return datafile.exists();
+        return datafile.existsDir();
     }
 
     public boolean lock() {
@@ -158,7 +159,7 @@ public abstract class StructuredTextFile {
         return root;
     }
 
-    public void openAppend() {
+    public void openAppend() throws IOException {
         if (!datafile.hasLock()) {
             throw new RuntimeException(PrintTools.sprintf("Should lock file before append %s", datafile.getName()));
         }
@@ -177,7 +178,7 @@ public abstract class StructuredTextFile {
         datafile.setCeiling(ceiling);
     }
 
-    public void setOffset(long offset) {
+    public void setOffset(long offset) throws IOException {
         datafile.setOffset(offset);
     }
 
@@ -226,7 +227,7 @@ public abstract class StructuredTextFile {
         return section.notEmpty();
     }
 
-    public void read() {
+    public void read() throws IOException {
         openRead();
         try {
             while (true) {
@@ -241,7 +242,7 @@ public abstract class StructuredTextFile {
         closeRead();
     }
 
-    public void write() {
+    public void write() throws IOException {
         if (root.nodevalues != null) {
             root.write(root.nodevalues);
         }
@@ -314,9 +315,9 @@ public abstract class StructuredTextFile {
         
         protected abstract void emptyDataContainer();
 
-        protected abstract void write(ArrayList values);
+        protected abstract void write(ArrayList values) throws IOException;
 
-        protected abstract void writeHeader();
+        protected abstract void writeHeader() throws IOException;
 
         protected abstract void readNode(ByteSearchSection section);
 
@@ -376,14 +377,14 @@ public abstract class StructuredTextFile {
         }
 
         @Override
-        protected void write(ArrayList list) {
+        protected void write(ArrayList list) throws IOException {
             for (T t : (ArrayList<T>) list) {
                 datafile.printf("%s%s%s", openlabel, toString(t), closelabel);
             }
         }
 
         @Override
-        protected void writeHeader() {
+        protected void writeHeader() throws IOException {
             datafile.printf("%s%s%s", openlabel, label, closelabel);
         }
 
@@ -500,7 +501,7 @@ public abstract class StructuredTextFile {
         }
 
         @Override
-        protected void write(ArrayList list) {
+        protected void write(ArrayList list) throws IOException {
             if (list != null) {
                 for (NodeValue v : (ArrayList<NodeValue>) list) {
                     if (openlabel.length() > 0) {
@@ -520,7 +521,7 @@ public abstract class StructuredTextFile {
         }
 
         @Override
-        protected void writeHeader() {
+        protected void writeHeader() throws IOException {
             if (openlabel.length() > 0) {
                 datafile.printf("%s", openlabel);
             }

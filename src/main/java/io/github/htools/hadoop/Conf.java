@@ -77,7 +77,6 @@ public class Conf extends JobConf {
 
     public Conf() {
         super();
-        HBaseConfiguration.addHbaseResources(this);
     }
 
     protected Conf(org.apache.hadoop.conf.Configuration other) {
@@ -104,7 +103,7 @@ public class Conf extends JobConf {
     public void addLibraries(String dirs[]) {
         StringBuilder sb = new StringBuilder();
         for (String dir : dirs) {
-            if (FSPath.isDir(dir)) {
+            if (FSPath.existsDir(dir)) {
                 if (!dir.endsWith("/")) {
                     dir = dir + "/";
                 }
@@ -161,7 +160,7 @@ public class Conf extends JobConf {
     }
 
     // creates a Conf based on a file with settings in a JAR
-    public static Conf createFromResource(String resource) {
+    public static Conf createFromResource(String resource) throws IOException {
         InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
         FSFileInBuffer fi = new FSFileInBuffer(input);
         byte[] readBytes = fi.readBytes();

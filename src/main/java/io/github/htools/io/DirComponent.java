@@ -10,5 +10,7 @@ public interface DirComponent {
    
    String getName();
 
-   boolean exists();
+   boolean existsDir();
+   
+   boolean existsFile();
 }

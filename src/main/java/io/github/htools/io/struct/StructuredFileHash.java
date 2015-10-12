@@ -2,6 +2,7 @@ package io.github.htools.io.struct;
 
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 /**
  * Internal helper class, that stores offsets to a Records in a StructuredFile 
@@ -15,26 +16,26 @@ public class StructuredFileHash extends StructuredFile {
    public int currentbucketindex = -1;
    public LongField offset = this.addLong("offset");
 
-   public StructuredFileHash(Datafile df, int tablesize) {
+   public StructuredFileHash(Datafile df, int tablesize) throws IOException {
       super(df);
       this.setCapacity(tablesize);
    }
 
    @Override
-   public void openWrite() {
+   public void openWrite() throws IOException {
       super.openWrite();
       currentbucketindex = -1;
    }
 
    @Override
-   public void closeWrite() {
+   public void closeWrite() throws IOException {
       for (; currentbucketindex < bucketcapacity - 1; currentbucketindex++) {
          this.offset.write(0l);
       }
       super.closeWrite();
    }
 
-   public void writeHash(int bucketindex, long offset) {
+   public void writeHash(int bucketindex, long offset) throws IOException {
       for (; currentbucketindex < bucketindex - 1; currentbucketindex++) {
          this.offset.write(-1l);
       }

@@ -7,6 +7,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import io.github.htools.lib.ByteTools;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * An implementation of EntityReader that scans the input for Wikipedia XML
@@ -36,9 +37,10 @@ public class ReaderWikipedia extends ArchiveReader {
     }
 
     @Override
-    public boolean nextKeyValue() {
-        while (fsin.hasMore()  && fsin.getOffset() < end) {
+    public boolean nextKeyValue() throws IOException {
+        while (fsin.hasMore() && fsin.getOffset() < end) {
             if (readUntilStart() && fsin.getOffset() - startTag.length < end) {
+            log.info("nextKeyValue");
                 key.set(fsin.getOffset());
                 if (readEntity()) {
                     int starttext = ByteTools.find(entitywritable.content, bodyStart, 0, entitywritable.content.length, false, false);
@@ -66,27 +68,35 @@ public class ReaderWikipedia extends ArchiveReader {
         return false;
     }
 
-    private boolean readEntity() {
+    private boolean readEntity() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         entitywritable = new Content();
         int needleposition = 0;
         while (true) {
             try {
                 int b = fsin.readByte();
-                if (b != endTag[needleposition]) { // check if we match needle
-                    if (needleposition > 0) {
-                        buffer.write(endTag, 0, needleposition);
-                        needleposition = 0;
-                    }
-                }
-                if (b == endTag[needleposition]) {
-                    needleposition++;
-                    if (needleposition >= endTag.length) {
-                        entitywritable.content = buffer.toByteArray();
-                        return true;
+                if (b < 0) { // eof encountered in an archivefile
+                    buffer = new ByteArrayOutputStream();
+                    needleposition = 0;
+                    if (!fsin.hasMore()) {
+                        return false;
                     }
                 } else {
-                    buffer.write(b);
+                    if (b != endTag[needleposition]) { // check if we match needle
+                        if (needleposition > 0) {
+                            buffer.write(endTag, 0, needleposition);
+                            needleposition = 0;
+                        }
+                    }
+                    if (b == endTag[needleposition]) {
+                        needleposition++;
+                        if (needleposition >= endTag.length) {
+                            entitywritable.content = buffer.toByteArray();
+                            return true;
+                        }
+                    } else {
+                        buffer.write(b);
+                    }
                 }
             } catch (EOCException ex) {
                 return false;
@@ -94,22 +104,26 @@ public class ReaderWikipedia extends ArchiveReader {
         }
     }
 
-    private boolean readUntilStart() {
+    private boolean readUntilStart() throws IOException {
         int needleposition = 0;
         while (true) {
             try {
                 int b = fsin.readByte();
-                if (b != startTag[needleposition]) { // check if we match needle
+                if (b < 0) {
                     needleposition = 0;
-                }
-                if (b == startTag[needleposition]) {
-                    needleposition++;
-                    if (needleposition >= startTag.length) {
-                        return true;
-                    }
                 } else {
-                    if (needleposition == 0 && !fsin.hasMore()) {  // see if we've passed the stop point:
-                        return false;
+                    if (b != startTag[needleposition]) { // check if we match needle
+                        needleposition = 0;
+                    }
+                    if (b == startTag[needleposition]) {
+                        needleposition++;
+                        if (needleposition >= startTag.length) {
+                            return true;
+                        }
+                    } else {
+                        if (needleposition == 0 && !fsin.hasMore()) {  // see if we've passed the stop point:
+                            return false;
+                        }
                     }
                 }
             } catch (EOCException ex) {

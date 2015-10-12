@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
@@ -130,8 +131,12 @@ public enum ClassTools {
     public static <O> Constructor<O> getConstructor(Class<O> clazz, Class... parameters) {
         Constructor constructor = null;
         try {
-            constructor = clazz.getDeclaredConstructor(parameters);
-            constructor.setAccessible(true);
+            if (Modifier.isAbstract(clazz.getModifiers())) {
+                log.error("getConstructor %s is abstract", clazz.getCanonicalName());
+            } else {
+                constructor = clazz.getDeclaredConstructor(parameters);
+                constructor.setAccessible(true);
+            }
         } catch (NoSuchMethodException ex) {
             log.fatalexception(ex, "getConstructor( %s, %s )", clazz, parameters);
         }

@@ -41,7 +41,7 @@ import org.apache.hadoop.fs.Path;
  * <p>
  * @author Jeroen
  */
-public class Datafile implements StructureData, Comparable<Datafile>, ByteSearchReader, DirComponent {
+public class Datafile implements StructureData, Comparable<Datafile>, ByteSearchReader, DirComponent, ByteReader {
 
     public static Log log = new Log(Datafile.class);
 
@@ -72,7 +72,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     protected boolean hasbeenopened = false;
     public final BufferReaderWriter rwbuffer = new BufferReaderWriter();
 
-    protected Datafile(String filename, STATUS status) {
+    protected Datafile(String filename, STATUS status) throws IOException {
         this(filename);
         open(status);
     }
@@ -113,7 +113,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         lockfile = null;
     }
 
-    public Datafile(Datafile df) {
+    public Datafile(Datafile df) throws IOException {
         this(df.filename);
         this.type = df.type;
         this.fs = df.fs;
@@ -128,7 +128,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         this.fs = df.fs;
     }
 
-    protected Datafile(FSDataInputStream in, long offset, long end) {
+    protected Datafile(FSDataInputStream in, long offset, long end) throws IOException {
         this(new ISDataIn(in));
         rwbuffer.setOffset(offset);
         rwbuffer.setCeiling(end);
@@ -222,11 +222,25 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         this.close();
     }
 
-    public boolean exists() {
+    public boolean existsDir() {
         if (this.fs != null) {
             try {
                 return fs.exists(new Path(lockfile))
                         || fs.exists(new Path(filename));
+            } catch (IOException ex) {
+                log.exception(ex, "exists() %s %s", filename, lockfile);
+                return true;
+            }
+        } else {
+            return FSPath.exists(lockfile) || FSFile.exists(filename);
+        }
+    }
+    
+    public boolean existsFile() {
+        if (this.fs != null) {
+            try {
+                return fs.exists(new Path(lockfile))
+                        || HDFSPath.existsFile(fs, new Path(filename));
             } catch (IOException ex) {
                 log.exception(ex, "exists() %s %s", filename, lockfile);
                 return true;
@@ -328,7 +342,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
                 return new HDFSPath(fs, filename.substring(0, dirpos));
             }
         } else {
-            if (FSPath.isDir(filename)) {
+            if (FSPath.existsDir(filename)) {
                 return new FSPath(filename);
             } else {
                 return new FSPath(filename.substring(0, dirpos));
@@ -351,7 +365,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     @Override
-    public void setOffset(long offset) {
+    public void setOffset(long offset) throws IOException {
         //openRead();
         rwbuffer.setOffset(offset);
     }
@@ -374,7 +388,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         hasbeenopened = false;
     }
 
-    public void openReadKeepOffset() {
+    public void openReadKeepOffset() throws IOException {
         long offset = rwbuffer.offset;
         long ceiling = rwbuffer.ceiling;
         openRead();
@@ -389,11 +403,11 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         rwbuffer.hasmore = true;
     }
 
-    public void openWrite() {
+    public void openWrite() throws IOException {
         open(STATUS.WRITE);
     }
 
-    public void openAppend() {
+    public void openAppend() throws IOException {
         open(STATUS.APPEND);
     }
 
@@ -409,7 +423,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return status == STATUS.WRITE;
     }
 
-    public void openRead() {
+    public void openRead() throws IOException {
         if (status == STATUS.READ) {
             return;
         }
@@ -443,11 +457,11 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     @Override
-    public void reuseBuffer() {
+    public void reuseBuffer() throws IOException {
         this.rwbuffer.reuseBuffer();
     }
 
-    protected DataIn getDataIn() {
+    public DataIn getDataIn() throws IOException {
         if (this.isReadOpen()) {
             return rwbuffer.datain;
         }
@@ -465,7 +479,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return null;
     }
 
-    protected void open(STATUS newstatus) {
+    protected void open(STATUS newstatus) throws IOException {
         //log.info("openFirst %s %s", newstatus, this.getfilename());
         if (status == newstatus) {
             return;
@@ -533,7 +547,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
                 }
             } else if (type == TYPE.HDFS) {
                 if (df.type == TYPE.HDFS) {
-                    if (df.exists()) {
+                    if (df.existsDir()) {
                         df.delete();
                     }
                 } else if (df.type == TYPE.FS) {
@@ -1452,7 +1466,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         }
     }
 
-    public void printf(String format, Object... args) {
+    public void printf(String format, Object... args) throws IOException {
         if (!isWriteOpen()) {
             this.openWrite();
         }
@@ -1461,7 +1475,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         rwbuffer.print(s);
     }
 
-    public void print(String s) {
+    public void print(String s) throws IOException {
         if (!isWriteOpen()) {
             this.openWrite();
         }
@@ -1489,7 +1503,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return this.rwbuffer.datain.getInputStream();
     }
 
-    public OutputStream getOutputStream() {
+    public OutputStream getOutputStream() throws IOException {
         if (!isWriteOpen()) {
             this.openWrite();
         }
@@ -1619,7 +1633,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         rwbuffer.movePast(section);
     }
 
-    public Iterable<String> readLines() {
+    public Iterable<String> readLines() throws IOException {
         return new LineIterator(this);
     }
     
@@ -1627,7 +1641,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         Datafile df;
         String next;
         
-        public LineIterator(Datafile df) {
+        public LineIterator(Datafile df) throws IOException {
             this.df = new Datafile(df);
             this.df.openRead();
         }

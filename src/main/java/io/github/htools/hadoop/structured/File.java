@@ -6,6 +6,7 @@ import io.github.htools.io.struct.StructuredFile;
 import io.github.htools.io.struct.StructuredRecordFile;
 import io.github.htools.io.struct.StructuredRecordFileIterator;
 import io.github.htools.hadoop.InputFormat;
+import java.io.IOException;
 /**
  * Supports Hadoop access to file storage in a structured binary file. While data
  * stored in this format is not easy to manually inspect, is does allow for any
@@ -17,19 +18,19 @@ import io.github.htools.hadoop.InputFormat;
 public abstract class File<J extends Writable> extends StructuredFile implements StructuredRecordFile<J> {
    public static final Log log = new Log( File.class );
 
-   public File(Datafile df) {
+   public File(Datafile df) throws IOException {
        super(df);
    }
    
     @Override
-    public J readRecord() {
+    public J readRecord() throws IOException {
         J u = newRecord();
         u.read(this);
         return u;
     }
 
    @Override
-    public void setDatafile(Datafile df) {
+    public void setDatafile(Datafile df) throws IOException {
         super.setDatafile(df);
     }
     
@@ -39,7 +40,7 @@ public abstract class File<J extends Writable> extends StructuredFile implements
     }
 
     @Override
-    public void write(J record) {
+    public void write(J record) throws IOException {
         record.write(this);
     }
 

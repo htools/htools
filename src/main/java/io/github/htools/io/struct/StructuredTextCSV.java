@@ -6,6 +6,7 @@ import io.github.htools.search.ByteSearchSection;
 import io.github.htools.search.ByteSection;
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -91,7 +92,7 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
       }
       
       @Override
-      protected void write(ArrayList list) {
+      protected void write(ArrayList list) throws IOException {
          if (list != null) {
             for (NodeValue v : (ArrayList<NodeValue>) list) {
                if (openlabel.length() > 0) {

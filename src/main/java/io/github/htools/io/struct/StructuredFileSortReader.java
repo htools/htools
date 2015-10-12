@@ -1,6 +1,8 @@
 package io.github.htools.io.struct;
 
+import io.github.htools.io.FileIntegrityException;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 
 /**
  * Internal helper class for the construction of StructureFileSort
@@ -17,11 +19,11 @@ public class StructuredFileSortReader implements Comparable<Object> {
       this.segment = segment;
    }
 
-   public void openRead() {
+   public void openRead() throws IOException {
       index.openReadTemp();
    }
 
-   public boolean next() {
+   public boolean next() throws IOException {
       return index.hasNext() && index.nextRecord();
    }
 

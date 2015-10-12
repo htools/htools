@@ -8,6 +8,7 @@ import io.github.htools.search.ByteSection;
 import io.github.htools.io.EOCException;
 import io.github.htools.lib.Log;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
@@ -32,7 +33,7 @@ public class RecordReaderCC extends ArchiveReader {
    }
 
    @Override
-   public boolean nextKeyValue() {
+   public boolean nextKeyValue() throws IOException {
       while (fsin.hasMore()) {
          readEntity();
          ArrayList<ByteSearchPosition> sectionbreaks = newSection.findPos(entitywritable.content, 0, entitywritable.content.length, 2);
@@ -61,7 +62,7 @@ public class RecordReaderCC extends ArchiveReader {
       return false;
    }
 
-   private void readEntity() {
+   private void readEntity() throws IOException {
       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       entitywritable = new Content();
       key.set(fsin.getOffset());

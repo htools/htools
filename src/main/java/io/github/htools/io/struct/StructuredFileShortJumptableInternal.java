@@ -3,6 +3,7 @@ package io.github.htools.io.struct;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
+import java.io.IOException;
 
 /**
  * The same as {@link StructuredFileByteJumptableInternal}, but this class uses two bytes for the length
@@ -15,19 +16,19 @@ import io.github.htools.io.EOCException;
    int lengthsize = 2;
    BufferReaderWriter rw;
 
-   public StructuredFileShortJumptableInternal(Datafile df) {
+   public StructuredFileShortJumptableInternal(Datafile df) throws IOException {
       super(df);
    }
 
    @Override
-   public void openWrite() {
+   public void openWrite() throws IOException {
       super.openWrite();
       currenttable = new byte[subpointers * lengthsize];
       rw = new BufferReaderWriter(currenttable);
    }
 
    @Override
-   protected void writeJump(int id, StructuredFile rec) {
+   protected void writeJump(int id, StructuredFile rec) throws IOException {
       int jumpindex = getJumpIndex(id);
       rw.bufferpos = (jumpindex - 1) * lengthsize;
       int oldoffset = lastoffset;
@@ -44,7 +45,7 @@ import io.github.htools.io.EOCException;
       return markers * (4 + subpointers * lengthsize);
    }
 
-   public long getOffset(int id) {
+   public long getOffset(int id) throws IOException {
       long offset = -1;
       try {
          int marker = getMarkerOffset(id);

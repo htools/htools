@@ -25,7 +25,7 @@ public class FSFileInBuffer extends FSFile implements DataIn {
    public BufferReaderWriter buffer;
    private long offset = 0;
 
-   public FSFileInBuffer(String fullpathname) {
+   public FSFileInBuffer(String fullpathname) throws IOException {
       super(fullpathname);
       reopen();
    }
@@ -34,13 +34,13 @@ public class FSFileInBuffer extends FSFile implements DataIn {
       super(is);
    }
 
-   private void reopen() {
+   private void reopen() throws IOException {
       this.offset = 0;
       this.close();
       getInputStream();
    }
 
-   public void mustMoveBack() {
+   public void mustMoveBack() throws IOException {
       reopen();
    }
 
@@ -84,7 +84,7 @@ public class FSFileInBuffer extends FSFile implements DataIn {
       return this.file.length();
    }
 
-   private void setOffset(long offset) {
+   private void setOffset(long offset) throws IOException {
       if (offset < this.offset) {
          mustMoveBack();
       }

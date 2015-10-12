@@ -1,16 +1,16 @@
 package io.github.htools.io.struct;
 
 import io.github.htools.io.EOCException;
-import io.github.htools.io.FileIntegrityException;
+import java.io.IOException;
 import java.util.Collection;
 
 public interface StructuredFileKeyInterface<R extends StructuredFileKeyValueRecord> {
    
    public R newRecord();
    
-   public void openRead()  throws FileIntegrityException;
+   public void openRead()  throws IOException;
 
-   public void closeRead();
+   public void closeRead() throws IOException;
 
    public void setKeyBufferSize(int size);
 
@@ -42,19 +42,19 @@ public interface StructuredFileKeyInterface<R extends StructuredFileKeyValueReco
    
    public long getCeiling();
 
-   public R find(R r);
+   public R find(R r) throws IOException;
    
-   public boolean exists(R r);
+   public boolean exists(R r) throws IOException;
    
-   public void write(R r);
+   public void write(R r) throws IOException;
 
-   public void remove(Iterable<R> r);
+   public void remove(Iterable<R> r) throws IOException;
 
-   public void closeWrite();
+   public void closeWrite() throws IOException;
    
-   public void openAppend();
+   public void openAppend() throws IOException;
    
-   public void openWrite();
+   public void openWrite() throws IOException;
    
-   public Collection<R> getKeys();
+   public Collection<R> getKeys() throws IOException;
 }

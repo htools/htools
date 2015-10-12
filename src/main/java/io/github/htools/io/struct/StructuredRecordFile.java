@@ -2,6 +2,7 @@ package io.github.htools.io.struct;
 
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
+import java.io.IOException;
 import java.util.Iterator;
 
 public interface StructuredRecordFile<R extends StructuredFileRecord> extends Iterable<R> {
@@ -9,29 +10,29 @@ public interface StructuredRecordFile<R extends StructuredFileRecord> extends It
    
    public abstract R newRecord();
    
-   public abstract R readRecord();
+   public abstract R readRecord() throws IOException;
    
-   public abstract void openRead();
+   public abstract void openRead() throws IOException;
    
-   public abstract void closeRead();
+   public abstract void closeRead() throws IOException;
    
-   public abstract void openWrite();
+   public abstract void openWrite() throws IOException;
    
    public abstract Datafile getDatafile();
    
-   public abstract void closeWrite();
+   public abstract void closeWrite() throws IOException;
    
    public abstract long getLength();
    
    public abstract void delete();
    
-   public abstract void write(R record);
+   public abstract void write(R record) throws IOException;
    
-   public abstract boolean nextRecord();
+   public abstract boolean nextRecord() throws IOException ;
    
    public abstract long getOffset();
    
-   public abstract void setOffset(long offset);
+   public abstract void setOffset(long offset) throws IOException;
    
    public abstract long getCeiling();
    

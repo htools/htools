@@ -7,12 +7,13 @@ import io.github.htools.io.EOCException;
 import io.github.htools.search.ByteSection;
 import io.github.htools.lib.Log;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
- * An implementation of Reader that reads the ClueWeb09 collection. In
- * this collection, each document is preceded by a WARC header, which contains
+ * An implementation of Reader that reads the ClueWeb09 collection. In this
+ * collection, each document is preceded by a WARC header, which contains
  * document metadata and length. Each document has a WarcIDTag of 25 characters,
  * which s used to validate Warc headers of correct documents.
  * <p>
@@ -35,93 +36,105 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
  */
 public class ReaderClueweb9new extends ArchiveReader {
 
-   public static Log log = new Log(ReaderClueweb9new.class);
-   private byte[] warcTag = "WARC/0.18".getBytes();
-   private ByteSearch contentlength = ByteSearch.create("\nContent-Length: ");
-   private ByteSearch warcIDTag = ByteSearch.create("WARC-TREC-ID: ");
-   private ByteSearch eol = ByteSearch.create("\n");
-   private ByteSection warcID = new ByteSection(warcIDTag, eol);
-   private idlist ids;
-   private int spamthreshold;
+    public static Log log = new Log(ReaderClueweb9new.class);
+    private byte[] warcTag = "WARC/0.18".getBytes();
+    private ByteSearch contentlength = ByteSearch.create("\nContent-Length: ");
+    private ByteSearch warcIDTag = ByteSearch.create("WARC-TREC-ID: ");
+    private ByteSearch eol = ByteSearch.create("\n");
+    private ByteSection warcID = new ByteSection(warcIDTag, eol);
+    private idlist ids;
+    private int spamthreshold;
 
-   @Override
-   public void initialize(FileSplit fileSplit) {
-      Path file = fileSplit.getPath();
-      String directory = getDir(file);
-      spamthreshold = conf.getInt("repository.spamthreshold", 0);
-      String spamlist = conf.get("repository.spamlist", null);
-      String idlist = conf.get("repository.idlist", null);
-      if (spamlist != null) {
-         ids = SpamFile.getIdList(new Datafile(filesystem, spamlist + "/" + directory + ".spam"), spamthreshold);
-      } else if (idlist != null) {
-         ids = SubSetFile.getIdList(new Datafile(filesystem, idlist + "/" + directory + ".idlist"));
-      }
-      readEntity(); // the first warc tag isn't a document
-   }
+    @Override
+    public void initialize(FileSplit fileSplit) throws IOException {
+        Path file = fileSplit.getPath();
+        String directory = getDir(file);
+        spamthreshold = conf.getInt("repository.spamthreshold", 0);
+        String spamlist = conf.get("repository.spamlist", null);
+        String idlist = conf.get("repository.idlist", null);
+        if (spamlist != null) {
+            ids = SpamFile.getIdList(new Datafile(filesystem, spamlist + "/" + directory + ".spam"), spamthreshold);
+        } else if (idlist != null) {
+            ids = SubSetFile.getIdList(new Datafile(filesystem, idlist + "/" + directory + ".idlist"));
+        }
+        readEntity(); // the first warc tag isn't a document
+    }
 
-   @Override
-   public boolean nextKeyValue() {
-      while (fsin.hasMore()) {
-         readEntity();
-         String id = warcID.getFirstString(entitywritable.content, 0, entitywritable.content.length);
-         if (id.length() == 25 && (ids == null || ids.get(id))) {
-            //log.info("id %s", id);
-            entitywritable.get("collectionid").add(id);
-            int p = contentlength.findEnd(entitywritable.content, 0, entitywritable.content.length);
-            if (p >= 0) {
-               p = contentlength.findEnd(entitywritable.content, p, entitywritable.content.length);
-               if (p >= 0) {
-                  p = eol.findEnd(entitywritable.content, p, entitywritable.content.length);
-                  if (p > 0) {
-                     entitywritable.addSectionPos("warcheader", 
-                                entitywritable.content, 0, 0, p, p);
-                     entitywritable.addSectionPos("all", 
-                                entitywritable.content, p, p, entitywritable.content.length, entitywritable.content.length);
-                  }
-               }
+    @Override
+    public boolean nextKeyValue() throws IOException {
+        boolean hasMore = true;
+
+        while (hasMore) {
+            hasMore = fsin.hasMore();
+
+            readEntity();
+            String id = warcID.getFirstString(entitywritable.content, 0, entitywritable.content.length);
+            if (id.length() == 25 && (ids == null || ids.get(id))) {
+                //log.info("id %s", id);
+                entitywritable.get("collectionid").add(id);
+                int p = contentlength.findEnd(entitywritable.content, 0, entitywritable.content.length);
+                if (p >= 0) {
+                    p = contentlength.findEnd(entitywritable.content, p, entitywritable.content.length);
+                    if (p >= 0) {
+                        p = eol.findEnd(entitywritable.content, p, entitywritable.content.length);
+                        if (p > 0) {
+                            entitywritable.addSectionPos("warcheader",
+                                    entitywritable.content, 0, 0, p, p);
+                            entitywritable.addSectionPos("all",
+                                    entitywritable.content, p, p, entitywritable.content.length, entitywritable.content.length);
+                        }
+                    }
+                }
+                key.set(fsin.getOffset());
+                return true;
             }
-            key.set(fsin.getOffset());
-            return true;
-         }
-      }
-      return false;
-   }
+        }
+        return false;
+    }
 
-   private void readEntity() {
-      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      entitywritable = new Content();
-      key.set(fsin.getOffset());
-      int match = 0;
-      while (true) {
-         try {
-            int b = fsin.readByte();
-            if (match > 0 && b != warcTag[match]) { // output falsely cached chars
-               buffer.write(warcTag, 0, match);
-               match = 0;
+    private void readEntity() throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        entitywritable = new Content();
+        key.set(fsin.getOffset());
+        int match = 0;
+        while (true) {
+            try {
+                int b = fsin.readByte();
+                if (b < 0) { // eof encountered in an archivefile
+                    buffer = new ByteArrayOutputStream();
+                    match = 0;
+                    if (!fsin.hasMore()) {
+                        break;
+                    }
+                } else {
+                    if (match > 0 && b != warcTag[match]) { // output falsely cached chars
+                        buffer.write(warcTag, 0, match);
+                        match = 0;
+                    }
+                    if (b == warcTag[match]) { // check if we're matching needle
+                        match++;
+                        if (match >= warcTag.length) {
+                            break;
+                        }
+                    } else {
+                        buffer.write(b);
+                    }
+                }
+            } catch (EOCException ex) {
+                buffer.write(warcTag, 0, match);
+                break;
             }
-            if (b == warcTag[match]) { // check if we're matching needle
-               match++;
-               if (match >= warcTag.length) {
-                  break;
-               }
-            } else {
-               buffer.write(b);
-            }
-         } catch (EOCException ex) {
-            buffer.write(warcTag, 0, match);
-            break;
-         }
-      }
-      entitywritable.content = buffer.toByteArray();
-   }
+        }
+        entitywritable.content = buffer.toByteArray();
+    }
 
-   public String getDir(Path p) {
-      String file = p.toString();
-      int pos = file.lastIndexOf('/');
-      int pos2 = file.lastIndexOf('/', pos - 1);
-      if (pos < 0 || pos2 < 0) {
-         log.fatal("illegal path %s", file);
-      }
-      return file.substring(pos2 + 1, pos);
-   }
+    public String getDir(Path p) {
+        String file = p.toString();
+        int pos = file.lastIndexOf('/');
+        int pos2 = file.lastIndexOf('/', pos - 1);
+        if (pos < 0 || pos2 < 0) {
+            log.fatal("illegal path %s", file);
+        }
+        return file.substring(pos2 + 1, pos);
+    }
 }

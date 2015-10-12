@@ -16,7 +16,7 @@ public class LogCounterFile extends LogFileAbstract {
         super(context);
     }
 
-    public void write(String label, int counter) {
+    public void write(String label, int counter) throws IOException {
         this.label.set(label);
         this.counter.set(counter);
         this.write();

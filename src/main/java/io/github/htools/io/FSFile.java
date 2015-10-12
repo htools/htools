@@ -1,5 +1,6 @@
 package io.github.htools.io;
 
+import io.github.htools.io.compressed.LZ4FrameInputStream;
 import static io.github.htools.lib.Const.*;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
@@ -38,6 +39,7 @@ public class FSFile extends FileGeneric {
    protected FileOutputStream outputstream = null;
    public FileChannel channel;
    private String fullpathname;
+   protected boolean isCompressed = false;
    public File file;
    public Scanner scanner = null;
    public FileChannel filechannelin = null;
@@ -142,6 +144,10 @@ public class FSFile extends FileGeneric {
       return file.canRead();
    }
 
+   public boolean isCompressed() {
+       return isCompressed;
+   }
+   
    /**
     * @return name of the last component of the path
     */
@@ -248,10 +254,14 @@ public class FSFile extends FileGeneric {
       }
    }
 
-   public InputStream getInputStream() {
+   public InputStream getInputStream() throws IOException {
       try {
          if (inputstream == null) {
             inputstream = new FileInputStream(getFullPathName());
+            if (getFullPathName().endsWith(".lz4")) {
+                inputstream = new LZ4FrameInputStream(inputstream);
+                isCompressed = true;
+            }
          }
       } catch (FileNotFoundException ex) {
          log.exception(ex, "getInputStream()");
@@ -284,7 +294,7 @@ public class FSFile extends FileGeneric {
       return printwriter;
    }
 
-   public FileChannel getFileChannelIn() {
+   public FileChannel getFileChannelIn() throws IOException {
       if (filechannelin != null) {
          filechannelin = ((FileInputStream) getInputStream()).getChannel();
       }
@@ -326,7 +336,7 @@ public class FSFile extends FileGeneric {
     * @param file
     * @return
     */
-   public static String fileToString(java.io.File file) {
+   public static String fileToString(java.io.File file) throws IOException {
       FSFile fc = new FSFile(file);
       if (fc.exists()) {
          return fc.read();
@@ -340,7 +350,7 @@ public class FSFile extends FileGeneric {
     * @param filename
     * @return
     */
-   public static String fileToString(String filename) {
+   public static String fileToString(String filename) throws IOException {
       FSFile fc = new FSFile(filename);
       if (fc.exists()) {
          return fc.read();
@@ -354,7 +364,7 @@ public class FSFile extends FileGeneric {
     * @param file
     * @return
     */
-   public static byte[] fileToBytes(java.io.File file) {
+   public static byte[] fileToBytes(java.io.File file) throws IOException {
       FSFile fc = new FSFile(file);
       if (fc.exists()) {
          return fc.readBytes();

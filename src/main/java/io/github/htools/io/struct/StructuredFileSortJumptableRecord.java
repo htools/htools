@@ -1,4 +1,5 @@
 package io.github.htools.io.struct;
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 public abstract class StructuredFileSortJumptableRecord extends StructuredFileSortRecord {
@@ -15,7 +16,7 @@ public abstract class StructuredFileSortJumptableRecord extends StructuredFileSo
    }
 
    @Override
-   protected void writeFinal() {
+   protected void writeFinal() throws IOException {
       //setHashCode();
       //RecordSortJumpArray tt = (RecordSortJumpArray) file;
       //int recordstart = (int)t.getOffset();

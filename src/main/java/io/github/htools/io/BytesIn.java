@@ -63,4 +63,9 @@ public class BytesIn implements DataIn {
     public byte[] readFully() throws EOCException, IOException {
         return this.content;
     }
+
+    @Override
+    public boolean isCompressed() {
+       return false;
+    }
 }
