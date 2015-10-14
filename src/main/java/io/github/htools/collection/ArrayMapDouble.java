@@ -179,6 +179,11 @@ public class ArrayMapDouble<V> implements Iterable<Double2ObjectMap.Entry<V>> {
             entry.value = getValue(pos);
             return entry;
         }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
     }
     
     public class Entry<V> implements Double2ObjectMap.Entry<V> {
