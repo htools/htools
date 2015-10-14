@@ -123,5 +123,10 @@ public class ZipRecordReader extends RecordReader<ZipEntry, byte[]> {
             }
             this.content = writer.getBytes();
         }
-    }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Delete operation not supported.");
+        }
+   }
 }

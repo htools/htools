@@ -324,10 +324,11 @@ public enum ClassTools {
         return generic;
     }
 
-    public static Class getGenericType(Object c) {
-        String generic = ((ParameterizedType) c.getClass().getGenericSuperclass()).getActualTypeArguments()[0].getTypeName();
-        return toClass(generic);
-    }
+    // David: I didn't know how to fix this, but it seems that this method is not used anywhere
+//    public static Class getGenericType(Object c) {
+//        String generic = ((ParameterizedType) c.getClass().getGenericSuperclass()).getActualTypeArguments()[0].getTypeName();
+//        return toClass(generic);
+//    }
 
     public static <S, B extends S> Class[] findTypeParameters(Class<B> base, Class<S> superClass) {
         Class[] actuals = new Class[0];

@@ -59,6 +59,11 @@ public class ZipFile extends ArchiveByteFile<ZipEntry> {
 
     @Override
     protected long getLastModified(ZipEntry entry) throws IOException {
-        return entry.getLastModifiedTime().toMillis();
+        return entry.getTime();
+    }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("Delete operation not supported.");
     }
 }

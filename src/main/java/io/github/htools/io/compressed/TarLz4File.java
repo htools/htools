@@ -66,4 +66,9 @@ public class TarLz4File extends ArchiveByteFile<org.apache.commons.compress.arch
     protected long getLastModified(org.apache.commons.compress.archivers.ArchiveEntry entry) throws IOException {
         return entry.getLastModifiedDate().getTime();
     }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("Delete operation not supported.");
+    }
 }
