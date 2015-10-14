@@ -9,6 +9,12 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
+/**
+ * Tool to decompress files on HDFS, by reading a supported compressed format and
+ * writing in uncompressed format.
+ * 
+ * @author Jeroen
+ */
 public class Decompress {
 
 	private static final Log log = new Log(Job.class);

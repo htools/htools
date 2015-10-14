@@ -1,6 +1,7 @@
 package io.github.htools.lib;
 
 import static io.github.htools.lib.MathTools.welchDegreesOfFreedom;
+import java.util.Arrays;
 import java.util.Collection;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.distribution.TDistribution;
@@ -10,15 +11,17 @@ import org.apache.commons.math3.distribution.TDistribution;
  * @author jeroen
  */
 public enum DoubleTools {
+
     ;
 
     public static Log log = new Log(DoubleTools.class);
+
     /**
      *
      * @param x
      * @return
      */
-    public static double min(double ... x) {
+    public static double min(double... x) {
         double min = (x.length > 0) ? x[0] : null;
         for (int i = 1; i < x.length; i++) {
             min = java.lang.Math.min(min, x[i]);
@@ -80,11 +83,36 @@ public enum DoubleTools {
     public static double[] normalize(double x[]) {
         double sum = sum(x);
         if (sum != 1) {
+            double[] result = new double[x.length];
             for (int i = 0; i < x.length; i++) {
-                x[i] /= sum;
+                result[i] = x[i] / sum;
             }
+            return result;
+        } else {
+            return x;
         }
-        return x;
+    }
+
+    public static double[] average(double[] x, double[] x2) {
+        double[] result = new double[Math.max(x.length, x2.length)];
+        for (int i = 0; i < x.length; i++) {
+            result[i] = x[i] / 2;
+        }
+        for (int i = 0; i < x2.length; i++) {
+            result[i] += x2[i] / 2;
+        }
+        return result;
+    }
+
+    public static double[] average(double[] x, double[] x2, int max) {
+        double[] result = new double[max];
+        for (int i = 0; i < max && i < x.length; i++) {
+            result[i] = x[i] / 2;
+        }
+        for (int i = 0; i < max && i < x2.length; i++) {
+            result[i] += x2[i] / 2;
+        }
+        return result;
     }
 
     /**
@@ -109,6 +137,21 @@ public enum DoubleTools {
             total += i;
         }
         return (total / x.size());
+    }
+
+    public static double[] quartiles(Collection<Double> x) {
+        double[] quartiles = new double[5];
+        if (x.size() == 0) {
+            Arrays.fill(quartiles, Double.NaN);
+        } else {
+            double[] array = ArrayTools.toDoubleArray(x);
+            Arrays.sort(array);
+            for (int i = 0; i < 5; i++) {
+                int pos = Math.min(array.length - 1, array.length * i / 4);
+                quartiles[i] = array[pos];
+            }
+        }
+        return quartiles;
     }
 
     public static double mean(double x[], int xstart, int xend) {
@@ -162,9 +205,9 @@ public enum DoubleTools {
     public static double standardDeviation(double x[]) {
         double avg = mean(x);
         double variance = variance(x, avg);
-        return java.lang.Math.sqrt(variance); 
+        return java.lang.Math.sqrt(variance);
     }
-    
+
     public static double variance(Collection<Double> x, double mean) {
         if (x.size() == 0) {
             return Double.NaN;
@@ -177,7 +220,7 @@ public enum DoubleTools {
         dev /= (x.size() - 1);
         return dev;
     }
-        
+
     public static double variance(Collection<Double> x) {
         if (x.size() == 0) {
             return Double.NaN;
@@ -191,7 +234,7 @@ public enum DoubleTools {
         dev /= (x.size() - 1);
         return dev;
     }
-        
+
     public static double standardDeviation(Collection<Double> x) {
         double avg = DoubleTools.mean(x);
         double variance = variance(x, avg);
@@ -222,6 +265,28 @@ public enum DoubleTools {
         return y;
     }
 
+    public static double KLD(double y[], double[] y2) {
+        double kld = 0;
+        for (int i = 0; i < y2.length && i < y.length; i++) {
+            if (y[i] > 0) {
+                kld += y[i] * MathTools.log2(y[i] / y2[i]);
+            }
+        }
+        return kld;
+    }
+
+    public static double JensenShannonDivergence(double y[], double[] y2) {
+        double[] m = average(y, y2);
+        double js = (KLD(y, m) + KLD(y2, m)) / 2;
+        return js;
+    }
+
+    public static double JensenShannonDivergence(double y[], double[] y2, int max) {
+        double[] m = average(y, y2, max);
+        double js = (KLD(y, m) + KLD(y2, m)) / 2;
+        return js;
+    }
+
     public static double[] subtractMean(double x[]) {
         double mean = mean(x);
         double y[] = new double[x.length];
@@ -230,7 +295,7 @@ public enum DoubleTools {
         }
         return y;
     }
-    
+
     public static double welchTTestOneSided(Collection<Double> a, Collection<Double> b) {
         double meana = DoubleTools.mean(a);
         double meanb = DoubleTools.mean(b);
@@ -238,8 +303,8 @@ public enum DoubleTools {
         double varb = variance(b, meanb);
         double rvara = vara / a.size();
         double rvarb = varb / b.size();
-        
-        double t = (meana - meanb)/Math.sqrt(vara / a.size() + varb / b.size());
+
+        double t = (meana - meanb) / Math.sqrt(vara / a.size() + varb / b.size());
         double df = welchDegreesOfFreedom(vara, varb, a.size(), b.size());
         TDistribution tdistribution = new TDistribution(df);
         double p = 1 - tdistribution.cumulativeProbability(t);

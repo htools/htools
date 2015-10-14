@@ -13,8 +13,10 @@ import java.util.PriorityQueue;
 /**
  * This collection retains the TopK objects that are added. Instantiate with any
  * int k, where a negative value means to retain the BottomK (-k) objects, where
- * k is the maximum number of objects to keep, and a inverse Comparator, i.e.
- * the smallest element should return -1. TopK does not sort the objects.
+ * k is the maximum number of objects to keep. The underlying mechanism for TopK
+ * is a Priority Queue, meaning that the elements are not sorted and the
+ * comparator used internally is inverted which can be confusing when used. A
+ * sorted() method is provided to return the elements in sorted order.
  *
  * @author Jeroen Vuurens
  */
@@ -99,7 +101,7 @@ public class TopK<T> extends PriorityQueue<T> {
         for (String s : l) {
             topk.add(s);
         }
-      //for (String s : topk)
+        //for (String s : topk)
         //   log.reportTime("%s", s);
         log.info("topk lowst %s highest %s", topk.lowest, topk.highest);
         String t = topk.lowest;
