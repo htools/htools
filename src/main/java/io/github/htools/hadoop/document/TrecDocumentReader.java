@@ -7,7 +7,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
- * An implementation of EntityReader that scans the input for TREC style
+ * An implementation of DocumentAbstractReader that scans the input for TREC style
  * documents, that are enclosed in &lt;DOC&gt;&lt;/DOC&gt; tags. The used tags may be
  * overridden by setting different tags in entityreader.entitystart and
  * entityreader.entityend.
@@ -18,9 +18,9 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
  * <p>
  * @author jeroen
  */
-public class DocumentReader extends DocumentAbstractReader {
+public class TrecDocumentReader extends DocumentAbstractReader {
 
-   public static Log log = new Log(DocumentReader.class);
+   public static Log log = new Log(TrecDocumentReader.class);
    private byte[] startTag;
    private byte[] endTag;
 

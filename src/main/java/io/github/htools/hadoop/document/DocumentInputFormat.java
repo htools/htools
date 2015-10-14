@@ -17,7 +17,7 @@ public class DocumentInputFormat extends InputFormat<byte[]> {
     
     @Override
     public RecordReader<LongWritable, byte[]> createRecordReader(InputSplit is, TaskAttemptContext tac) {
-        return new DocumentReader();
+        return new TrecDocumentReader();
     }
     
     public final static void setDocumentStart(Configuration conf, String label) {
