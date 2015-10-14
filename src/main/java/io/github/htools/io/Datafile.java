@@ -1660,6 +1660,11 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         public Iterator<String> iterator() {
             return this;
         }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Delete operation not supported.");
+        }
     }
     
 }

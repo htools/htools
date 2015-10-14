@@ -182,7 +182,7 @@ public class ArrayMapDouble<V> implements Iterable<Double2ObjectMap.Entry<V>> {
 
         @Override
         public void remove() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Delete operation not supported.");
         }
     }
     

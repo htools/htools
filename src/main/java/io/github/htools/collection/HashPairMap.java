@@ -30,11 +30,13 @@ public class HashPairMap<K1, K2, V> extends HashMap<Tuple2<K1, K2>, V> {
        return super.containsKey(new Tuple2<K1, K2>(k1, k2));
    }
    
-   public V getOrDefault(K1 k1, K2 k2, V v) {
-       return super.getOrDefault(new Tuple2<K1, K2>(k1, k2), v);
-   }
-   
-   public V putIfAbsent(K1 k1, K2 k2, V v) {
-       return super.putIfAbsent(new Tuple2<K1, K2>(k1, k2), v);
-   }
+    // David: I didn't know how to fix this, but it seems that this method is not used anywhere
+//   public V getOrDefault(K1 k1, K2 k2, V v) {
+//       return super.getOrDefault(new Tuple2<K1, K2>(k1, k2), v);
+//   }
+//   
+    // David: I didn't know how to fix this, but it seems that this method is not used anywhere
+//   public V putIfAbsent(K1 k1, K2 k2, V v) {
+//       return super.putIfAbsent(new Tuple2<K1, K2>(k1, k2), v);
+//   }
 }
