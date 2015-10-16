@@ -29,6 +29,13 @@ public enum ByteTools {
         return new String(c, 0, c.length, UTF8_CHARSET);
     }
 
+    /**
+     * @param array
+     * @param start
+     * @param end
+     * @return the content in the array between start and end, omitting any zero
+     * bytes.
+     */
     public static byte[] toBytes(byte array[], int start, int end) {
         int realchars = 0;
         for (int p = start; p < end; p++) {

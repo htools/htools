@@ -26,7 +26,7 @@ public class HtmlLiteralTitleExtractor extends Extractor {
        Content entity = new Content();
        entity.setContent(content);
        this.process(entity);
-       ArrayList<String> list = process(content).get("result");
+       ArrayList<String> list = process(content).get("result").getTerms();
        return (list.size() > 0)?list.get(0):null;
    }
 }

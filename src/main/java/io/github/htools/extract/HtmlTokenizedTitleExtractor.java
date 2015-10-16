@@ -53,6 +53,6 @@ public class HtmlTokenizedTitleExtractor extends ExtractorConf {
        Content entity = new Content();
        entity.setContent(content);
        this.process(entity);
-       return process(content).get("result");
+       return process(content).get("result").getTerms();
    }
 }

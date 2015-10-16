@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A HashMap containing a nested HashMap as values
+ * A HashMap containing a nested HashMap as values.
  * @author jeroen
  */
 public class HashMapMap<K, K2, V> extends HashMap<K, Map<K2, V>> {
@@ -21,6 +21,11 @@ public class HashMapMap<K, K2, V> extends HashMap<K, Map<K2, V>> {
        list.put(k2, v);
    }
    
+   /**
+    * @param k key
+    * @return The value Map<K2, V> for key k, if no map exists for key k an empty
+    * Map is created.
+    */
    public Map<K2, V> getHashMap(K k) {
        Map<K2, V> map = super.get(k);
        if (map == null) {

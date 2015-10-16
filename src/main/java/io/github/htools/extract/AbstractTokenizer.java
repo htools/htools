@@ -63,7 +63,7 @@ public abstract class AbstractTokenizer extends Extractor {
    }
    
    public ArrayList<String> tokenize(byte content[]) {
-       return process(content).get("result");
+       return process(content).get("result").getTerms();
    }
    
    public ArrayList<String> tokenize(String text) {
