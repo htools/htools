@@ -38,6 +38,6 @@ public class HtmlTitleExtractor extends ExtractorConf {
    }
    
    public ArrayList<String> extract(byte content[]) {
-       return process(content).get("result");
+       return process(content).get("result").getTerms();
    }
 }

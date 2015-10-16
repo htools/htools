@@ -56,14 +56,25 @@ public enum DoubleTools {
     }
 
     /**
-     *
      * @param x
-     * @return
+     * @return sum of doubles in x
      */
     public static double sum(double x[]) {
         double sum = 0;
         for (int i = 0; i < x.length; i++) {
             sum += x[i];
+        }
+        return sum;
+    }
+
+    /**
+     * @param x
+     * @return sum of doubles in x
+     */
+    public static double sum(Collection<Double> x) {
+        double sum = 0;
+        for (double d : x) {
+            sum += d;
         }
         return sum;
     }

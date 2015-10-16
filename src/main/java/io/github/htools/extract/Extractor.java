@@ -222,6 +222,7 @@ public class Extractor {
                 for (ByteSearchSection section : content.getSectionPos(p.section)) {
                     //log.info("section %d %d", section.start, section.innerstart);
                     for (ExtractorProcessor proc : processor.get(p.process)) {
+                        //log.info("process %s", proc.getClass().getCanonicalName());
                         proc.process(content, section, p.entityattribute);
                     }
                 }
