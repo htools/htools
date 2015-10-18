@@ -30,6 +30,10 @@ public class FHashMapObjectInt<K> extends Object2IntOpenHashMap<K> implements ja
         super(map);
     }
 
+    public FHashMapObjectInt(K [] keys, int [] values) {
+        super(keys, values);
+    }
+    
     @Override
     public FHashMapObjectInt clone() {
         FHashMapObjectInt clone = new FHashMapObjectInt(size());
