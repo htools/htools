@@ -32,6 +32,10 @@ public class TermVectorInt extends FHashMapObjectInt<String> implements BufferSe
         super(map);
     }
 
+    public TermVectorInt(String [] keys, int [] values) {
+        super(keys, values);
+    }
+    
     public TermVectorInt(Collection<String> terms) {
         add(terms);
     }
@@ -103,6 +107,9 @@ public class TermVectorInt extends FHashMapObjectInt<String> implements BufferSe
     }
 
     public double cossim(TermVectorInt v) {
+        if (this.size() > v.size()) {
+            return v.cossim(this);
+        }
         double dotproduct = 0;
         for (Object2IntMap.Entry<String> entry : object2IntEntrySet()) {
             dotproduct += v.getInt(entry.getKey()) * entry.getIntValue();
