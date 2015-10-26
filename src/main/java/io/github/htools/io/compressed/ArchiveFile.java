@@ -40,7 +40,6 @@ public abstract class ArchiveFile<E> implements Iterator<ArchiveEntry>, Iterable
     }
 
     public static ArchiveByteFile getReader(String file, InputStream is) throws IOException {
-        log.info("ArchiveFile %s", file);
         ByteSearchPosition pos = suffix.findLastPos(file);
         if (pos.found()) {
             switch (pos.pattern) {

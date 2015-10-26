@@ -432,6 +432,13 @@ public enum MathTools {
         return finishHash(combineHash(31, v));
     }
 
+    public static int hashCode(byte[] bytes, int offset, int end) {
+        int hash = 31;
+        for (; offset < end; offset++) 
+            hash = combineHash(hash, bytes[offset]);
+        return finishHash(hash);
+    }
+
     public static int hashCode(long... v) {
         return finishHash(combineHash(31, v));
     }

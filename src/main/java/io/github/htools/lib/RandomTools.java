@@ -8,22 +8,28 @@ import java.util.UUID;
  * @author jeroen
  */
 public enum RandomTools {
-
     ;
 
    // global randomizer
-   private static RandomGenerator mersenneTwister = new RandomGenerator();
-
+   private static RandomGenerator randomizer;
+    public static Log log = new Log(RandomTools.class);
+   
     public static RandomGenerator createGenerator(int seed) {
         return new RandomGenerator(seed);
     }
 
+    private static RandomGenerator getRandomizer() {
+        if (randomizer == null)
+            randomizer = new RandomGenerator();
+        return randomizer;
+    }
+    
     /**
      *
      * @return
      */
     public static double getStdNormal() {
-        return mersenneTwister.getStdNormal();
+        return getRandomizer().getStdNormal();
     }
 
     /**
@@ -31,7 +37,7 @@ public enum RandomTools {
      * @return
      */
     public static int getSign() {
-        return mersenneTwister.getSign();
+        return getRandomizer().getSign();
     }
 
     /**
@@ -39,7 +45,7 @@ public enum RandomTools {
      * @return
      */
     public static boolean getBoolean() {
-        return mersenneTwister.getBoolean();
+        return getRandomizer().getBoolean();
     }
 
     /**
@@ -48,7 +54,7 @@ public enum RandomTools {
      * @return
      */
     public static int getBiasRandomSign(double bias) {
-        return mersenneTwister.getBiasRandomSign(bias);
+        return getRandomizer().getBiasRandomSign(bias);
     }
 
     /**
@@ -56,7 +62,7 @@ public enum RandomTools {
      * @return pseudo-random double between 0.0 and 1.0 (inclusive)
      */
     public static double getDouble() { // double between 0.0 and 1.0
-        return mersenneTwister.getDouble();
+        return getRandomizer().getDouble();
     }
 
     /**
@@ -64,11 +70,11 @@ public enum RandomTools {
      * @return
      */
     public static int getInt() {
-        return mersenneTwister.getInt();
+        return getRandomizer().getInt();
     }
 
     public static int[] getRandomList(int upperlimit) {
-        return mersenneTwister.getRandomList(upperlimit);
+        return getRandomizer().getRandomList(upperlimit);
     }
 
     /**
@@ -77,7 +83,7 @@ public enum RandomTools {
      * @return
      */
     public static int getInt(int UpperLimit) {
-        return mersenneTwister.getInt(UpperLimit);
+        return getRandomizer().getInt(UpperLimit);
     }
 
     /**
@@ -86,7 +92,7 @@ public enum RandomTools {
      * @return
      */
     public static int getBits(int bits) {
-        return mersenneTwister.getBits(bits);
+        return getRandomizer().getBits(bits);
     }
 
     /**
@@ -95,7 +101,7 @@ public enum RandomTools {
      * @return
      */
     public static int chooseClass(double[] classes) {
-        return mersenneTwister.chooseClass(classes);
+        return getRandomizer().chooseClass(classes);
     }
 
     /**
@@ -104,7 +110,7 @@ public enum RandomTools {
      * @return
      */
     public static int StdNormalOneTailed(double p) {
-        return mersenneTwister.StdNormalOneTailed(p);
+        return getRandomizer().StdNormalOneTailed(p);
     }
 
     /**
@@ -113,7 +119,7 @@ public enum RandomTools {
      * @return
      */
     public static int StdNormalOneTailedComp(double p) {
-        return mersenneTwister.StdNormalOneTailedComp(p);
+        return getRandomizer().StdNormalOneTailedComp(p);
     }
 
     public static String uuid() {
@@ -134,9 +140,11 @@ public enum RandomTools {
             for (int i = 0; i < 624; i++) {
                 mt_buffer[i] = random.nextInt();
             }
+            Log.out("Random seeds %s", ArrayTools.toString(mt_buffer));
+            Log.printStackTrace();
             mt_index = 0;
         }
-
+        
         protected RandomGenerator(int seed) {
             this(new Random(seed));
         }

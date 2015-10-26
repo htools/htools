@@ -500,11 +500,11 @@ public class Log {
         }
     }
 
-    public void printStackTrace() {
+    public static void printStackTrace() {
         out(getCustomStackTrace(Thread.currentThread().getStackTrace(), 1));
     }
 
-    public void printStackTrace(String message, Object... args) {
+    public static void printStackTrace(String message, Object... args) {
         out(message, args);
         out(getCustomStackTrace(Thread.currentThread().getStackTrace(), 1));
     }
