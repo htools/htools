@@ -85,7 +85,7 @@ public class TermVectorInt extends FHashMapObjectInt<String> implements BufferSe
 
     public double magnitude() {
         if (magnitude == null) {
-            int sum = 0;
+            long sum = 0;
             for (int freq : values()) {
                 sum += freq * freq;
             }
@@ -115,6 +115,20 @@ public class TermVectorInt extends FHashMapObjectInt<String> implements BufferSe
             dotproduct += v.getInt(entry.getKey()) * entry.getIntValue();
         }
         double magnitude = magnitude() * v.magnitude();
+        return (magnitude == 0) ? 0 : dotproduct / magnitude;
+    }
+
+    public double cossimDebug(TermVectorInt v) {
+        if (this.size() > v.size()) {
+            return v.cossimDebug(this);
+        }
+        double dotproduct = 0;
+        for (Object2IntMap.Entry<String> entry : object2IntEntrySet()) {
+            dotproduct += v.getInt(entry.getKey()) * entry.getIntValue();
+            log.info("%s %d %d %s", entry.getKey(), v.getInt(entry.getKey()), entry.getIntValue(), dotproduct);
+        }
+        double magnitude = magnitude() * v.magnitude();
+        log.info("magnitude %s %s %s", magnitude(), v.magnitude(), dotproduct / magnitude);
         return (magnitude == 0) ? 0 : dotproduct / magnitude;
     }
 

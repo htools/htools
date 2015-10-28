@@ -435,7 +435,7 @@ public enum MathTools {
     public static int hashCode(byte[] bytes, int offset, int end) {
         int hash = 31;
         for (; offset < end; offset++) 
-            hash = combineHash(hash, bytes[offset]);
+            hash = combineHash(hash, bytes[offset] & 0xff);
         return finishHash(hash);
     }
 

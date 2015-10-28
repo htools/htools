@@ -37,12 +37,11 @@ public class DefaultTokenizer extends AbstractTokenizer {
         this.addPreProcessor(ConvertUnicodeDiacritics.class);
         this.addPreProcessor(new RemoveNonASCII(this, true));
         this.addPreProcessor(ConvertToLowercase.class);
+        this.addPreProcessor(RemoveHtmlSpecialCodes.class);
     }
 
     @Override
     protected void buildProcess() {
-        this.addProcess(RemoveHtmlSpecialCodes.class);
-        //this.addEndPipeline(new RemoveFilteredWords(this, unstemmedFilterSet));
     }
     
     public DefaultTokenizer removeStopWords() {

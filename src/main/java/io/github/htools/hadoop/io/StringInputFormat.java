@@ -1,5 +1,6 @@
 package io.github.htools.hadoop.io;
 
+import io.github.htools.hadoop.Job;
 import io.github.htools.lib.Log;
 
 public class StringInputFormat extends ConstInputFormat<String, String> {
@@ -10,4 +11,7 @@ public class StringInputFormat extends ConstInputFormat<String, String> {
         return new StringStringInputSplit(key);
     }
    
+    public static void add(Job job, String key) {
+        add(job, key, key);
+    }
 }

@@ -45,13 +45,13 @@ public class RemoveFilteredWords extends ExtractorProcessor {
         attribute.set(keep);
     }
     
-    public void process(Iterable<String> list) {
-        Iterator<String> iter = list.iterator();
-        while (iter.hasNext()) {
-            String word = iter.next();
-            if (words.contains(word)) {
-                iter.remove();
+    public ArrayList<String> process(ArrayList<String> list) {
+        ArrayList<String> keep = new ArrayList(list.size());
+        for (String word : list) {
+            if (!words.contains(word)) {
+                keep.add(word);
             }
         }
+        return keep;
     }
 }

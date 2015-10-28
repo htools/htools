@@ -24,14 +24,17 @@ public class IntIntWritable extends IntWritable {
         super();
     }
 
-    public IntIntWritable(int partition, int value2) {
-        super(partition);
+    public IntIntWritable(int value1, int value2) {
+        super(value1);
         this.value2 = value2;
     }
 
-    public void set(int partition, int value2) {
-        super.set(partition);
+    public void setValue2(int value2) {
         this.value2 = value2;
+    }
+    
+    public int getValue2() {
+        return value2;
     }
     
     @Override

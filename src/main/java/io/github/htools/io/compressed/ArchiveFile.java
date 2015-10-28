@@ -9,11 +9,8 @@ import io.github.htools.search.ByteRegex;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchPosition;
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 

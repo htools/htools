@@ -12,6 +12,7 @@ public enum ByteTools {
     ;
 
    public static Log log = new Log(ByteTools.class);
+    public static final byte[] EMPTYARRAY = new byte[0];
     private static final boolean quotes[] = getQuotes();
     private static final byte lowercase[] = getLC();
     private static final boolean identifier[] = getIdentifier();
@@ -55,6 +56,10 @@ public enum ByteTools {
     }
 
     public static String toTrimmedString(byte b[], int pos, int end) {
+        return new String(toTrimmed(b, pos, end), UTF8_CHARSET);
+    }
+
+    public static byte[] toTrimmed(byte b[], int pos, int end) {
         byte c[];
         for (; pos < end && whitespacezero[b[pos] & 0xFF]; pos++);
         for (; end > pos && whitespacezero[b[end - 1] & 0xFF]; end--);
@@ -71,9 +76,9 @@ public enum ByteTools {
                     c[cnr++] = b[p];
                 }
             }
-            return new String(c, UTF8_CHARSET);
+            return c;
         }
-        return "";
+        return EMPTYARRAY;
     }
 
     /**
@@ -83,6 +88,16 @@ public enum ByteTools {
      * @return
      */
     public static String toFullTrimmedString(byte b[], int pos, int end) {
+        return new String(toFullTrimmed(b, pos, end), UTF8_CHARSET);
+    }
+
+    /**
+     * @param b
+     * @param pos
+     * @param end
+     * @return
+     */
+    public static byte[] toFullTrimmed(byte b[], int pos, int end) {
         byte c[];
         for (; pos < end && whitespacezero[b[pos] & 0xFF]; pos++);
         for (; end > pos && whitespacezero[b[end - 1] & 0xFF]; end--);
@@ -105,9 +120,9 @@ public enum ByteTools {
                     }
                 }
             }
-            return new String(c, UTF8_CHARSET);
+            return c;
         }
-        return "";
+        return EMPTYARRAY;
     }
 
     public static String toString(byte b[]) {
