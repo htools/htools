@@ -2,6 +2,7 @@ package io.github.htools.search;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.struct.StructuredTextCSV;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import java.io.IOException;
 
@@ -78,7 +79,7 @@ public class W09 extends StructuredTextCSV {
 "wt09-48:wilson antenna\n" +
 "wt09-49:flame designs\n" +
 "wt09-50:dog heat");
-     return new W09(new BufferReaderWriter(sb.toString().getBytes()));
+     return new W09(new BufferReaderWriter(ByteTools.toBytes(sb.toString())));
   }
   
    public static void main(String[] args) throws IOException {

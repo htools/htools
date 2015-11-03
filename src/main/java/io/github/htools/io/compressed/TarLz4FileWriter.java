@@ -12,6 +12,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -66,6 +68,16 @@ public class TarLz4FileWriter extends ArchiveFileWriter {
         ArchiveEntry archiveEntry = tar.createArchiveEntry(file, file.getName());
         tar.putArchiveEntry(archiveEntry);
         FileInputStream inputStream = new FileInputStream(file);
+        IOUtils.copy(inputStream, tar);
+        inputStream.close();
+        tar.closeArchiveEntry();
+    }
+
+    @Override
+    public void write(String filename, int size, InputStream inputStream) throws IOException {
+        TarArchiveEntry archiveEntry = new TarArchiveEntry(filename);
+        archiveEntry.setSize(size);
+        tar.putArchiveEntry(archiveEntry);
         IOUtils.copy(inputStream, tar);
         inputStream.close();
         tar.closeArchiveEntry();

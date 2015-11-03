@@ -1,41 +1,47 @@
 package io.github.htools.collection;
 
 import io.github.htools.collection.MapKeyIterator;
+import io.github.htools.lib.ArrayTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.MapTools;
 import io.github.htools.lib.RandomTools;
 import io.github.htools.type.KV;
 import io.github.htools.type.Tuple2;
+import java.util.AbstractCollection;
 import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 /**
- * An ArrayMap is similar to a Map in that it stores Map.Entry&lt;K,V&gt;, however it
- * is no a true Map in that it can contain duplicate Keys, and does not
- * implement the Map interface because it should not be used like a Map for fast
- * access of Keys. What it does do is provide a very fast mechanism to add
+ * An ArrayMap is similar to a Map in that it stores Map.Entry&lt;K,V&gt;,
+ * however it is no a true Map in that it can contain duplicate Keys, and does
+ * not implement the Map interface because it should not be used like a Map for
+ * fast access of Keys. What it does do is provide a very fast mechanism to add
  * items, sort one time and provide the sorted list as a
- * Collection&lt;Map.Entry&lt;K,V&gt;&gt;. This allows fast and easy iteration over the
- * sorted list, however the order is disrupted when the list is changed.
- * However, returning as a Collection does allow easy transformation of it's
- * contents into a Collection of any other type.
+ * Collection&lt;Map.Entry&lt;K,V&gt;&gt;. This allows fast and easy iteration
+ * over the sorted list, however the order is disrupted when the list is
+ * changed. However, returning as a Collection does allow easy transformation of
+ * it's contents into a Collection of any other type.
  * <p>
  * Sorting and iteration are all shallow on the collection itself. To create a
  * sorted copy the collection must be cloned.
  * <p>
  * @author jeroen
  */
-public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map.Entry<K, V>> {
- 
+public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Map<K, V> {
+
     public static Log log = new Log(ArrayMap.class);
     ArrayList<Map.Entry<K, V>> list;
-    private boolean isSorted = false;
     private Comparator<Map.Entry<K, V>> comparator = null;
 
     public ArrayMap() {
@@ -66,19 +72,23 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
     }
 
     public int indexOfValue(V value) {
-        for (int i = 0; i < size(); i++)
-            if (get(i).getValue().equals(value))
+        for (int i = 0; i < size(); i++) {
+            if (ArrayMap.this.get(i).getValue().equals(value)) {
                 return i;
+            }
+        }
         return -1;
     }
-    
+
     public int indexOfKey(K key) {
-        for (int i = 0; i < size(); i++)
-            if (get(i).getKey().equals(key))
+        for (int i = 0; i < size(); i++) {
+            if (ArrayMap.this.get(i).getKey().equals(key)) {
                 return i;
+            }
+        }
         return -1;
     }
-    
+
     public static <K, V> ArrayMap<K, V> invert(AbstractMap<V, K> c) {
         return invert(c.entrySet());
     }
@@ -90,25 +100,11 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
     public ArrayMap<K, V> clone() {
         ArrayMap<K, V> n = new ArrayMap();
         n.list = (ArrayList<Map.Entry<K, V>>) list.clone();
-        n.isSorted = isSorted;
         return n;
     }
 
     public void add(K key, V value) {
         list.add(new Tuple2(key, value));
-        isSorted = false;
-    }
-
-    public void addSorted(K key, V value) {
-        if (isSorted) {
-            int binarySearch = Collections.binarySearch(list, new KV<K, V>(key, null), comparator);
-            if (binarySearch >= 0 && binarySearch < list.size()) {
-                this.add(binarySearch, key, value);
-            } else if (binarySearch < 0) {
-                this.add(-binarySearch + 1, key, value);
-            }
-        } else
-            list.add(new Tuple2(key, value));
     }
 
     public static <K, V> Map.Entry<K, V> createEntry(K key, V value) {
@@ -143,28 +139,23 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
 
     public void add(int i, K key, V value) {
         list.add(i, new KV(key, value));
-        isSorted = false;
     }
 
     public void add(int i, Map.Entry<K, V> entry) {
-        if (entry instanceof KV)
-            list.add((KV)entry);
-        else
+        if (entry instanceof KV) {
+            list.add((KV) entry);
+        } else {
             list.add(i, new KV(entry.getKey(), entry.getValue()));
-        isSorted = false;
+        }
     }
 
-    public V getValue(K key) {
-        if (isSorted) {
-            int binarySearch = Collections.binarySearch(list, new KV<K, V>(key, null), comparator);
-            if (binarySearch >= 0 && binarySearch < list.size()) {
-                Map.Entry<K, V> entry = list.get(binarySearch);
-                if (entry.getKey().equals(key)) {
-                    return entry.getValue();
-                }
-            }
-            return null;
-        }
+    /**
+     * @param key
+     * @return The first value for the given key or null if no such key exists,
+     * note that an ArrayMap can contain non-unique keys
+     */
+    @Override
+    public V get(Object key) {
         for (int i = 0; i < list.size(); i++) {
             Map.Entry<K, V> entry = list.get(i);
             if (entry.getKey().equals(key)) {
@@ -174,28 +165,23 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
         return null;
     }
 
+    /**
+     * @param key
+     * @return removes all entries for the given key and returns the value for the
+     * last entry or null if no entry with the given key was found
+     */
     @Override
-    public boolean remove(Object key) {
-        if (isSorted) {
-            int binarySearch = Collections.binarySearch(list, new KV<K, V>((K) key, null), comparator);
-            if (binarySearch >= 0 && binarySearch < list.size()) {
-                Map.Entry<K, V> entry = list.get(binarySearch);
-                if (entry.getKey().equals(key)) {
-                    list.remove(binarySearch);
-                    return true;
-                }
-            }
-            return false;
-        }
+    public V remove(Object key) {
+        V removedValue = null;
         Iterator<Map.Entry<K, V>> iter = list.iterator();
         while (iter.hasNext()) {
             Map.Entry<K, V> entry = iter.next();
             if (entry.getKey().equals(key)) {
                 iter.remove();
-                return true;
+                removedValue = entry.getValue();
             }
         }
-        return false;
+        return null;
     }
 
     @Override
@@ -208,7 +194,6 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
         return list.isEmpty();
     }
 
-    @Override
     public boolean contains(Object o) {
         return list.contains(o);
     }
@@ -216,21 +201,18 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
     public ArrayMap<K, V> ascending() {
         comparator = new AscComparator();
         Collections.sort(list, comparator);
-        isSorted = true;
         return this;
     }
 
     public ArrayMap<K, V> descending() {
         comparator = new DescComparator();
         Collections.sort(list, comparator);
-        isSorted = true;
         return this;
     }
 
     public ArrayMap<K, V> sorted(Comparator<Map.Entry<K, V>> comparator) {
         this.comparator = comparator;
         Collections.sort(list, comparator);
-        isSorted = true;
         return this;
     }
 
@@ -243,8 +225,9 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
         return new MapKeyIterator<K, V>(iterator());
     }
 
-    public MixedIterator<V> values() {
-        return new MapValueIterator<K, V>(iterator());
+    @Override
+    public Collection<V> values() {
+        return new Values();
     }
 
     public PeekIterator<K> peekKeys() {
@@ -267,12 +250,10 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
         return sorted(comparator).iterator();
     }
 
-    @Override
     public Map.Entry<K, V>[] toArray() {
         return (Map.Entry<K, V>[]) list.toArray();
     }
 
-    @Override
     public <T> T[] toArray(T[] a) {
         return list.toArray(a);
     }
@@ -281,7 +262,6 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
         return list.add(e);
     }
 
-    @Override
     public boolean containsAll(Collection<?> c) {
         return list.containsAll(c);
     }
@@ -290,16 +270,13 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
         for (Map.Entry<V, K> entry : c) {
             list.add(new KV(entry.getValue(), entry.getKey()));
         }
-        isSorted = false;
         return this;
     }
 
-    @Override
     public boolean removeAll(Collection<?> c) {
         return list.removeAll(c);
     }
 
-    @Override
     public boolean retainAll(Collection<?> c) {
         return list.retainAll(c);
     }
@@ -309,10 +286,60 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
         list.clear();
     }
 
-    @Override
     public boolean addAll(Collection<? extends Map.Entry<K, V>> c) {
-        isSorted = false;
         return list.addAll(c);
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+       for (int i = size() -1; i >= 0; i++) {
+           if (key.equals(get(i).getKey())) {
+               return true;
+           }
+       }
+       return false;
+    }
+
+    public boolean containsAllKeys(Collection<Object> key) {
+       for (int i = size() -1; i >= 0; i++) {
+           if (key.equals(get(i).getKey())) {
+               return true;
+           }
+       }
+       return false;
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+       for (int i = size() -1; i >= 0; i++) {
+           if (value.equals(get(i).getKey())) {
+               return true;
+           }
+       }
+       return false;
+    }
+
+    @Override
+    public V put(K key, V value) {
+       add(key, value);
+       return null;
+    }
+
+    @Override
+    public void putAll(Map<? extends K, ? extends V> m) {
+        for (Entry<? extends K, ? extends V> entry : m.entrySet()) {
+            list.add(new Tuple2<K, V>(entry.getKey(), entry.getValue()));
+        }
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return new KeySet();
+    }
+
+    @Override
+    public Set<Entry<K, V>> entrySet() {
+        return new EntrySet();
     }
 
     private class AscComparator implements Comparator<Map.Entry<K, V>> {
@@ -332,7 +359,6 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
     }
 
     public void shuffle() {
-        isSorted = false;
         for (int i = 0; i < size() - 1; i++) {
             int winner = i + RandomTools.getInt(size() - i);
             if (winner != i) {
@@ -345,6 +371,52 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Collection<Map
     public String toString() {
         return MapTools.toString(this);
     }
+
+    private class KeySet extends AbstractSet<K> {
+        @Override
+        public int size() {
+            HashMap a;
+           return ArrayMap.this.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+           return ArrayMap.this.isEmpty();
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            return ArrayMap.this.containsKey(o);
+        }
+
+        @Override
+        public Iterator<K> iterator() {
+            return ArrayMap.this.keys();
+        }
+    }
+    
+    private class Values extends AbstractCollection<V> {
+        public int size() { return ArrayMap.this.size(); }
+        public boolean isEmpty() { return ArrayMap.this.isEmpty(); }
+        public Iterator<V> iterator() {  return new MapValueIterator<K, V>(ArrayMap.this.iterator()); }
+
+        @Override
+        public boolean contains(Object o) {
+            for (int i = 0; i < size(); i++) {
+                if (o.equals(get(i).getValue())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    
+    final class EntrySet extends AbstractSet<Map.Entry<K,V>> {
+        public final int size()                 { return ArrayMap.this.size(); }
+        public final void clear()               { ArrayMap.this.clear(); }
+        public final Iterator<Map.Entry<K,V>> iterator() { return ArrayMap.this.iterator(); }
+        public final boolean contains(Object o) { return ArrayMap.this.contains(o); }
+    }    
 
     public static void main(String[] args) {
         ArrayMap<Integer, Integer> map = new ArrayMap();

@@ -4,7 +4,7 @@ import io.github.htools.collection.ArrayMap;
 import io.github.htools.type.Tuple2;
 import io.github.htools.lib.Log;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Map; 
 
 /**
  * A ArrayMap of a key and two values
@@ -20,10 +20,6 @@ public class ArrayMap3<K, V1, V2> extends ArrayMap<K, Tuple2<V1, V2>> {
    
    public void add(K k, V1 v1, V2 v2) {
        super.add( k, new Tuple2<V1, V2>(v1, v2));
-   }
-   
-   public void addSorted(K k, V1 v1, V2 v2) {
-       super.addSorted( k, new Tuple2<V1, V2>(v1, v2));
    }
    
    public static <K,V,W> ArrayMap3<K,V,W> invert2(Collection<Map.Entry<V, Tuple2<K, W>>> c) {

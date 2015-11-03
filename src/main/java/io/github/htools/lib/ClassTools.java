@@ -329,7 +329,6 @@ public enum ClassTools {
 //        String generic = ((ParameterizedType) c.getClass().getGenericSuperclass()).getActualTypeArguments()[0].getTypeName();
 //        return toClass(generic);
 //    }
-
     public static <S, B extends S> Class[] findTypeParameters(Class<B> base, Class<S> superClass) {
         Class[] actuals = new Class[0];
         for (Class clazz = base; !clazz.equals(superClass); clazz = clazz.getSuperclass()) {
@@ -397,6 +396,19 @@ public enum ClassTools {
                     String classname = entryName.substring(0, entryName.length() - 6).replace('/', '.');
                     list.add(classname);
                 }
+            }
+        }
+        return list;
+    }
+
+    public static ArrayList<String> getFilesFromJars(Class superclass) throws IOException {
+        ArrayList<String> list = new ArrayList();
+        URL jar = getJarLocation(superclass);
+        if (jar != null) {
+            ZipInputStream zip = new ZipInputStream(jar.openStream());
+            for (ZipEntry ze = zip.getNextEntry(); ze != null; ze = zip.getNextEntry()) {
+                String entryName = ze.getName();
+                list.add(entryName);
             }
         }
         return list;

@@ -16,6 +16,7 @@ import static io.github.htools.lib.PrintTools.sprintf;
 import io.github.htools.hadoop.io.OutputFormat;
 import io.github.htools.io.FSFile;
 import io.github.htools.io.HDFSPath;
+import io.github.htools.lib.ByteTools;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.io.IOException;
 import java.io.InputStream;
@@ -165,7 +166,7 @@ public class Conf extends JobConf {
         FSFileInBuffer fi = new FSFileInBuffer(input);
         byte[] readBytes = fi.readBytes();
         Conf conf = new Conf();
-        conf.processScript(new String(readBytes, 0, readBytes.length));
+        conf.processScript(ByteTools.toString(readBytes, 0, readBytes.length));
         return conf;
     }
 
@@ -230,6 +231,7 @@ public class Conf extends JobConf {
         ArrayList<String> ar = new ArrayList<String>();
         for (int i = 0; i < args.length; i++) {
             if (configurationkey.startsWith(args[i])) {
+                log.info("EHHH");
                 processScript(args[i]);
             } else if (jarskey.startsWith(args[i])) {
                 String dirs[] = args[i].substring(args[i].indexOf('=') + 1).split("[,:]");
@@ -275,7 +277,7 @@ public class Conf extends JobConf {
                         if (df != null) {
                             p = stringregex.matchPos(content, p.end, content.length);
                             pos = p.end;
-                            String file = new String(content, p.start, p.end - p.start).trim();
+                            String file = ByteTools.toString(content, p.start, p.end - p.start).trim();
                             Datafile subfile = new Datafile(df.getDir().getFilename(file));
                             subfile.setFileSystem(df.getFileSystem());
                             sb.append(readConfigFile(subfile));
@@ -284,7 +286,7 @@ public class Conf extends JobConf {
                         }
                         continue;
                     default:
-                        sb.append(new String(content, p.start, p.end - p.start));
+                        sb.append(ByteTools.toString(content, p.start, p.end - p.start));
                         continue;
                 }
             }
@@ -296,7 +298,7 @@ public class Conf extends JobConf {
     }
 
     public void processScript(String contentstring) {
-        byte content[] = contentstring.getBytes();
+        byte content[] = ByteTools.toBytes(contentstring);
         int pos = 0;
         while (pos < content.length) {
             boolean array = false;
@@ -310,33 +312,33 @@ public class Conf extends JobConf {
                 case 0: // delete entry
                     p = stringregex.matchPos(content, p.end, content.length);
                     pos = p.end;
-                    String key = new String(content, p.start, p.end - p.start - 1).trim();
+                    String key = ByteTools.toTrimmedString(content, p.start, p.end - 1);
                     delete(key);
                     continue;
                 case 1: // line is array
                     array = true;
-                    p.start++;
+                    p = new ByteSearchPosition(p.haystack, p.start+1, p.end, p.endreached, p.pattern);
                     break;
                 case 2: // optionalkey
                     optional = true;
-                    p.start++;
+                    p = new ByteSearchPosition(p.haystack, p.start+1, p.end, p.endreached, p.pattern);
                 case 3: // line is no array
                     break;
                 default:
-                    log.info("unreadable line in configuration : %s", new String(content, p.start, p.end - p.start));
+                    log.info("unreadable line in configuration : %s", ByteTools.toString(content, p.start, p.end));
                     continue;
             }
-            String key = new String(content, p.start, p.end - p.start - 1).trim();
+            String key = ByteTools.toTrimmedString(content, p.start, p.end - 1);
             if (array) {
                 p = stringregex.matchPos(content, p.end, content.length);
                 pos = p.end;
-                String value = new String(content, p.start, p.end - p.start - 1).trim();
+                String value = ByteTools.toTrimmedString(content, p.start, p.end - 1);
                 addArray(key, value);
             } else {
                 p = valueregex.matchPos(content, p.end, content.length);
                 pos = p.end;
 
-                String value = new String(content, p.start, p.end - p.start).trim();
+                String value = ByteTools.toTrimmedString(content, p.start, p.end);
                 //log.info("conf key %s pattern %d content %s", key, p.pattern, value);
                 switch (p.pattern) {
                     case 0: // empty line means delete key
@@ -464,6 +466,15 @@ public class Conf extends JobConf {
      */
     public HDFSPath getHDFSPath(String key) {
         return new HDFSPath(this, get(key));
+    }
+
+    /**
+     * @param key
+     * @return FSPath for the pathstring set under the key. Fails when the key
+     * is not set. This is short for new FSPath(conf.get(key)).
+     */
+    public FSPath getFSPath(String key) {
+        return new FSPath(get(key));
     }
 
     /**

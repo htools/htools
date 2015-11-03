@@ -39,7 +39,7 @@ public abstract class Table extends HTable {
 
     protected Table(Configuration conf, String tableName, String[] regions) throws IOException {
         super(conf, tableName);
-        this.tableKey = new ImmutableBytesWritable(tableName.getBytes());
+        this.tableKey = new ImmutableBytesWritable(ByteTools.toBytes(tableName));
         addRegions(regions);
     }
 

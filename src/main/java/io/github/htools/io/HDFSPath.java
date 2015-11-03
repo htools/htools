@@ -6,20 +6,17 @@ import io.github.htools.collection.HashMapSet;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.collection.ListIterator;
 import io.github.htools.hadoop.Conf;
-import io.github.htools.hadoop.io.DatafileInputFormat;
 import static io.github.htools.io.HDFSMove.verbose;
 import io.github.htools.lib.IteratorIterable;
 import io.github.htools.lib.Log;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -543,7 +540,7 @@ public class HDFSPath extends Path implements HPath {
         return offsets;
     }
 
-    public long[] mergeFiles(Datafile out, String filestart) throws IOException {
+    public long[] mergeFiles(Datafile out, ByteSearch filestart) throws IOException {
         //log.info("out %s dir %s filestart %s", out.getFullPath(), this.getCanonicalPath(), filestart);
         TreeSet<Datafile> sortedfiles = new TreeSet(getFiles(filestart));
         return mergeFiles(out, sortedfiles);
@@ -634,6 +631,7 @@ public class HDFSPath extends Path implements HPath {
         return null;
     }
 
+    @Override
     public ListIterator<DirComponent> iteratorRecursive() throws IOException {
         return new ListIterator(getRecursive());
     }
@@ -646,34 +644,30 @@ public class HDFSPath extends Path implements HPath {
         return new ListIterator(get(regex));
     }
 
-    public ListIterator<DirComponent> iteratorDirs() throws IOException {
+    public ListIterator<HPath> iteratorDirs() throws IOException {
         return new ListIterator(getDirs());
     }
 
-    public ListIterator<DirComponent> iteratorFiles() throws IOException {
+    public ListIterator<Datafile> iteratorFiles() throws IOException {
         return new ListIterator(getFiles());
     }
 
-    public ListIterator<DirComponent> iteratorDirs(String regexstring) throws IOException {
+    public ListIterator<HPath> iteratorDirs(ByteSearch regexstring) throws IOException {
         return new ListIterator(getDirs(regexstring));
     }
 
-    public ListIterator<DirComponent> iteratorDirs(ByteSearch regexstring) throws IOException {
-        return new ListIterator(getDirs(regexstring));
-    }
-
-    public ListIterator<DirComponent> iteratorFiles(String regexstring) throws IOException {
-        return new ListIterator(getFiles(regexstring));
-    }
-
-    private ListIterator<DirComponent> iteratorFiles(ByteSearch regexstring) throws IOException {
+    public ListIterator<Datafile> iteratorFiles(ByteSearch regexstring) throws IOException {
         return new ListIterator(getFiles(regexstring));
     }
 
     @Override
     public ArrayList<DirComponent> get() throws IOException {
         ArrayList<DirComponent> results = new ArrayList();
-        if (isDir(fs, this)) {
+        if (!exists()) {
+            for (DirComponent c : wildcardIterator()) {
+                results.add(c);
+            }
+        } else if (isDir(fs, this)) {
             for (FileStatus child : fs.listStatus(this)) {
                 if (child.isDir()) {
                     results.add(new HDFSPath(fs, child.getPath().toString()));
@@ -690,7 +684,14 @@ public class HDFSPath extends Path implements HPath {
     @Override
     public ArrayList<DirComponent> getRecursive() throws IOException {
         ArrayList<DirComponent> results = new ArrayList();
-        if (isDir(fs, this)) {
+        if (!exists()) {
+            for (DirComponent c : wildcardIterator()) {
+                results.add(c);
+                if (c.existsDir()) {
+                    results.addAll(((HDFSPath) c).getRecursive());
+                }
+            }
+        } else if (isDir(fs, this)) {
             for (FileStatus child : fs.listStatus(this)) {
                 String name = child.getPath().getName();
                 if (child.isDir()) {
@@ -701,31 +702,23 @@ public class HDFSPath extends Path implements HPath {
                     results.add(new Datafile(fs, child.getPath().toString()));
                 }
             }
+        } else if (existsFile(fs, this)) {
+            results.add(new Datafile(fs, this.getCanonicalPath()));
         }
         return results;
     }
 
-    @Override
     public ArrayList<DirComponent> get(String regexstring) throws IOException {
         return get(ByteSearch.createFilePattern(regexstring));
     }
 
-    private ArrayList<DirComponent> get(ByteSearch pattern) throws IOException {
+    @Override
+    public ArrayList<DirComponent> get(ByteSearch pattern) throws IOException {
         ArrayList<DirComponent> results = new ArrayList();
-        if (isDir(fs, this)) {
-            for (FileStatus child : fs.listStatus(this)) {
-                String name = child.getPath().getName();
-                if (pattern.exists(name)) {
-                    if (!child.isDir()) {
-                        results.add(new Datafile(fs, child.getPath().toString()));
-                    } else {
-                        results.add(new HDFSPath(fs, child.getPath().toString()));
-
-                    }
-                }
+        for (DirComponent c : get()) {
+            if (pattern.match(c.getName())) {
+                results.add(c);
             }
-        } else if (existsFile(fs, this) && pattern.exists(getName())) {
-            results.add(new Datafile(fs, this.getCanonicalPath()));
         }
         return results;
     }
@@ -733,14 +726,10 @@ public class HDFSPath extends Path implements HPath {
     @Override
     public ArrayList<Datafile> getFiles() throws IOException {
         ArrayList<Datafile> results = new ArrayList();
-        if (isDir(fs, this)) {
-            for (FileStatus child : fs.listStatus(this)) {
-                if (!child.isDir()) {
-                    results.add(new Datafile(fs, child.getPath().toString()));
-                }
+        for (DirComponent c : get()) {
+            if (c instanceof Datafile) {
+                results.add((Datafile) c);
             }
-        } else if (existsFile(fs, this)) {
-            results.add(new Datafile(fs, this));
         }
         return results;
     }
@@ -748,14 +737,10 @@ public class HDFSPath extends Path implements HPath {
     @Override
     public ArrayList<Datafile> getFilesNewerThan(long lastupdate) throws IOException {
         ArrayList<Datafile> results = new ArrayList();
-        if (isDir(fs, this)) {
-            for (FileStatus child : fs.listStatus(this)) {
-                if (!child.isDir() && child.getModificationTime() >= lastupdate) {
-                    results.add(new Datafile(fs, child.getPath().toString()));
-                }
+        for (DirComponent c : get()) {
+            if (c instanceof Datafile && ((Datafile) c).getLastModified() >= lastupdate) {
+                results.add((Datafile) c);
             }
-        } else if (existsFile(fs, this)) {
-            results.add(new Datafile(fs, this));
         }
         return results;
     }
@@ -845,9 +830,9 @@ public class HDFSPath extends Path implements HPath {
     @Override
     public ArrayList<String> getFilenames() throws IOException {
         ArrayList<String> results = new ArrayList();
-        for (DirComponent c : iterator()) {
+        for (DirComponent c : get()) {
             if (c instanceof Datafile) {
-                results.add(((Datafile) c).getName());
+                results.add(c.getName());
             }
         }
         return results;
@@ -855,77 +840,31 @@ public class HDFSPath extends Path implements HPath {
 
     public ArrayList<String> getFilepathnames() throws IOException {
         ArrayList<String> results = new ArrayList();
-        if (isDir(fs, this)) {
-            for (FileStatus child : fs.listStatus(this)) {
-                if (child.isFile()) {
-                    results.add(child.getPath().toString());
-                }
+        for (DirComponent c : get()) {
+            if (c instanceof Datafile) {
+                results.add(c.getCanonicalPath());
             }
-        } else if (existsFile(fs, this)) {
-            results.add(this.getCanonicalPath());
-        } else if (this.getName().contains("*")) {
-            this.getParentPath().getFilenames(getName());
         }
         return results;
     }
 
     @Override
-    public ArrayList<Datafile> getFiles(String regexstring) throws IOException {
-        return getFiles(ByteSearch.createFilePattern(regexstring));
-    }
-
-    private ArrayList<Datafile> getFiles(ByteSearch pattern) throws IOException {
+    public ArrayList<Datafile> getFiles(ByteSearch pattern) throws IOException {
         ArrayList<Datafile> results = new ArrayList();
-        if (isDir(fs, this)) {
-            for (FileStatus child : fs.listStatus(this)) {
-                String name = child.getPath().getName();
-                if (pattern.match(name)) {
-                    if (!child.isDir()) {
-                        results.add(new Datafile(fs, child.getPath().toString()));
-                    }
-                }
+        for (DirComponent c : get()) {
+            if (c instanceof Datafile && pattern.match(c.getName())) {
+                results.add((Datafile) c);
             }
-        } else if (existsFile(fs, this) && pattern.match(getName())) {
-            results.add(new Datafile(fs, this.getCanonicalPath()));
         }
         return results;
     }
 
-    public ArrayList<String> getFilenames(String regexstring) throws IOException {
-        return getFilenames(ByteSearch.createFilePattern(regexstring));
-    }
-
-    private ArrayList<String> getFilenames(ByteSearch pattern) throws IOException {
+    public ArrayList<String> getFilenames(ByteSearch pattern) throws IOException {
         ArrayList<String> results = new ArrayList();
-        if (isDir(fs, this)) {
-            for (FileStatus child : fs.listStatus(this)) {
-                String name = child.getPath().getName();
-                if (pattern.match(name)) {
-                    if (!child.isDir()) {
-                        results.add(name);
-                    }
-                }
+        for (DirComponent c : get()) {
+            if (c instanceof Datafile && pattern.match(c.getName())) {
+                results.add(c.getName());
             }
-        } else if (existsFile(fs, this) && pattern.match(getName())) {
-            results.add(getName());
-        }
-        return results;
-    }
-
-    @Override
-    public ArrayList<Datafile> getFilesStartingWith(String start) throws IOException {
-        ArrayList<Datafile> results = new ArrayList();
-        if (isDir(fs, this)) {
-            for (FileStatus child : fs.listStatus(this)) {
-                String name = child.getPath().getName();
-                if (name.startsWith(start)) {
-                    if (!child.isDir()) {
-                        results.add(new Datafile(fs, child.getPath().toString()));
-                    }
-                }
-            }
-        } else if (existsFile(fs, this) && getName().startsWith(start)) {
-            results.add(new Datafile(fs, this.getCanonicalPath()));
         }
         return results;
     }
@@ -933,11 +872,9 @@ public class HDFSPath extends Path implements HPath {
     @Override
     public ArrayList<HDFSPath> getDirs() throws IOException {
         ArrayList<HDFSPath> results = new ArrayList();
-        if (isDir(fs, this)) {
-            for (FileStatus child : fs.listStatus(this)) {
-                if (child.isDir()) {
-                    results.add(new HDFSPath(fs, child.getPath().toString()));
-                }
+        for (DirComponent c : get()) {
+            if (c instanceof HPath) {
+                results.add((HDFSPath) c);
             }
         }
         return results;
@@ -946,17 +883,14 @@ public class HDFSPath extends Path implements HPath {
     @Override
     public ArrayList<String> getDirnames() throws IOException {
         ArrayList<String> results = new ArrayList();
-        if (isDir(fs, this)) {
-            for (FileStatus child : fs.listStatus(this)) {
-                if (child.isDir()) {
-                    results.add(child.getPath().toString());
-                }
+        for (DirComponent c : get()) {
+            if (c instanceof HPath) {
+                results.add(c.getName());
             }
         }
         return results;
     }
 
-    @Override
     public ArrayList<HDFSPath> getDirs(String regexstring) throws IOException {
         return getDirs(ByteSearch.createFilePattern(regexstring));
     }
@@ -964,14 +898,9 @@ public class HDFSPath extends Path implements HPath {
     @Override
     public ArrayList<HDFSPath> getDirs(ByteSearch pattern) throws IOException {
         ArrayList<HDFSPath> results = new ArrayList();
-        if (isDir(fs, this)) {
-            for (FileStatus child : fs.listStatus(this)) {
-                String name = child.getPath().getName();
-                if (pattern.exists(name)) {
-                    if (child.isDir()) {
-                        results.add(new HDFSPath(this.fs, child.getPath().toString()));
-                    }
-                }
+        for (DirComponent c : get()) {
+            if (c instanceof HPath && pattern.match(c.getName())) {
+                results.add((HDFSPath) c);
             }
         }
         return results;

@@ -6,6 +6,7 @@ import io.github.htools.extract.modules.ConvertHtmlAmpersand;
 import io.github.htools.extract.modules.ConvertHtmlSpecialCodes;
 import io.github.htools.extract.modules.MarkWikipediaMLMacro;
 import io.github.htools.extract.modules.MarkWikipediaTable;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import java.util.ArrayList;
 
@@ -52,7 +53,7 @@ public class WikipediaSourceSplitter extends ExtractorConf {
     }
 
     public Result tokenize(String text) {
-        return tokenize(text.getBytes());
+        return tokenize(ByteTools.toBytes(text));
     }
 
     @Override

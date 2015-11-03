@@ -49,11 +49,11 @@ public class StopWordsMultiLang {
         }
     }
 
-    public HashSet<String> getStemmedFilterSet() {
+    public static HashSet<String> getStemmedFilterSet() {
         if (stemmedfilterset == null) {
             DefaultTokenizer extractor = new DefaultTokenizer();
             stemmedfilterset = new HashSet<String>();
-            for (String s : this.getUnstemmedFilterSet()) {
+            for (String s : getUnstemmedFilterSet()) {
                 ArrayList<String> tokenize = extractor.tokenize(s);
                 if (tokenize.size() == 1) {
                     stemmedfilterset.add(tokenize.get(0));
@@ -63,18 +63,18 @@ public class StopWordsMultiLang {
         return stemmedfilterset;
     }
 
-    public HashSet<String> getLancasterStemmedFilterSet() {
+    public static HashSet<String> getLancasterStemmedFilterSet() {
         if (lancasterstemmedfilterset == null) {
             LancasterStemmer stemmer = LancasterStemmer.get();
             lancasterstemmedfilterset = new HashSet<String>();
-            for (String s : this.getUnstemmedFilterSet()) {
+            for (String s : getUnstemmedFilterSet()) {
                     lancasterstemmedfilterset.add(stemmer.stem(s));
             }
         }
         return lancasterstemmedfilterset;
     }
 
-    public HashSet<String> getUnstemmedFilterSet() {
+    public static HashSet<String> getUnstemmedFilterSet() {
         if (unstemmedfilterset == null) {
             unstemmedfilterset = new HashSet<String>();
             unstemmedfilterset.addAll(StopWordsSmart.getUnstemmedFilterSet());
@@ -82,12 +82,13 @@ public class StopWordsMultiLang {
             unstemmedfilterset.addAll(StopWordsLetter.getUnstemmedFilterSet());
             unstemmedfilterset.addAll(StopWordsSpanish.getUnstemmedFilterSet());
             unstemmedfilterset.addAll(StopWordsFrench.getUnstemmedFilterSet());
+            unstemmedfilterset.addAll(StopWordsGerman.getUnstemmedFilterSet());
         }
         return unstemmedfilterset;
     }
 
-    public boolean isUnstemmedStopWord(String s) {
-        return this.getUnstemmedFilterSet().contains(s);
+    public static boolean isUnstemmedStopWord(String s) {
+        return getUnstemmedFilterSet().contains(s);
     }
 
     public boolean isStemmedStopWord(String s) {

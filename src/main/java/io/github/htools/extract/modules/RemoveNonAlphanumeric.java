@@ -1,14 +1,10 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteRegex;
-import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.search.ByteSearchSection;
 import io.github.htools.extract.Content;
-import io.github.htools.extract.ExtractChannel;
 import io.github.htools.extract.Extractor;
 import io.github.htools.lib.BoolTools;
 import io.github.htools.lib.Log;
-import java.util.ArrayList;
 
 /**
  * Remove HTML special codes that are written in between &amp; ;, such as <code>&tilde;</code>
@@ -19,7 +15,7 @@ import java.util.ArrayList;
 public class RemoveNonAlphanumeric extends ExtractorProcessor {
 
    public static Log log = new Log(RemoveNonAlphanumeric.class);
-   boolean[] alphanumeric = BoolTools.alphanumeric();
+   boolean[] allowedCharacters = BoolTools.combineRanges(BoolTools.alphanumeric(), BoolTools.createASCIIAccept('\0'));
 
    private RemoveNonAlphanumeric(Extractor extractor, String process) {
       super(extractor, process);
@@ -28,7 +24,7 @@ public class RemoveNonAlphanumeric extends ExtractorProcessor {
    @Override
    public void process(Content entity, ByteSearchSection section, String attribute) {
          for (int i = section.innerstart; i < section.innerend; i++) {
-             if (entity.content[i] != 0 && !alphanumeric[entity.content[i] & 0xff])
+             if (!allowedCharacters[entity.content[i] & 0xff])
                 entity.content[i] = 32;
          }
    }

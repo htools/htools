@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 import io.github.htools.hadoop.io.archivereader.*;
+import io.github.htools.lib.ByteTools;
 
 /**
  * The Extractor is a generic processor that converts {@link Content}s submitted
@@ -241,7 +242,7 @@ public class Extractor {
     }
 
     public Content process(String text) {
-        return process(text.getBytes());
+        return process(ByteTools.toBytes(text));
     }
 
     public void removeProcessor(String process, Class processclass) {
@@ -301,16 +302,18 @@ public class Extractor {
         while (all.size() > 0) {
             ByteSearchSection s = all.pollFirst();
             while (s.innerstart < s.end) {
-                for (; firstother != null && firstother.end < s.innerstart; firstother = other.pollFirst());
+                int innerstart = s.innerstart;
+                int start = s.start;
+                for (; firstother != null && firstother.end < innerstart; firstother = other.pollFirst());
                 if (firstother == null || firstother.innerstart >= s.end) {
-                    entity.addSectionPos(resultsection, s.haystack, s.start, s.innerstart, s.innerend, s.end);
-                    s.innerstart = s.end;
+                    entity.addSectionPos(resultsection, s.haystack, start, innerstart, s.innerend, s.end);
+                    innerstart = s.end;
                 } else {
                     if (firstother.start > s.innerstart) {
-                        entity.addSectionPos(resultsection, s.haystack, s.start, s.innerstart, firstother.start, firstother.start);
+                        entity.addSectionPos(resultsection, s.haystack, start, innerstart, firstother.start, firstother.start);
                     }
-                    s.innerstart = firstother.end;
-                    s.start = firstother.end;
+                    innerstart = firstother.end;
+                    start = firstother.end;
                     firstother = other.pollFirst();
                 }
             }

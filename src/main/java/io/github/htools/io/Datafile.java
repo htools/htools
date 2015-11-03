@@ -10,6 +10,7 @@ import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.search.ByteSearchSection;
 import io.github.htools.search.ByteSection;
 import io.github.htools.io.ByteSearchReader;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Const;
 import static io.github.htools.lib.Const.NULLLONG;
 import io.github.htools.lib.Log;
@@ -1483,7 +1484,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     public String readAsString() {
-        return new String(readFully());
+        return ByteTools.toString(readFully());
     }
 
     public byte[] readFully() {

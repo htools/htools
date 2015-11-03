@@ -595,7 +595,7 @@ public class BulkOutputFormat extends FileOutputFormat<ImmutableBytesWritable, C
                 continue;
             }
             try {
-                confValMap.put(URLDecoder.decode(familySplit[0], "UTF-8").getBytes(),
+                confValMap.put(ByteTools.toBytes(URLDecoder.decode(familySplit[0], "UTF-8")),
                         URLDecoder.decode(familySplit[1], "UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 // will not happen with UTF-8 encoding

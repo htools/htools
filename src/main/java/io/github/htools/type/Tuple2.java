@@ -1,8 +1,9 @@
 package io.github.htools.type;
 
 import io.github.htools.lib.MathTools;
+import java.util.Map;
 
-public class Tuple2<K, V> extends KV<K, V> {
+public class Tuple2<K, V> extends KV<K, V> implements Map.Entry<K, V> {
 
     public Tuple2(K key, V value) {
         super(key, value);

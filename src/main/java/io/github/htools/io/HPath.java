@@ -40,7 +40,7 @@ public interface HPath extends DirComponent, Iterable<DirComponent> {
 
    HPath getParentPath();
 
-   public ArrayList<Datafile> getFiles(String regex) throws IOException;
+   public ArrayList<Datafile> getFiles(ByteSearch pattern) throws IOException;
    
    boolean mkdirs();
 
@@ -58,19 +58,15 @@ public interface HPath extends DirComponent, Iterable<DirComponent> {
 
     public Iterator<DirComponent> iteratorRecursive() throws IOException;
 
-    public Iterator<DirComponent> iterator(String regexstring) throws IOException;
+    public Iterator<HPath> iteratorDirs() throws IOException;
 
-    public Iterator<DirComponent> iteratorDirs() throws IOException;
+    public Iterator<Datafile> iteratorFiles() throws IOException;
 
-    public Iterator<DirComponent> iteratorFiles() throws IOException;
+    public Iterator<HPath> iteratorDirs(ByteSearch pattern) throws IOException;
 
-    public Iterator<DirComponent> iteratorDirs(String regexstring) throws IOException;
-
-    public Iterator<DirComponent> iteratorFiles(String regexstring) throws IOException;
-
-    public Iterator<DirComponent> iteratorDirs(ByteSearch regexstring) throws IOException;
+    public Iterator<Datafile> iteratorFiles(ByteSearch pattern) throws IOException;
     
-    public Iterator<DirComponent> iterator(ByteSearch regex) throws IOException;
+    public Iterator<DirComponent> iterator(ByteSearch pattern) throws IOException;
 
     public Iterator<DirComponent> wildcardIterator() throws IOException;
 
@@ -78,7 +74,7 @@ public interface HPath extends DirComponent, Iterable<DirComponent> {
 
     public ArrayList<DirComponent> getRecursive() throws IOException;
 
-    public ArrayList<DirComponent> get(String regexstring) throws IOException;
+    public ArrayList<DirComponent> get(ByteSearch pattern) throws IOException;
 
     public ArrayList<Datafile> getFiles() throws IOException;
 
@@ -93,10 +89,5 @@ public interface HPath extends DirComponent, Iterable<DirComponent> {
     public ArrayList<? extends HPath> getDirs(ByteSearch pattern) throws IOException;
     
     public ArrayList<String> getDirnames() throws IOException;
-
-    public ArrayList<? extends HPath> getDirs(String regexstring) throws IOException;
-    
-    public ArrayList<Datafile> getFilesStartingWith(String start) throws IOException;
-
 
 }

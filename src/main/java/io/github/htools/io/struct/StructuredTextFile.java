@@ -208,7 +208,7 @@ public abstract class StructuredTextFile {
                 ByteSearchSection section = reader.readSectionStart(root.section);
                 if (validRecord(section)) {
                     root.emptyDataContainer();
-                    root.readNode(section);
+                    section = root.readNode(section);
                     reader.movePast(section);
                     return true;
                 }
@@ -233,7 +233,7 @@ public abstract class StructuredTextFile {
             while (true) {
                 ByteSearchSection section = reader.readSectionStart(root.section);
                 if (section.notEmpty()) {
-                    root.readNode(section);
+                    section = root.readNode(section);
                     reader.movePast(section);
                 }
             }
@@ -319,7 +319,7 @@ public abstract class StructuredTextFile {
 
         protected abstract void writeHeader() throws IOException;
 
-        protected abstract void readNode(ByteSearchSection section);
+        protected abstract ByteSearchSection readNode(ByteSearchSection section);
 
         protected abstract void readHeader(ByteSearchSection section);
 
@@ -367,9 +367,10 @@ public abstract class StructuredTextFile {
         }
 
         @Override
-        protected void readNode(ByteSearchSection outersection) {
+        protected ByteSearchSection readNode(ByteSearchSection outersection) {
             T value = value(outersection);
             set(value);
+            return outersection;
         }
 
         @Override
@@ -476,7 +477,7 @@ public abstract class StructuredTextFile {
         }
 
         @Override
-        protected void readNode(ByteSearchSection section) {
+        protected ByteSearchSection readNode(ByteSearchSection section) {
             for (Node f : nestedfields.values()) {
                 //log.info("readNode node %s", f.label);
                 for (ByteSearchSection pos : findAllSections(section, f.section)) {
@@ -485,6 +486,7 @@ public abstract class StructuredTextFile {
                     f.readNode(pos);
                 }
             }
+            return section;
         }
 
         protected void readHeader(ByteSearchSection section) {

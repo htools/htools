@@ -140,8 +140,8 @@ public enum RandomTools {
             for (int i = 0; i < 624; i++) {
                 mt_buffer[i] = random.nextInt();
             }
-            Log.out("Random seeds %s", ArrayTools.toString(mt_buffer));
-            Log.printStackTrace();
+            //Log.out("Random seeds %s", ArrayTools.toString(mt_buffer));
+            //Log.printStackTrace();
             mt_index = 0;
         }
         

@@ -9,8 +9,8 @@ import java.util.Comparator;
  * @author Jeroen Vuurens
  */
 public class ByteSearchPosition implements Comparator<ByteSearchPosition>, Comparable<ByteSearchPosition> {
-   public int start = -1; 
-   public int end = Integer.MIN_VALUE;
+   public final int start; 
+   public final int end;
    public long offset;
    // indicates end of input was reached and possibly reading more input could
    // lead to a different exists, if the caller has more input (e.g reading from
@@ -19,17 +19,8 @@ public class ByteSearchPosition implements Comparator<ByteSearchPosition>, Compa
    public int pattern;
    public byte[] haystack;
 
-  public ByteSearchPosition(byte haystack[]) {
-     this.haystack = haystack;
-  }
-
-   public ByteSearchPosition(byte haystack[], int start) {
-       this.haystack = haystack;
-      this.start = start;
-   }
-
    public ByteSearchPosition(byte haystack[], int start, int end) {
-       this.haystack = haystack;
+      this.haystack = haystack;
       this.start = start;
       this.end = end;
    }
@@ -37,6 +28,11 @@ public class ByteSearchPosition implements Comparator<ByteSearchPosition>, Compa
    public ByteSearchPosition(byte haystack[], int start, int end, boolean endreached) {
       this(haystack, start, end);
       this.endreached = endreached;
+   }
+
+   public ByteSearchPosition(byte haystack[], int start, int end, boolean endreached, int pattern) {
+      this(haystack, start, end, endreached);
+      this.pattern = pattern;
    }
 
    public static ByteSearchPosition notFound() {
@@ -61,10 +57,6 @@ public class ByteSearchPosition implements Comparator<ByteSearchPosition>, Compa
 
    public boolean found() {
       return end > -1;
-   }
-
-   public void setNotFound() {
-      end = -1;
    }
 
    public boolean notEmpty() {

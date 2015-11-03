@@ -90,13 +90,13 @@ public class BytePatternTest {
             break;
          }
 
-
-         section.innerstart--;
+         section = new ByteSearchSection(section.haystack, section.start, section.innerstart-1,
+         section.innerend, section.end);
          if (keywords.exists(reader.buffer, section.innerstart, section.innerend)) {
                ByteSearchPosition c = content.findPos(reader.buffer, section.innerstart, section.innerend);
                if (c.found()) {
-                  c.start = quote.find(reader.buffer, c.start+8, c.end) + 1;
-                  results.add(ByteTools.toString(reader.buffer, c.start, --c.end));
+                  int cstart = quote.find(reader.buffer, c.start+8, c.end) + 1;
+                  results.add(ByteTools.toString(reader.buffer, cstart, c.end - 1));
                }
          }
       } while (true);

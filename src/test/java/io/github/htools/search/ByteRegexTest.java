@@ -4,6 +4,7 @@ import io.github.htools.search.ByteRegex;
 import static io.github.htools.search.ByteRegex.log;
 import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.io.buffer.BufferReaderWriter;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import java.util.ArrayList;
 import org.junit.Assert;
@@ -357,7 +358,7 @@ public class ByteRegexTest {
             testcase = test;
             bytesource = new byte[source.length][];
             for (int i = 0; i < source.length; i++) {
-                bytesource[i] = source[i].getBytes();
+                bytesource[i] = ByteTools.toBytes(source[i]);
             }
         }
 
@@ -382,7 +383,7 @@ public class ByteRegexTest {
             testcase = test;
             bytesource = new byte[source.length][];
             for (int i = 0; i < source.length; i++) {
-                bytesource[i] = source[i].getBytes();
+                bytesource[i] = ByteTools.toBytes(source[i]);
             }
         }
 

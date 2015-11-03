@@ -18,38 +18,40 @@ import java.util.ArrayList;
  */
 public class RemoveURL extends ExtractorProcessor {
 
-   public static Log log = new Log(RemoveURL.class);
-   public ByteSearch url = ByteSearch.create("://[\\w/%:@#\\(\\)_\\-\\+=;\\.,\\?\\[\\]\\{\\}\\|~]+");
-   public ByteSearch domain = ByteSearch.create("\\.\\c[\\w_\\-]*(\\.\\c[\\w_\\-]*)+");
-   public boolean letter[] = BoolTools.letter();
-   public boolean name0[] = BoolTools.word0();
+    public static Log log = new Log(RemoveURL.class);
+    public ByteSearch url = ByteSearch.create("://[\\w/%:@#\\(\\)_\\-\\+=;\\.,\\?\\[\\]\\{\\}\\|~]+");
+    public ByteSearch domain = ByteSearch.create("\\.\\c[\\w_\\-]*(\\.\\c[\\w_\\-]*)+");
+    public boolean letter[] = BoolTools.letter();
+    public boolean name0[] = BoolTools.word0();
 
-   private RemoveURL(Extractor extractor, String process) {
-      super(extractor, process);
-   }
+    private RemoveURL(Extractor extractor, String process) {
+        super(extractor, process);
+    }
 
-   @Override
-   public void process(Content entity, ByteSearchSection section, String attribute) {
-      int startpos = section.innerstart;
-      int endpos = section.innerend;
-      for (ByteSearchPosition pos : url.findAllPos(entity.content, startpos, endpos)) {
-         while (pos.start > section.innerstart && letter[entity.content[pos.start - 1] & 0xFF]) {
-            pos.start--;
-         }
-         for (int a = pos.start; a < pos.end; a++) {
-            entity.content[a] = 32;
-         }
-      }
-      for (ByteSearchPosition pos : domain.findAllPos(entity.content, startpos, endpos)) {
-         for (; pos.start > section.innerstart && entity.content[pos.start - 1] == 0; pos.start--);
-         if (pos.start > section.innerstart && name0[entity.content[pos.start - 1] & 0xFF]) {
-            while (pos.start > section.innerstart && name0[entity.content[pos.start - 1] & 0xFF]) {
-               pos.start--;
+    @Override
+    public void process(Content entity, ByteSearchSection section, String attribute) {
+        int startpos = section.innerstart;
+        int endpos = section.innerend;
+        for (ByteSearchPosition pos : url.findAllPos(entity.content, startpos, endpos)) {
+            int bpos = pos.start;
+            while (bpos > section.innerstart && letter[entity.content[bpos - 1] & 0xFF]) {
+                bpos--;
             }
-            for (int a = pos.start; a < pos.end; a++) {
-               entity.content[a] = 32;
+            for (int a = bpos; a < pos.end; a++) {
+                entity.content[a] = 32;
             }
-         }
-      }
-   }
+        }
+        for (ByteSearchPosition pos : domain.findAllPos(entity.content, startpos, endpos)) {
+            int bpos = pos.start;
+            for (; bpos > section.innerstart && entity.content[bpos - 1] == 0; bpos--);
+            if (bpos > section.innerstart && name0[entity.content[bpos - 1] & 0xFF]) {
+                while (bpos > section.innerstart && name0[entity.content[bpos - 1] & 0xFF]) {
+                    bpos--;
+                }
+                for (int a = bpos; a < pos.end; a++) {
+                    entity.content[a] = 32;
+                }
+            }
+        }
+    }
 }

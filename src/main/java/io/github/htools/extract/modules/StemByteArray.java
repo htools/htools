@@ -43,7 +43,7 @@ public class StemByteArray extends ExtractorProcessor {
                   byte[] word = ByteTools.toBytes(content, wordstart, wordend);
                   byte[] wordStemmed = translateStemmed.get(word);
                   if (wordStemmed == null) {
-                      wordStemmed = stemmer.stem(ByteTools.toString(word)).getBytes();
+                      wordStemmed = ByteTools.toBytes(stemmer.stem(ByteTools.toString(word)));
                       if (ArrayTools.equals(word, wordStemmed))
                           wordStemmed = alreadyStemmed;
                       translateStemmed.put(word, wordStemmed);

@@ -1,9 +1,7 @@
 package io.github.htools.lib;
 
-import io.github.htools.type.Tuple2Comparable;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -18,16 +16,18 @@ public enum ByteTools {
     private static final boolean identifier[] = getIdentifier();
     private static final boolean whitespace[] = getByteArray(" \n\t\r");
     private static final boolean whitespacezero[] = getByteArray(" \n\t\r\0");
-    private static final String UTF8_ENCODING = "UTF-8";
-    private static final Charset UTF8_CHARSET = Charset.forName(UTF8_ENCODING);
 
     /**
      * returns a String constructed with the content that is marked by start
      * (inclusive) and end (exclusive) in the byte array, omitting \0 bytes.
      */
     public static String toString(byte array[], int start, int end) {
-        byte[] c = toBytes(array, start, end);
-        return new String(c, 0, c.length, UTF8_CHARSET);
+       try {
+           return new String(array, start, end - start, "UTF-8");
+       } catch (UnsupportedEncodingException ex) {
+           log.fatalexception(ex, "toString()");
+           return null;
+       }
     }
 
     /**
@@ -56,7 +56,12 @@ public enum ByteTools {
     }
 
     public static String toTrimmedString(byte b[], int pos, int end) {
-        return new String(toTrimmed(b, pos, end), UTF8_CHARSET);
+       try {
+           return new String(toTrimmed(b, pos, end), "UTF-8");
+       } catch (UnsupportedEncodingException ex) {
+           ex.printStackTrace();
+           return null;
+       }
     }
 
     public static byte[] toTrimmed(byte b[], int pos, int end) {
@@ -88,14 +93,19 @@ public enum ByteTools {
      * @return
      */
     public static String toFullTrimmedString(byte b[], int pos, int end) {
-        return new String(toFullTrimmed(b, pos, end), UTF8_CHARSET);
+       try {
+           return new String(toFullTrimmed(b, pos, end), "UTF-8");
+       } catch (UnsupportedEncodingException ex) {
+           ex.printStackTrace();
+           return null;
+       }
     }
 
     /**
      * @param b
      * @param pos
      * @param end
-     * @return
+     * @return a byte array from which \0 bytes 
      */
     public static byte[] toFullTrimmed(byte b[], int pos, int end) {
         byte c[];
@@ -105,7 +115,7 @@ public enum ByteTools {
         for (int p = pos; p < end; p++) {
             if (whitespace[b[p] & 0xFF]) {
                 realchars++;
-                for (; p + 1 < end && whitespace[b[p + 1] & 0xFF]; p++);
+                for (; p + 1 < end && whitespacezero[b[p + 1] & 0xFF]; p++);
             } else if (b[p] != 0) {
                 realchars++;
             }
@@ -114,9 +124,11 @@ public enum ByteTools {
             c = new byte[realchars];
             for (int cnr = 0, p = pos; p < end; p++) {
                 if (b[p] != 0) {
-                    c[cnr++] = b[p];
                     if (whitespace[b[p] & 0xFF]) {
-                        for (; p + 1 < end && whitespace[b[p + 1] & 0xFF]; p++);
+                        c[cnr++] = 32;
+                        for (; p + 1 < end && whitespacezero[b[p + 1] & 0xFF]; p++);
+                    } else {
+                        c[cnr++] = b[p];
                     }
                 }
             }
@@ -136,7 +148,12 @@ public enum ByteTools {
      * @return the byte array
      */
     public static byte[] toBytes(String s) {
-        return s.getBytes(UTF8_CHARSET);
+       try {
+           return s.getBytes("UTF-8");
+       } catch (UnsupportedEncodingException ex) {
+           ex.printStackTrace();
+           return null;
+       }
     }
 
     public static String listBytesAsString(byte b[]) {
@@ -258,17 +275,6 @@ public enum ByteTools {
         int match = 0;
         for (match = 0; match < needle.length && pos < haystack.length && haystack[pos] == needle[match]; match++, pos++);
         return (match >= needle.length);
-    }
-
-    public static Tuple2Comparable<Integer, Integer> find(byte[] haystack, byte[] needlestart, byte[] needleend, int startpos, int endpos, boolean ignorecase, boolean omitquotes) {
-        int needlepos = find(haystack, needlestart, startpos, endpos, ignorecase, false);
-        if (needlepos > -1) {
-            int needlepos2 = find(haystack, needleend, needlepos + needlestart.length, endpos, ignorecase, omitquotes);
-            if (needlepos2 > -1) {
-                return new Tuple2Comparable<Integer, Integer>(needlepos, needlepos2);
-            }
-        }
-        return null;
     }
 
     public static int string0HashCode(byte buffer[], int pos, int bufferend) {
@@ -440,7 +446,7 @@ public enum ByteTools {
     public static boolean[] getByteArray(String s) {
         boolean c[] = new boolean[256];
         Arrays.fill(c, false);
-        byte bytes[] = s.getBytes();
+        byte bytes[] = ByteTools.toBytes(s);
         for (byte b : bytes) {
             if (b >= 0) {
                 c[b] = true;
@@ -464,7 +470,7 @@ public enum ByteTools {
 
     public static int print(byte[] haystack, int startpos, String... strings) {
         for (String s : strings) {
-            byte[] b = s.getBytes();
+            byte[] b = ByteTools.toBytes(s);
             for (int i = 0; i < b.length && startpos < haystack.length;) {
                 haystack[startpos++] = b[i++];
             }

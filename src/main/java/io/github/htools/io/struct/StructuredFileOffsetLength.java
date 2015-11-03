@@ -4,6 +4,7 @@ import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearch;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -68,7 +69,8 @@ public abstract class StructuredFileOffsetLength extends StructuredFile {
    public void mergeIndexSegments() throws IOException {
       long offsets[] = getSource().mergeSegments();
       HDFSPath dir = (HDFSPath) getDatafile().getDir();
-      TreeSet<Datafile> sortedfiles = new TreeSet(dir.getFilesStartingWith(getDatafile().getName()));
+      ByteSearch filePattern = ByteSearch.create(getDatafile().getName());
+      TreeSet<Datafile> sortedfiles = new TreeSet(dir.getFiles(filePattern));
       StructuredFileOffsetLength in = (StructuredFileOffsetLength) this.clone();
       int offsetpos = 0;
       this.openWrite();

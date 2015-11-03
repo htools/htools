@@ -4,6 +4,7 @@ import io.github.htools.extract.Content;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.HDFSIn;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,8 +29,8 @@ public class ReaderTREC extends ArchiveReader {
 
     @Override
     public void initialize(FileSplit fileSplit) {
-        startTag = getDocStartTag().getBytes();
-        endTag = getDocEndTag().getBytes();
+        startTag = ByteTools.toBytes(getDocStartTag());
+        endTag = ByteTools.toBytes(getDocEndTag());
         Path file = fileSplit.getPath();
         if (!isCompressed() && end < HDFSIn.getLengthNoExc(filesystem, file)) { // only works for uncompressed files
             ((Datafile)fsin).setCeiling(end);

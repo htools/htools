@@ -2,6 +2,7 @@ package io.github.htools.search;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.struct.StructuredTextCSV;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import java.io.IOException;
 
@@ -36,7 +37,7 @@ public class QRELfile extends StructuredTextCSV {
 "101 0 AP880314-0121 0\n" +
 "101 0 AP880314-0145 0\n" +
 "101 0 AP880320-0041 0");
-     return new QRELfile(new BufferReaderWriter(sb.toString().getBytes()));
+     return new QRELfile(new BufferReaderWriter(ByteTools.toBytes(sb.toString())));
   }
   
    public static void main(String[] args) throws IOException {

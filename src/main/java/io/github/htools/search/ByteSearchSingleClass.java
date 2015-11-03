@@ -100,23 +100,20 @@ public class ByteSearchSingleClass extends ByteSearch {
 
     @Override
     public ByteSearchPosition matchPos(byte[] haystack, int position, int end) {
-        ByteSearchPosition p = new ByteSearchPosition(haystack);
-        p.start = position;
-        p.end = (valid[haystack[position]]) ? position + 1 : Integer.MIN_VALUE;
+        ByteSearchPosition p = new ByteSearchPosition(haystack, position,
+        (valid[haystack[position]]) ? position + 1 : Integer.MIN_VALUE);
         return p;
     }
 
     @Override
     public ByteSearchPosition findPos(byte[] haystack, int start, int end) {
-        ByteSearchPosition p = new ByteSearchPosition(haystack);
+        ByteSearchPosition p;
         int pos = find(haystack, start, end);
         if (pos < 0) {
-            p.start = end;
-            p.end = Integer.MIN_VALUE;
+            p = new ByteSearchPosition(haystack, end, Integer.MIN_VALUE);
             p.endreached = true;
         } else {
-            p.start = pos;
-            p.end = pos + 1;
+            p = new ByteSearchPosition(haystack, pos, pos + 1);
         }
         return p;
     }

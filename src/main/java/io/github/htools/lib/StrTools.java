@@ -782,7 +782,8 @@ public enum StrTools {
         (byte) 0xe2, (byte) 0x80, (byte) 0x9f,
     };
     public static byte asciibyte20[] = {'-', '-', '-', '-', '-', '-', '-', '\'', '\'', '\'', '\'', '"', '"', '"', '"'};
-    public static byte unicodebyteC3[] = {(byte) 0x80, (byte) 0xA0, (byte) 0x88, (byte) 0xA8, (byte) 0x8C,
+    public static byte unicodebyteC3[] = {
+        (byte) 0x80, (byte) 0xA0, (byte) 0x88, (byte) 0xA8, (byte) 0x8C,
         (byte) 0xAC, (byte) 0x92, (byte) 0xB2, (byte) 0x99, (byte) 0xB9,
         (byte) 0x81, (byte) 0xA1, (byte) 0x89, (byte) 0xA9, (byte) 0x8D,
         (byte) 0xAD, (byte) 0x93, (byte) 0xB3, (byte) 0x9A, (byte) 0xBA,
@@ -792,8 +793,23 @@ public enum StrTools {
         (byte) 0xB5, (byte) 0x91, (byte) 0xB1, (byte) 0x84, (byte) 0xA4,
         (byte) 0x8B, (byte) 0xAB, (byte) 0x8F, (byte) 0xAF, (byte) 0x96,
         (byte) 0xB6, (byte) 0x9C, (byte) 0xBC, (byte) 0xBF, (byte) 0x85,
-        (byte) 0xA5, (byte) 0x87, (byte) 0xA7};
-    public static byte asciibyteC3[] = {'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'Y', 'y', 'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'A', 'a', 'O', 'o', 'N', 'n', 'A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'y', 'A', 'a', 'C', 'c'};
+        (byte) 0xA5, (byte) 0x87, (byte) 0xA7, (byte) 0x98, (byte) 0xF8};
+    public static byte asciibyteC3[] = {
+        'A', 'a', 'E', 'e', 'I', 
+        'i', 'O', 'o', 'U', 'u', 
+        'A', 'a', 'E', 'e', 'I', 
+        'i', 'O', 'o', 'U', 'u', 
+        'Y', 'y', 'A', 'a', 'E', 
+        'e', 'I', 'i', 'O', 'o', 
+        'U', 'u', 'A', 'a', 'O', 
+        'o', 'N', 'n', 'A', 'a', 
+        'E', 'e', 'I', 'i', 'O', 
+        'o', 'U', 'u', 'y', 'A', 
+        'a', 'C', 'c', 'O', 'o'};
+    public static byte unicodebyteC32byte[] = {
+        (byte) 0x9F, (byte) 0x86, (byte)0xA6};
+    public static String asciibyteC32byte[] = {
+        "ss", "AE", "ae", };
     public static byte unicodebyteC5[] = {(byte) 0xB6, (byte) 0xB7, (byte) 0xB8, (byte) 0x90, (byte) 0x91, (byte) 0xB0, (byte) 0xB1};
     public static byte asciibyteC5[] = {'Y', 'y', 'Y', 'O', 'o', 'U', 'u'};
     public static byte asciiextendedbyte[] = {

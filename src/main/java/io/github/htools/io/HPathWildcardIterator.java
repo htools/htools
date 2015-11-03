@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The Dir class represents a wildcarded directory, through which you can
@@ -22,7 +20,7 @@ public class HPathWildcardIterator implements IteratorIterable<DirComponent> {
     HPath hpath;
     private ArrayDeque<String> components;
     private ArrayList<ByteSearch> regex = new ArrayList();
-    private ArrayList<Iterator<DirComponent>> contents = new ArrayList();
+    private ArrayList<Iterator<? extends DirComponent>> contents = new ArrayList();
     DirComponent lastcomponent;
 
     protected HPathWildcardIterator(HPath path) {
@@ -54,7 +52,7 @@ public class HPathWildcardIterator implements IteratorIterable<DirComponent> {
     public boolean setupIterator(HPath p, int i) {
         try {
             ByteSearch r = regex.get(i);
-            Iterator<DirComponent> iter;
+            Iterator<? extends DirComponent> iter;
             if (i < regex.size() - 1) {
                 iter = p.iteratorDirs(r);
             } else {
@@ -89,7 +87,7 @@ public class HPathWildcardIterator implements IteratorIterable<DirComponent> {
     public DirComponent next() {
         DirComponent result = lastcomponent;
         lastcomponent = null;
-        Iterator<DirComponent> iter = contents.get(contents.size() - 1);
+        Iterator<? extends DirComponent> iter = contents.get(contents.size() - 1);
         if (iter.hasNext()) {
             lastcomponent = iter.next();
         } else {

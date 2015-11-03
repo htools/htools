@@ -1,5 +1,6 @@
 package io.github.htools.io.compressed;
 
+import io.github.htools.io.Datafile;
 import java.io.IOException;
 import io.github.htools.lib.Log;
 import io.github.htools.search.ByteRegex;
@@ -8,6 +9,7 @@ import io.github.htools.search.ByteSearchPosition;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
@@ -29,10 +31,22 @@ public abstract class ArchiveFileWriter {
     public static ArchiveFileWriter getWriter(String file, int compressionlevel) throws IOException {
         ByteSearchPosition pos = suffix.findLastPos(file);
         if (pos.found()) {
-            FileOutputStream fis = new FileOutputStream(file);
+            FileOutputStream fos = new FileOutputStream(file);
             switch (pos.pattern) {
                 case 0:
-                    return new TarLz4FileWriter(fis, compressionlevel);
+                    return new TarLz4FileWriter(fos, compressionlevel);
+            }
+        }
+        throw new IOException("Not supported extension for file " + file);
+    }
+    
+    public static ArchiveFileWriter getWriter(Datafile file, int compressionlevel) throws IOException {
+        ByteSearchPosition pos = suffix.findLastPos(file.getName());
+        if (pos.found()) {
+            OutputStream fos = file.getOutputStream();
+            switch (pos.pattern) {
+                case 0:
+                    return new TarLz4FileWriter(fos, compressionlevel);
             }
         }
         throw new IOException("Not supported extension for file " + file);
@@ -44,5 +58,7 @@ public abstract class ArchiveFileWriter {
 
     public abstract void write(File file) throws IOException;
 
+    public abstract void write(String filename, int size, InputStream inputStream) throws IOException;
+    
     public abstract void close() throws IOException;
 }

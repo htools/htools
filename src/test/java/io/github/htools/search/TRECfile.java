@@ -2,6 +2,7 @@ package io.github.htools.search;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.struct.StructuredTextFile;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import java.io.IOException;
 
@@ -39,7 +40,7 @@ public class TRECfile extends StructuredTextFile {
      sb.append("  <title> topic: mies wim ");
      sb.append("  <desc> description: zus jet ");
      sb.append("</top>\n");
-     return new TRECfile(new BufferReaderWriter(sb.toString().getBytes()));
+     return new TRECfile(new BufferReaderWriter(ByteTools.toBytes(sb.toString())));
   }
   
    public static void main(String[] args) throws IOException {

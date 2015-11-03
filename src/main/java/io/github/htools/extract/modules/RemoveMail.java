@@ -31,15 +31,14 @@ public class RemoveMail extends ExtractorProcessor {
       int endpos = section.innerend;
       ArrayList<ByteSearchPosition> positions = start.findAllPos(entity.content, startpos, endpos);
       for (ByteSearchPosition pos : positions) {
-         while (pos.start > section.innerstart && letter[entity.content[pos.start - 1] & 0xFF]) {
-            pos.start--;
+          int bpos = pos.start;
+         while (bpos > section.innerstart && letter[entity.content[bpos - 1] & 0xFF]) {
+            bpos--;
          }
-         if (pos.start > section.innerstart && entity.content[pos.start - 1] == ':') { // remove stuff like mailto:
-            while (--pos.start > section.innerstart && letter[entity.content[pos.start - 1] & 0xFF]) {
-              pos.start--;
-           }
+         if (bpos > section.innerstart && entity.content[bpos - 1] == ':') { // remove stuff like mailto:
+            while (--bpos > section.innerstart && letter[entity.content[bpos - 1] & 0xFF]);
          }
-         for (int a = pos.start; a < pos.end; a++) {
+         for (int a = bpos; a < pos.end; a++) {
             entity.content[a] = 32;
          }
       }

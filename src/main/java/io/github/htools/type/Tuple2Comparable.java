@@ -1,5 +1,7 @@
 package io.github.htools.type;
 
+import io.github.htools.lib.ByteTools;
+import static io.github.htools.lib.ByteTools.find;
 import java.util.Map;
 
 public class Tuple2Comparable<R extends Comparable, S extends Comparable> implements Comparable<Tuple2Comparable<R, S>>,Map.Entry<R, S> {
@@ -46,4 +48,16 @@ public class Tuple2Comparable<R extends Comparable, S extends Comparable> implem
     public S setValue(S value) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    public static Tuple2Comparable<Integer, Integer> find(byte[] haystack, byte[] needlestart, byte[] needleend, int startpos, int endpos, boolean ignorecase, boolean omitquotes) {
+        int needlepos = ByteTools.find(haystack, needlestart, startpos, endpos, ignorecase, false);
+        if (needlepos > -1) {
+            int needlepos2 = ByteTools.find(haystack, needleend, needlepos + needlestart.length, endpos, ignorecase, omitquotes);
+            if (needlepos2 > -1) {
+                return new Tuple2Comparable<Integer, Integer>(needlepos, needlepos2);
+            }
+        }
+        return null;
+    }
+
 }

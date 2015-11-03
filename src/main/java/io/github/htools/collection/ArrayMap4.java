@@ -18,8 +18,4 @@ public class ArrayMap4<K, V1, V2, V3> extends ArrayMap<K, Tuple3<V1, V2, V3>> {
    public void add(K k, V1 v1, V2 v2, V3 v3) {
        super.add( k, new Tuple3<V1, V2, V3>(v1, v2, v3));
    }
-   
-   public void addSorted(K k, V1 v1, V2 v2, V3 v3) {
-       super.addSorted( k, new Tuple3<V1, V2, V3>(v1, v2, v3));
-   }
 }

@@ -3,6 +3,7 @@ package io.github.htools.extract;
 import io.github.htools.extract.modules.ExtractorProcessor;
 import io.github.htools.extract.modules.TokenChar;
 import io.github.htools.extract.modules.TokenizerRegex;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import java.util.ArrayList;
 /**
@@ -67,6 +68,6 @@ public abstract class AbstractTokenizer extends Extractor {
    }
    
    public ArrayList<String> tokenize(String text) {
-       return tokenize(text.getBytes());
+       return tokenize(ByteTools.toBytes(text));
    }
 }

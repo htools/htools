@@ -288,6 +288,15 @@
     <build>
         <sourceDirectory>${src.dir}</sourceDirectory>
         <testSourceDirectory>${test.dir}</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>${src.dir}/io/github/htools/words/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <targetPath>resources</targetPath>
+            </resource>
+        </resources>
         <plugins>
             <plugin> <!-- use with antrun:run to upload, change settings for your server -->
                 <groupId>org.apache.maven.plugins</groupId>

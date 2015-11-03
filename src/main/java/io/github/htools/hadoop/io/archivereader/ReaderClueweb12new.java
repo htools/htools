@@ -77,7 +77,7 @@ public class ReaderClueweb12new extends ArchiveReader {
          pos.startpos = lengthend;
          pos.endpos = ByteTools.find(entitywritable.content, (byte) '\n', pos.startpos, entitywritable.content.length);
          if (pos.endpos > pos.startpos) {
-            String length = new String(entitywritable.content, pos.startpos, pos.endpos - pos.startpos).trim();
+            String length = ByteTools.toTrimmedString(entitywritable.content, pos.startpos, pos.endpos);
             if (Character.isDigit(length.charAt(0))) {
                return Integer.parseInt(length);
             }

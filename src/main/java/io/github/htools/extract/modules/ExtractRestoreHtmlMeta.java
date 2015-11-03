@@ -17,24 +17,24 @@ import java.util.ArrayList;
  */
 public class ExtractRestoreHtmlMeta extends ExtractRestore {
 
-   public static Log log = new Log(ExtractRestoreHtmlMeta.class);
-   private ByteSearch correcttype = ByteSearch.create("\\sname\\s*=\\s*(keywords|description|'keywords'|'description'|\"keywords\"|\"description\")");
-   private ByteSearch content = ByteSearch.create("\\scontent\\s*=\\s*\\Q");
-   private ByteSearch quote = ByteSearch.create("['\"]");
+    public static Log log = new Log(ExtractRestoreHtmlMeta.class);
+    private ByteSearch correcttype = ByteSearch.create("\\sname\\s*=\\s*(keywords|description|'keywords'|'description'|\"keywords\"|\"description\")");
+    private ByteSearch content = ByteSearch.create("\\scontent\\s*=\\s*\\Q");
+    private ByteSearch quote = ByteSearch.create("['\"]");
 
-   public ExtractRestoreHtmlMeta(Extractor extractor, String process) {
-      super(extractor, process);
-   }
+    public ExtractRestoreHtmlMeta(Extractor extractor, String process) {
+        super(extractor, process);
+    }
 
-   @Override
-   public void process(Content entity, ByteSearchSection section, String attribute) {
-      section.innerstart--;
-      if (correcttype.exists(entity.content, section.innerstart, section.innerend)) {
-            ByteSearchPosition c = content.findPos(entity.content, section.innerstart, section.innerend);
+    @Override
+    public void process(Content entity, ByteSearchSection section, String attribute) {
+        int innerstart = section.innerstart - 1;
+        if (correcttype.exists(entity.content, innerstart, section.innerend)) {
+            ByteSearchPosition c = content.findPos(entity.content, innerstart, section.innerend);
             if (c.found()) {
-               c.start = quote.find(entity.content, c.start+8, c.end) + 1;
-               add(entity, c.start, --c.end);
+                int start = quote.find(entity.content, c.start + 8, c.end) + 1;
+                add(entity, start, c.end - 1);
             }
-      }
-   }
+        }
+    }
 }

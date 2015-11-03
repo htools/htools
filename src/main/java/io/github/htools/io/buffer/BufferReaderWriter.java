@@ -17,6 +17,7 @@ import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
 import static io.github.htools.lib.PrintTools.memoryDump;
+import static io.github.htools.lib.PrintTools.sprintf;
 import io.github.htools.type.Long128;
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -500,14 +501,14 @@ public class BufferReaderWriter implements StructureData {
 
     public void print(String s) {
         if (s != null) {
-            byte b[] = s.getBytes();
+            byte b[] = ByteTools.toBytes(s);
             writeRaw(b);
         }
     }
 
     public void write0(String s) {
         if (s != null) {
-            writeRaw(s.getBytes());
+            writeRaw(ByteTools.toBytes(s));
         }
         write((byte) 0);
     }
@@ -1330,6 +1331,14 @@ public class BufferReaderWriter implements StructureData {
         }
     }
 
+    public void writeRaw(String s) {
+        writeRaw(ByteTools.toBytes(s));
+    }
+    
+    public void writeRaw(String s, Object ... params) {
+        writeRaw(ByteTools.toBytes(sprintf(s, params)));
+    }
+    
     public void write(byte b[]) {
         if (b == null) {
             write(-1);

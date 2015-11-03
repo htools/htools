@@ -36,8 +36,8 @@ public class ConvertTagnamesToLowercase extends ExtractorProcessor {
       byte buffer[] = entity.content;
       ArrayList<ByteSearchPosition> findAll = tagname.findAllPos(buffer, section.innerstart, section.innerend);
       for (ByteSearchPosition p : findAll) {
-         p.end--;
-         for (int i = p.start; i < p.end; i++) {
+         int end = p.end - 1;
+         for (int i = p.start; i < end; i++) {
             buffer[i] |= 32;
          }
       }

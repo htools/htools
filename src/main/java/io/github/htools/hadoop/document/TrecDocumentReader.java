@@ -1,6 +1,7 @@
 package io.github.htools.hadoop.document;
 
 import io.github.htools.io.EOCException;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import java.io.ByteArrayOutputStream;
 import org.apache.hadoop.fs.Path;
@@ -26,8 +27,8 @@ public class TrecDocumentReader extends DocumentAbstractReader {
 
    @Override
    public void initialize(FileSplit fileSplit) {
-      startTag = this.getStartLabel().getBytes();
-      endTag = this.getEndLabel().getBytes();
+      startTag = ByteTools.toBytes(getStartLabel());
+      endTag = ByteTools.toBytes(getEndLabel());
       Path file = fileSplit.getPath();
    }
    

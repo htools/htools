@@ -74,18 +74,18 @@ public abstract class StructuredTextXML extends StructuredTextFile {
       }
       
       @Override
-      public void readNode(ByteSearchSection section) {
-         
+      public ByteSearchSection readNode(ByteSearchSection section) {
+          
          // process attributes in tag
          ArrayList<ByteSearchPosition> positions = attribute.findAllPos(section.haystack, section.start, section.innerstart);
          for (ByteSearchPosition pos : positions) {
-            pos.start++; // eat space
-            pos.end--;
-            String attr = attributename.findAsFullTrimmedString(section.haystack, pos.start, pos.end);
+            int posstart = pos.start+1; // eat space
+            int posend = pos.end - 1;
+            String attr = attributename.findAsFullTrimmedString(section.haystack, posstart, posend);
             Node datanode = nestedfields.get(attr);
             if (datanode != null) {
-               pos.start = valuestart.findEnd(section.haystack, pos.start, pos.end);
-               ByteSearchSection subsection = new ByteSearchSection(section.haystack, pos.start, pos.start, pos.end, pos.end);
+               posstart = valuestart.findEnd(section.haystack, posstart, posend);
+               ByteSearchSection subsection = new ByteSearchSection(section.haystack, posstart, posstart, posend, posend);
                datanode.readNode(subsection);
             }
          }
@@ -93,8 +93,7 @@ public abstract class StructuredTextXML extends StructuredTextFile {
          //ByteSearchSection pos1 = section.findSection(ff.section);
          //log.info("scan %s regex %s found %s", ff.label, ff.section, pos1);
          if (isOpenClose(section)) {
-            section.innerend = section.innerstart;
-            section.end = section.innerstart;
+             return new ByteSearchSection(section.haystack, section.start, section.innerstart, section.innerstart, section.innerstart);
          } else {
             // process attributes between open and close tag 
             for (Node f : orderedfields) {
@@ -104,6 +103,7 @@ public abstract class StructuredTextXML extends StructuredTextFile {
                }
             }
          }
+         return section;
       }
 
       private boolean isOpenClose(ByteSearchSection section) {

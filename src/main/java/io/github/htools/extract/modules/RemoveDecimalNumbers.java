@@ -15,23 +15,27 @@ import io.github.htools.lib.Log;
  */
 public class RemoveDecimalNumbers extends ExtractorProcessor {
 
-   private static Log log = new Log(RemoveDecimalNumbers.class);
-   ByteSearch decimal = ByteSearch.create("\\.[0-9]");
-   boolean number[] = new boolean[256];
+    private static Log log = new Log(RemoveDecimalNumbers.class);
+    ByteSearch decimal = ByteSearch.create("\\.[0-9]");
+    boolean number[] = new boolean[256];
 
-   public RemoveDecimalNumbers(Extractor extractor, String process) {
-      super(extractor, process);
-      for (int i = 0; i < 256; i++)
-         number[i] = (i >= '0' && i <= '9') || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z');
-   }
+    public RemoveDecimalNumbers(Extractor extractor, String process) {
+        super(extractor, process);
+        for (int i = 0; i < 256; i++) {
+            number[i] = (i >= '0' && i <= '9') || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z');
+        }
+    }
 
-   @Override
-   public void process(Content entity, ByteSearchSection section, String attribute) {
-      for (ByteSearchPosition pos : decimal.findAllPos(entity.content, section.innerstart, section.innerend)) {
-         for ( ; pos.start > section.innerstart && number[entity.content[pos.start-1] & 0xFF]; pos.start--);
-         for ( ; pos.end < section.innerend && number[entity.content[pos.start+1] & 0xFF]; pos.end++);
-         for (int i = pos.start; i < pos.end; i++)
-            entity.content[i] = 32;
-      }
-   }
+    @Override
+    public void process(Content entity, ByteSearchSection section, String attribute) {
+        for (ByteSearchPosition pos : decimal.findAllPos(entity.content, section.innerstart, section.innerend)) {
+            int bpos = pos.start;
+            int bend = pos.end;
+            for (; bpos > section.innerstart && number[entity.content[bpos - 1] & 0xFF]; bpos--);
+            for (; bend < section.innerend && number[entity.content[bpos + 1] & 0xFF]; bend++);
+            for (int i = bpos; i < bend; i++) {
+                entity.content[i] = 32;
+            }
+        }
+    }
 }

@@ -5,6 +5,7 @@ import io.github.htools.lib.Log;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
 import io.github.htools.lib.BoolTools;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.ClassTools;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -94,6 +95,7 @@ public class TokenizerRegex extends ExtractorProcessor {
             return;
         }
         ArrayList<String> list = loadTokens(entity.content);
+        //log.info("tokens %s", list);
         entity.get(attribute).addAll(list);
     }
 
@@ -121,7 +123,6 @@ public class TokenizerRegex extends ExtractorProcessor {
     }
 
     private void addToken(byte buffer[], ArrayList<String> list, int tokenStart, int tokenend) {
-        byte c[];
 
         //log.info("addToken start %d end %d buffer %d", tokenStart, tokenend, buffer.length);
         if (tokenend > tokenStart) {
@@ -132,16 +133,16 @@ public class TokenizerRegex extends ExtractorProcessor {
                 }
             }
             if (nullchars == 0) {
-                list.add(new String(buffer, tokenStart, tokenend - tokenStart));
+                list.add(ByteTools.toString(buffer, tokenStart, tokenend));
             } else if (tokenend > tokenStart + nullchars) {
-                c = new byte[tokenend - tokenStart - nullchars];
+                byte[] c = new byte[tokenend - tokenStart - nullchars];
                 for (int cnr = 0, p = tokenStart; p < tokenend; p++) {
                     if (buffer[p] != 0) {
                         // by using tokenchar, characters can be automaticaly mapped, e.g. to lowercase
                         c[cnr++] = buffer[p];
                     }
                 }
-                list.add(new String(c));
+                list.add(ByteTools.toString(c));
             }
         }
     }

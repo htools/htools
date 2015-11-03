@@ -47,7 +47,7 @@ public class MarkWikipediaTable extends SectionMarker {
                             tableopen--;
                         }
                     }
-                    section.innerstart = end.end;
+                    section = new ByteSearchSection(section.haystack, section.start, end.end, section.innerend, section.end);
                 } else {
                     break;
                 }

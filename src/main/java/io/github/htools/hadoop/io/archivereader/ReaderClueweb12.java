@@ -50,7 +50,7 @@ public class ReaderClueweb12 extends ArchiveReader {
             if (find.found()) {
                 ByteSearchPosition find1 = EOL.findPos(entitywritable.content, find.end, entitywritable.content.length);
                 if (find1.found()) {
-                    String id = new String(entitywritable.content, find.end, find1.start - find.end);
+                    String id = ByteTools.toString(entitywritable.content, find.end, find1.start);
                     //log.info("entity %s", new String(entitywritable.entity.content));
                     if (id.length() == 25 && (ids == null || ids.get(id))) {
                         entitywritable.get("collectionid").add(id);
@@ -80,7 +80,7 @@ public class ReaderClueweb12 extends ArchiveReader {
             pos.startpos = lengthstart + contentlengthtag.length;
             pos.endpos = ByteTools.find(entitywritable.content, (byte) '\n', pos.startpos, entitywritable.content.length);
             if (pos.endpos > pos.startpos) {
-                String length = new String(entitywritable.content, pos.startpos, pos.endpos - pos.startpos).trim();
+                String length = ByteTools.toTrimmedString(entitywritable.content, pos.startpos, pos.endpos);
                 if (Character.isDigit(length.charAt(0))) {
                     return Integer.parseInt(length);
                 }

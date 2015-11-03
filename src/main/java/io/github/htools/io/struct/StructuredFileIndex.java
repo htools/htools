@@ -1,10 +1,9 @@
 package io.github.htools.io.struct;
 
 import io.github.htools.io.Datafile;
-import io.github.htools.io.Datafile;
-import io.github.htools.io.FileIntegrityException;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearch;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -71,7 +70,8 @@ public abstract class StructuredFileIndex extends StructuredFile {
    public void mergeIndexSegments() throws IOException {
       long offsets[] = valuetuple.mergeSegments();
       HDFSPath dir = (HDFSPath) getDatafile().getDir();
-      TreeSet<Datafile> sortedfiles = new TreeSet(dir.getFilesStartingWith(getDatafile().getName()));
+      ByteSearch filePattern = ByteSearch.create(getDatafile().getName());
+      TreeSet<Datafile> sortedfiles = new TreeSet(dir.getFiles(filePattern));
       StructuredFileIndex in = this.clone();
       for (int i = 0; i < intkeys.length; i++) {
          intkeys[i].value = in.intkeys[i].key;

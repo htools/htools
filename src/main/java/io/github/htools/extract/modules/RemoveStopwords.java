@@ -4,7 +4,7 @@ import io.github.htools.lib.Log;
 import io.github.htools.extract.Extractor;
 import io.github.htools.words.StopWordsLetter;
 import io.github.htools.words.StopWordsSmart;
-import io.github.htools.words.StopWordsUrl;
+import io.github.htools.words.StopWordsWWW;
 
 /**
  * Processes all tokens in the supplied EntityChannel though the snowball
@@ -17,7 +17,7 @@ public class RemoveStopwords extends RemoveFilteredWords {
    public RemoveStopwords(Extractor extractor, String process) {
       super(extractor, process);
       this.addWords(StopWordsSmart.getUnstemmedFilterSet());
-      this.addWords(StopWordsUrl.getUnstemmedFilterSet());
+      this.addWords(StopWordsWWW.getUnstemmedFilterSet());
       this.addWords(StopWordsLetter.getUnstemmedFilterSet());
    }
 }

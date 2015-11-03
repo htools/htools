@@ -169,27 +169,23 @@ public enum ArrayTools {;
    }
 
    public static int[] clone(int[] a) {
-      int r[] = new int[a.length];
-      System.arraycopy(a, 0, r, 0, r.length);
-      return r;
+      return (int[])a.clone();
    }
 
    public static long[] clone(long[] a) {
-      long r[] = new long[a.length];
-      System.arraycopy(a, 0, r, 0, r.length);
-      return r;
+      return (long[])a.clone();
+   }
+
+   public static byte[] clone(byte[] a) {
+      return (byte[])a.clone();
    }
 
    public static boolean[] clone(boolean[] a) {
-      boolean r[] = new boolean[a.length];
-      System.arraycopy(a, 0, r, 0, r.length);
-      return r;
+      return (boolean[])a.clone();
    }
 
    public static String[] clone(String[] a) {
-      String r[] = new String[a.length];
-      System.arraycopy(a, 0, r, 0, r.length);
-      return r;
+      return (String[])a.clone();
    }
 
    public static long[] flatten(long array[][]) {
@@ -357,6 +353,18 @@ public enum ArrayTools {;
       return sb.append(" }").toString();
    }
 
+   public static String toString(byte[][] b) {
+      if (b == null)
+         return null;
+      if (b.length == 0)
+         return "{}";
+      StringBuilder sb = new StringBuilder();
+      sb.append("{ { ").append(ArrayTools.toString(b[0])).append((" }"));
+      for (int i = 1; i < b.length; i++)
+         sb.append(",\n{ ").append(ArrayTools.toString(b[i])).append(" }");
+      return sb.append(" }").toString();
+   }
+
    public static String toString(int[][][] b) {
       if (b == null)
          return null;
@@ -384,7 +392,7 @@ public enum ArrayTools {;
    public static String toString(byte[] b, int pos, int length, String separator) {
       StringBuilder sb = new StringBuilder();
       if (b.length > 0) {
-         sb.append(b[pos]);
+         sb.append(b[pos] & 0xff);
       }
       length = Math.min(length, b.length - pos);
       for (int i = 1; i < length; i++) {

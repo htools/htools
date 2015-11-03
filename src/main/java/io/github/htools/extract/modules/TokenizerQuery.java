@@ -25,10 +25,4 @@ public class TokenizerQuery extends Tokenizer {
    protected void setMaxTokenLength() {
       maxtokenlength = Integer.MAX_VALUE;
    }
-
-   protected void setCharacterTranslation() {
-      for (int i = 0; i < 256; i++) {
-         tokenchar[i] = (char) i;
-      }
-   }
 }

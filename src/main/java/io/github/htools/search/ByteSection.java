@@ -68,7 +68,7 @@ public class ByteSection extends ByteSearch {
    }
 
    public String getFirstString(String text) {
-     byte bytes[] = text.getBytes();
+     byte bytes[] = ByteTools.toBytes(text);
      return getFirstString(bytes, 0, bytes.length);
    }
 
@@ -122,7 +122,7 @@ public class ByteSection extends ByteSearch {
    
    @Override
    public ByteSearchSection findPos(String text) {
-      byte bytes[] = text.getBytes();
+      byte bytes[] = ByteTools.toBytes(text);
       return findPos(bytes, 0, bytes.length);
    }
    
@@ -184,7 +184,7 @@ public class ByteSection extends ByteSearch {
         if (s == null) {
             return null;
         }
-        byte b[] = s.getBytes();
+        byte b[] = ByteTools.toBytes(s);
         ByteSearchSection match = matchPos(b, 0, b.length);
         return match.found() ? match.toString() : null;
     }

@@ -17,8 +17,8 @@ import java.util.ArrayList;
 public class ByteSearchSection extends ByteSearchPosition implements ByteSearchReader {
 
     public static Log log = new Log(ByteSearchSection.class);
-    public int innerstart;
-    public int innerend;
+    public final int innerstart;
+    public final int innerend;
     public int currentpos = -1;
 
     public ByteSearchSection(byte haystack[], int start, int innerstart, int innerend, int end) {
@@ -292,8 +292,13 @@ public class ByteSearchSection extends ByteSearchPosition implements ByteSearchR
     }
 
     public ByteSearchSection trim() {
-        for (; innerstart < innerend && ByteTools.isWhiteSpaceZero(haystack[innerstart]); innerstart++);
-        for (; innerend > innerstart && ByteTools.isWhiteSpaceZero(haystack[innerend - 1]); innerend--);
-        return this;
+        int istart = innerstart;
+        int iend = innerend;
+        for (; istart < innerend && ByteTools.isWhiteSpaceZero(haystack[istart]); istart++);
+        for (; iend > istart && ByteTools.isWhiteSpaceZero(haystack[iend - 1]); iend--);
+        if (innerstart != istart || innerend != iend) {
+            return new ByteSearchSection(haystack, start, istart, iend, end);
+        } else 
+            return this;
     }
 }

@@ -5,6 +5,8 @@ import io.github.htools.lib.Log;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
 import io.github.htools.extract.ExtractorConf;
+import io.github.htools.lib.ByteTools;
+import io.github.htools.lib.StrTools;
 import java.util.ArrayList;
 
 /**
@@ -40,7 +42,6 @@ public class Tokenizer extends ExtractorProcessor {
     public boolean[] tokenpoststripper = new boolean[128];
     public boolean[] tokenprestripper = new boolean[128];
     public boolean[][] splitpeek = new boolean[128][128];
-    public final char[] tokenchar = new char[256];
     protected final char maxbyte = Byte.MAX_VALUE;
     protected final char minbyte = 0x0;
     protected int maxtokenlength;
@@ -94,7 +95,6 @@ public class Tokenizer extends ExtractorProcessor {
             setSplitNumbers();
         }
         this.maxtokenlength = maxtokenlength;
-        setCharacterTranslation(lowercase);
     }
 
     public static String getConf(String process, Extractor extractor, String label, String def) {
@@ -148,18 +148,6 @@ public class Tokenizer extends ExtractorProcessor {
         this.splitpeek('0', '9', 'A', 'Z');
     }
 
-    protected void setCharacterTranslation(boolean lowercase) {
-        if (lowercase) {
-            for (int i = 0; i < 256; i++) {
-                tokenchar[i] = (char) ((i >= 'A' && i <= 'Z') ? (i | 32) : i);
-            }
-        } else {
-            for (int i = 0; i < 256; i++) {
-                tokenchar[i] = (char) i;
-            }
-        }
-    }
-
     protected void splitpeek(char firststart, char firstend, char secondstart, char secondend) {
         for (int f = firststart; f <= firstend; f++) {
             for (int s = secondstart; s <= secondend; s++) {
@@ -199,14 +187,14 @@ public class Tokenizer extends ExtractorProcessor {
     }
 
     public void addTokenSplitBefore(String s) {
-        byte tokensepbyte[] = s.getBytes();
+        byte tokensepbyte[] = ByteTools.toBytes(s);
         for (byte b : tokensepbyte) {
             this.tokensplitbefore[b] = true;
         }
     }
 
     public void addTokenSplitAfter(String s) {
-        byte tokensepbyte[] = s.getBytes();
+        byte tokensepbyte[] = ByteTools.toBytes(s);
         for (byte b : tokensepbyte) {
             this.tokensplitafter[b] = true;
         }
@@ -254,7 +242,6 @@ public class Tokenizer extends ExtractorProcessor {
     }
 
     private void addToken(byte buffer[], ArrayList<String> list, int tokenStart, int tokenend) {
-        char c[];
         while (--tokenend >= tokenStart && this.tokenpoststripper[buffer[tokenend]]);
         if (tokenend >= tokenStart) {
             int realchars = 0;
@@ -264,14 +251,13 @@ public class Tokenizer extends ExtractorProcessor {
                 }
             }
             if (realchars > 0 && realchars < maxtokenlength) {
-                c = new char[realchars];
+                byte[] c = new byte[realchars];
                 for (int cnr = 0, p = tokenStart; p <= tokenend; p++) {
                     if (buffer[p] > 0) {
-                        // by using tokenchar, characters can be automaticaly mapped, e.g. to lowercase
-                        c[cnr++] = tokenchar[buffer[p] & 0xFF];
+                        c[cnr++] = buffer[p];
                     }
                 }
-                list.add(new String(c));
+                list.add(StrTools.toString(c));
             }
         }
     }

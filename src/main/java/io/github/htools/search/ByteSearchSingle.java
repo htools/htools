@@ -66,7 +66,7 @@ public class ByteSearchSingle extends ByteSearch {
 
    @Override
    public ByteSearchPosition findPosQuoteSafe(byte haystack[], int start, int end) {
-      ByteSearchPosition pos = new ByteSearchPosition(haystack);
+      int posend = end;
       LOOP:
       for (; start < end; start++) {
          switch (haystack[start]) {
@@ -90,19 +90,22 @@ public class ByteSearchSingle extends ByteSearch {
                break LOOP;
          }
          if (b == haystack[start]) {
-            pos.end = start + 1;
+            posend = start + 1;
             break;
          }
       }
-      pos.start = start;
-      if (!pos.found())
+       
+      if (start >= end) {
+         ByteSearchPosition pos = new ByteSearchPosition(haystack, start, -1);
          pos.endreached = true;
-      return pos;
+         return pos;
+      }
+      return new ByteSearchPosition(haystack, start, posend);
    }
 
    @Override
    public ByteSearchPosition findPosDoubleQuoteSafe(byte haystack[], int start, int end) {
-      ByteSearchPosition pos = new ByteSearchPosition(haystack);
+      int posend = end;
       LOOP:
       for (; start < end; start++) {
          switch (haystack[start]) {
@@ -117,29 +120,29 @@ public class ByteSearchSingle extends ByteSearch {
                break LOOP;
          }
          if (b == haystack[start]) {
-            pos.end = start + 1;
+            posend = start + 1;
             break;
          }
       }
-      pos.start = start;
-      if (!pos.found())
-         pos.endreached = true;
-      return pos;
+      if (start < end) {
+         return new ByteSearchPosition(haystack, start, posend);
+      }
+      return new ByteSearchPosition(haystack, start, -1, true);
    }
 
    @Override
    public ByteSearchPosition findPosNoQuoteSafe(byte haystack[], int start, int end) {
-      ByteSearchPosition pos = new ByteSearchPosition(haystack, start);
+      int posend = end;
       for (; start < end; start++) {
          if (haystack[start] == b) {
-            pos.end = start + 1;
+            posend = start + 1;
             break;
          }
       }
-      pos.start = start;
-      if (!pos.found())
-         pos.endreached = true;
-      return pos;
+      if (start < end) {
+         return new ByteSearchPosition(haystack, start, posend);
+      }
+      return new ByteSearchPosition(haystack, start, -1, true);
    }
 
    @Override
@@ -160,11 +163,9 @@ public class ByteSearchSingle extends ByteSearch {
 
    @Override
    public ByteSearchPosition matchPos(byte[] haystack, int position, int end) {
-      ByteSearchPosition pos = new ByteSearchPosition(haystack);
-      pos.start = (haystack[position] == b) ? position : Integer.MIN_VALUE;
-      pos.end = (haystack[position] == b) ? position + 1 : Integer.MIN_VALUE;
-      if (!pos.found())
-         pos.endreached = true;
-      return pos;
+      int posstart = (haystack[position] == b) ? position : Integer.MIN_VALUE;
+      int posend = (haystack[position] == b) ? position + 1 : Integer.MIN_VALUE;
+      boolean endreached = haystack[position] != b;
+      return new ByteSearchPosition(haystack, posstart, posend, endreached);
    }
 }

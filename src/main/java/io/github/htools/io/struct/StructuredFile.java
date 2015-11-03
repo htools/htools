@@ -6,6 +6,7 @@ import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearch;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 
@@ -211,7 +212,8 @@ public abstract class StructuredFile extends StructuredDataStream {
    public long[] mergeSegments() throws IOException {
       HDFSPath dir = (HDFSPath) datafile.getDir();
       //log.info("%s %s %s", datafile.getFullPath(), datafile.getDir().getCanonicalPath(), datafile.getFilename());
-      long offsets[] = dir.mergeFiles(new Datafile(datafile.getFileSystem(), datafile.getCanonicalPath()), datafile.getName());
+      ByteSearch filePattern = ByteSearch.create(datafile.getName());
+      long offsets[] = dir.mergeFiles(new Datafile(datafile.getFileSystem(), datafile.getCanonicalPath()), filePattern);
       return offsets;
    }
 

@@ -56,6 +56,7 @@ public class ArgsParser {
         for (int i = 0; i < args.length; i++) {
             if (flag.match(args[i]) || booleanflag.match(args[i])) {
                 Parameter f = flags.get(args[i]);
+                //log.info("args %s %s %d %s", f.name, f.tag, f.type, f.values);
                 if (f == null) {
                     log.exit("undefined flag '%s'", args[i]);
                 }
@@ -150,7 +151,7 @@ public class ArgsParser {
                     names.add(p.toString().trim());
                     break;
                 case 0: // optional argument
-                    names.add(new String(bmessage, p.start + 1, p.end - p.start - 2).trim());
+                    names.add(ByteTools.toTrimmedString(bmessage, p.start + 1, p.end - 2));
                     break;
                 case 3: // flag - switch flag for description name
                     names.add(p.toString().trim());
@@ -159,7 +160,7 @@ public class ArgsParser {
                     names.add(p.toString().trim());
                     break;
                 case 1: // repeated group, can only be last in list (or use flags)
-                    names.add(new String(bmessage, p.start + 1, p.end - p.start - 2).trim());
+                    names.add(ByteTools.toTrimmedString(bmessage, p.start + 1, p.end - 2));
             }
         }
         return names;
@@ -262,13 +263,11 @@ public class ArgsParser {
     }
 
     private void setFlags(String message) {
-        byte bmessage[] = message.getBytes();
-        ArrayList<ByteSearchPosition> argumentpositions = combi.findAllPos(bmessage, 0, bmessage.length);
-        //log.info("arguments %d", argumentpositions.size());
+        byte bmessage[] = ByteTools.toBytes(message);
+        ArrayList<ByteSearchPosition> argumentpositions = combi.findAllPos(bmessage);
         ArrayList<String> names = this.getArgumentNames(bmessage, argumentpositions);
         for (int argumentnumber = 0; argumentnumber < argumentpositions.size(); argumentnumber++) {
             ByteSearchPosition argument = argumentpositions.get(argumentnumber);
-            //log.info("%d %d %s", argumentnumber, argument.pattern, names.get(argumentnumber));
             if (argument.pattern == 3) { // flag
                 ByteSearchPosition nextArgument = argumentpositions.get(argumentnumber + 1);
                 Parameter f = addFlag(nextArgument.pattern, names.get(argumentnumber), names.get(argumentnumber + 1));

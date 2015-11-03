@@ -30,20 +30,22 @@ public class MarkWikipediaLink extends SectionMarker {
     public ByteSearchSection process(Content content, ByteSearchSection section) {
         ByteSearchPosition endPos = linkEnd.findPos(section);
         if (endPos.found()) {
-            section.innerend = endPos.start;
-            section.end = endPos.end;
+            int sectioninnerend = endPos.start;
+            int sectionend = endPos.end;
+            int sectioninnerstart = section.innerstart;
+            int sectionstart = section.start;
             ByteSearchPosition lastStart = startmarker.findLastPos(section);
             if (lastStart.found()) {
-                section.innerstart = lastStart.end;
-                section.start = lastStart.start;
+                sectioninnerstart = lastStart.end;
+                sectionstart = lastStart.start;
             }
-            for (int i = section.innerstart; i < endPos.end; i++) {
+            for (int i = sectioninnerstart; i < endPos.end; i++) {
                 if (content.content[i] < 0) {
                     return null;
                 }
             }
-            log.info("found %d %d %s", section.innerstart, endPos.start, section.toOuterString());
-            return content.addSectionPos(outputsection, content.content, section.start, section.innerstart, endPos.start, endPos.end);
+            //log.info("found %d %d %s", sectioninnerstart, endPos.start, section.toOuterString());
+            return content.addSectionPos(outputsection, content.content, sectionstart, sectioninnerstart, endPos.start, endPos.end);
         }
         return null;
     }

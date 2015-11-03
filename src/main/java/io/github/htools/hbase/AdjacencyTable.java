@@ -23,15 +23,15 @@ public abstract class AdjacencyTable extends TableF {
     }
     
     public void addRow(String source, String destination, byte[] value) {
-        addRow(source.getBytes(), destination.getBytes(), value);
+        addRow(ByteTools.toBytes(source), ByteTools.toBytes(destination), value);
     }
     
     public void addRow(byte[] source, String destination, byte[] value) {
-        addRow(source, destination.getBytes(), value);
+        addRow(source, ByteTools.toBytes(destination), value);
     }
     
     public void addRow(byte[] source, String destination, int value) {
-        addRow(source, destination.getBytes(), value);
+        addRow(source, ByteTools.toBytes(destination), value);
     }
     
     public void addRow(String source, String destination, int value) {

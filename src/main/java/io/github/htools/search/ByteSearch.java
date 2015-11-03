@@ -54,6 +54,7 @@ public abstract class ByteSearch {
     }
 
     public static ByteSearch createFilePattern(String pattern) {
+        pattern = escape(pattern).replace(".", "\\.");
         pattern = escape(pattern).replace("*", ".*");
         return create(pattern);
     }
@@ -100,12 +101,12 @@ public abstract class ByteSearch {
     }
 
     public int find(String text) {
-        byte bytes[] = text.getBytes();
+        byte bytes[] = ByteTools.toBytes(text);
         return find(bytes, 0, bytes.length);
     }
 
     public ByteSearchPosition findPos(String text) {
-        byte bytes[] = text.getBytes();
+        byte bytes[] = ByteTools.toBytes(text);
         return findPos(bytes, 0, bytes.length);
     }
 
@@ -136,7 +137,7 @@ public abstract class ByteSearch {
     public abstract boolean match(byte haystack[], int position, int end);
 
     public boolean match(String haystack) {
-        byte b[] = haystack.getBytes();
+        byte b[] = ByteTools.toBytes(haystack);
         return match(b, 0, b.length);
     }
 
@@ -236,7 +237,7 @@ public abstract class ByteSearch {
      * @return ByteSearchPosition for ByteSearch pattern at pos 0 of haystack
      */
     public ByteSearchPosition matchPos(String haystack) {
-        byte b[] = haystack.getBytes();
+        byte b[] = ByteTools.toBytes(haystack);
         return matchPos(b, 0, b.length);
     }
 
@@ -244,7 +245,7 @@ public abstract class ByteSearch {
         if (s == null) {
             return null;
         }
-        byte b[] = s.getBytes();
+        byte b[] = ByteTools.toBytes(s);
         ByteSearchPosition matchPos = matchPos(b, 0, b.length);
         return matchPos.found() ? matchPos.toString() : null;
     }
@@ -282,7 +283,7 @@ public abstract class ByteSearch {
         if (s == null) {
             return null;
         }
-        byte b[] = s.getBytes();
+        byte b[] = ByteTools.toBytes(s);
         ByteSearchPosition findPos = findPos(b, 0, b.length);
         return findPos.found() ? findPos.toString() : null;
     }
@@ -306,12 +307,12 @@ public abstract class ByteSearch {
     }
 
     public boolean exists(String s) {
-        byte a[] = s.getBytes();
+        byte a[] = ByteTools.toBytes(s);
         return exists(a, 0, a.length);
     }
 
     public boolean startsWith(String s) {
-        byte a[] = s.getBytes();
+        byte a[] = ByteTools.toBytes(s);
         return match(a, 0, a.length);
     }
 
@@ -356,7 +357,7 @@ public abstract class ByteSearch {
     }
 
     public ByteSearchPosition findLastPos(String haystack) {
-        byte bytes[] = haystack.getBytes();
+        byte bytes[] = ByteTools.toBytes(haystack);
         return findLastPos(bytes, 0, bytes.length);
     }
 
@@ -390,7 +391,8 @@ public abstract class ByteSearch {
         while (start <= end) {
             ByteSearchPosition p = findPos(b, start, end);
             if (p.found()) {
-                list.add(p);
+                if (p.length() > 0)
+                   list.add(p);
                 if (start == p.end) {
                     start++;
                 } else {
@@ -444,7 +446,7 @@ public abstract class ByteSearch {
      * will return 1 exists.
      */
     public ArrayList<ByteSearchPosition> findAllPos(String s) {
-        return findAllPos(s.getBytes());
+        return findAllPos(ByteTools.toBytes(s));
     }
 
     public ArrayList<ByteSearchPosition> findAllPos(byte haystack[]) {

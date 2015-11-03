@@ -75,7 +75,7 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
       }
 
       @Override
-      protected void readNode(ByteSearchSection section) {
+      protected ByteSearchSection readNode(ByteSearchSection section) {
          if (nodevalues == null)
             nodevalues = new ArrayList<NodeValue>();
          nodevalue = new NodeValue();
@@ -83,12 +83,13 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
             ByteSearchSection pos = findSection(section, f.section);
             //log.info("%s %b %s %s", f.label, pos.found(), f.section.toString(), pos.reportString());
             if (pos.found()) {
-               f.readNode(pos);
+               pos = f.readNode(pos);
                section.movePast(pos);
             }
          }
          if (nodevalue.size() > 0)
             nodevalues.add(nodevalue);
+         return section;
       }
       
       @Override
