@@ -25,14 +25,14 @@ public class ConvertUnicodeDiacritics extends Translator {
    public ConvertUnicodeDiacritics(Extractor extractor, String process) {
       super(extractor, process);
       ArrayMap<byte[], byte[]> b = translations[0xC3];
-      for (Map.Entry<byte[], byte[]> entry : b) {
-          log.printf("%s%s", PrintTools.memoryDump(entry.getKey()), PrintTools.memoryDump(entry.getValue()));
-      }
+//      for (Map.Entry<byte[], byte[]> entry : b) {
+//          log.printf("%s%s", PrintTools.memoryDump(entry.getKey()), PrintTools.memoryDump(entry.getValue()));
+//      }
    }
    
    @Override
     public void process(Content entity, ByteSearchSection section, String attribute) {
-        log.info("Translator %d %d\n%s", section.innerstart, section.innerend, PrintTools.memoryDump(entity.content, section.innerstart, section.innerend));
+        //log.info("Translator %d %d\n%s", section.innerstart, section.innerend, PrintTools.memoryDump(entity.content, section.innerstart, section.innerend));
         super.process(entity, section, attribute);
     }
     

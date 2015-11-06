@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A HashMap with a Double value, that supports adding values to existing keys
@@ -53,7 +54,7 @@ public class FHashMapObjectDouble<K> extends Object2DoubleOpenHashMap<K> impleme
         return result;
     }
     
-   public <S extends FHashMapObjectDouble<K>> S getTop(S result, int k) {
+   public <S extends Map<K, Double>> S getTop(S result, int k) {
        TopKMap<Double, K> topk = new TopKMap(k);
        CollectionTools.invert(this.entrySet(), topk);
        CollectionTools.invert(topk, result);

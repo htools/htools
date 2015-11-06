@@ -6,6 +6,7 @@ import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Factory for fast search of a byte array needle in a byte array. The input
@@ -441,6 +442,35 @@ public abstract class ByteSearch {
         return list;
     }
 
+    public ArrayList<ByteSearchSection> split(byte b[], int start, int end) {
+        Iterator<ByteSearchPosition> positions = this.findAllPos(b, start, end).iterator();
+        ArrayList<ByteSearchSection> result = new ArrayList();
+        int p = start;
+        while ( positions.hasNext() ) {
+            ByteSearchPosition pos = positions.next();
+            if (p < pos.start) {
+                result.add(new ByteSearchSection(b, p, p, pos.start, pos.end));
+            }
+            p = pos.end;
+        }
+        if (p < end) {
+            result.add(new ByteSearchSection(b, p, p, end, end));
+        }
+        return result;
+    }
+    
+    public ArrayList<ByteSearchSection> split(byte b[]) {
+        return split(b, 0, b.length);
+    }
+    
+    public ArrayList<ByteSearchSection> split(String b) {
+        return split(ByteTools.toBytes(b));
+    }
+    
+    public ArrayList<ByteSearchSection> split(ByteSearchSection b) {
+        return split(b.haystack, b.innerstart, b.innerend);
+    }
+    
     /**
      * @return all matching positions, without overlap, so "\w+" used on "word"
      * will return 1 exists.

@@ -2,6 +2,7 @@ package io.github.htools.collection;
 
 import io.github.htools.lib.CollectionTools;
 import io.github.htools.lib.Log;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -25,6 +26,11 @@ public class HashMapDouble<K> extends HashMap<K, Double> {
     public void add(K key, double value) {
         Double oldvalue = get(key);
         put(key, oldvalue == null ? value : oldvalue + value);
+    }
+
+    public void addAll(Collection<K> keys) {
+        for (K key: keys)
+            add(key, 1);
     }
 
     public <S extends HashMapDouble<K>> S divide(S result, double div) {

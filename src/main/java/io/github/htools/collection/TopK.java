@@ -60,7 +60,7 @@ public class TopK<T> extends PriorityQueue<T> {
                 highest = t;
             }
         } else if (comparator.compare(t, lowest) > 0) {
-            this.poll();
+            poll();
             r = super.add(t);
             lowest = this.peek();
             if (comparator.compare(t, highest) > 0) {
@@ -68,6 +68,17 @@ public class TopK<T> extends PriorityQueue<T> {
             }
         }
         return r;
+    }
+
+    /**
+     * When items are added, and the last item is removed using this method to
+     * keep the list to the restricted size. Extensions can override this method
+     * monitor if an item is removed while adding another.
+     *
+     * @return
+     */
+    public T poll() {
+        return super.poll();
     }
 
     public boolean wouldBeAdded(T t) {

@@ -31,15 +31,15 @@ public enum StopWords {
         Datafile df = getDatafile(resourceFilename);
         byte data[] = df.readFully();
         String s = ByteTools.toString(data);
-        log.printf("%s", PrintTools.memoryDump(data));
+        //log.printf("%s", PrintTools.memoryDump(data));
         HashSet<String> words = new HashSet();
         for (String word : s.split("\\s+")) {
             words.add(word);
-            if (word.startsWith("celle-l")) {
-                log.info("%s", s);
-                log.info("%s", word);
-                log.info("%s", ArrayTools.toString(ByteTools.toBytes(word)));
-            }
+//            if (word.startsWith("celle-l")) {
+//                log.info("%s", s);
+//                log.info("%s", word);
+//                log.info("%s", ArrayTools.toString(ByteTools.toBytes(word)));
+//            }
         }
         return words;
     }

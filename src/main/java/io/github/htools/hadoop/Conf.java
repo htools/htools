@@ -231,7 +231,6 @@ public class Conf extends JobConf {
         ArrayList<String> ar = new ArrayList<String>();
         for (int i = 0; i < args.length; i++) {
             if (configurationkey.startsWith(args[i])) {
-                log.info("EHHH");
                 processScript(args[i]);
             } else if (jarskey.startsWith(args[i])) {
                 String dirs[] = args[i].substring(args[i].indexOf('=') + 1).split("[,:]");

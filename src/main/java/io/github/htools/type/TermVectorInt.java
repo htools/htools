@@ -9,6 +9,7 @@ import io.github.htools.io.struct.StructureWriter;
 import it.unimi.dsi.fastutil.HashCommon;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import java.util.Map;
  *
  * @author jeroen
  */
-public class TermVectorInt extends FHashMapObjectInt<String> implements BufferSerializable {
+public class TermVectorInt extends FHashMapObjectInt<String> implements BufferSerializable, TermVector {
 
     protected Integer total = null;
     protected Double magnitude = null;
@@ -118,6 +119,19 @@ public class TermVectorInt extends FHashMapObjectInt<String> implements BufferSe
         return (magnitude == 0) ? 0 : dotproduct / magnitude;
     }
 
+    public double cossim(TermVectorDouble v) {
+        if (this.size() > v.size()) {
+            return v.cossim(this);
+        }
+        double dotproduct = 0;
+        for (Object2IntMap.Entry<String> entry : object2IntEntrySet()) {
+            dotproduct += v.getDouble(entry.getKey()) * entry.getIntValue();
+        }
+        double magnitude = magnitude() * v.magnitude();
+        return (magnitude == 0) ? 0 : dotproduct / magnitude;
+    }
+    
+    
     public double cossimDebug(TermVectorInt v) {
         if (this.size() > v.size()) {
             return v.cossimDebug(this);
@@ -235,5 +249,25 @@ public class TermVectorInt extends FHashMapObjectInt<String> implements BufferSe
             writer.write(entry.getKey());
             writer.write(entry.getIntValue());
         }
+    }
+
+    @Override
+    public TermVectorDouble multiply(Map<String, Double> v) {
+        if (size() > v.size() && v instanceof TermVectorDouble)
+            return ((TermVectorDouble)v).multiply(this);
+        TermVectorDouble result = new TermVectorDouble();
+        for (Object2IntMap.Entry<String> entry : object2IntEntrySet()) {
+            Double d = v.get(entry.getKey());
+            if (d != null) {
+                result.put(entry.getKey(), entry.getValue() * d);
+            }
+        }
+        return result;
+        
+    }
+
+    @Override
+    public double cossim(TermVector v) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -5,12 +5,13 @@ import io.github.htools.fcollection.FHashMapObjectDouble;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  *
  * @author jeroen
  */
-public class TermVectorDouble extends FHashMapObjectDouble<String>{
+public class TermVectorDouble extends FHashMapObjectDouble<String> implements TermVector {
 
     Double total = null;
     Double magnitude = null;
@@ -26,7 +27,7 @@ public class TermVectorDouble extends FHashMapObjectDouble<String>{
         super(size, loadfactor);
     }
 
-    public TermVectorDouble(FHashMapObjectDouble<String> map) {
+    public TermVectorDouble(Map<String, Double> map) {
         super(map);
     }
 
@@ -92,10 +93,12 @@ public class TermVectorDouble extends FHashMapObjectDouble<String>{
         return (magnitude == 0) ? 0 : dotproduct / magnitude;
     }
 
-    public TermVectorDouble multiply(TermVectorDouble v) {
+    public TermVectorDouble multiply(Map<String, Double> v) {
+        if (size() > v.size() && v instanceof TermVector)
+            return ((TermVector)v).multiply(this);
         TermVectorDouble result = new TermVectorDouble();
         for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
-            double d = v.getDouble(entry.getKey());
+            Double d = v.get(entry.getKey());
             if (d != 0) {
                 result.put(entry.getKey(), entry.getValue() * d);
             }
@@ -104,6 +107,8 @@ public class TermVectorDouble extends FHashMapObjectDouble<String>{
     }
 
     public TermVectorDouble multiply(TermVectorInt v) {
+        if (size() > v.size())
+            return v.multiply(this);
         TermVectorDouble result = new TermVectorDouble();
         for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
             int d = v.getInt(entry.getKey());
@@ -155,5 +160,14 @@ public class TermVectorDouble extends FHashMapObjectDouble<String>{
         magnitude = null;
         total = 1;
         return this;
+    }
+
+    @Override
+    public double cossim(TermVector v) {
+        if (v instanceof TermVectorDouble)
+            return cossim((TermVectorDouble)v);
+        else if (v instanceof TermVectorInt)
+            return cossim((TermVectorInt)v);
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

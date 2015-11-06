@@ -26,10 +26,12 @@ public class Job extends org.apache.hadoop.mapreduce.Job {
 
     /**
      * Creates a job, the value of the parameters are added to the jobname that
-     * is shown in the console and the jobtracker, they have no functionality here.
+     * is shown in the console and the jobtracker, they have no functionality
+     * here.
+     *
      * @param configuration
      * @param parameters parameters to be added to the jobname
-     * @throws IOException 
+     * @throws IOException
      */
     public Job(Configuration configuration, Object... parameters) throws IOException {
         // Jars need to be added to the Configuration before construction 
@@ -40,13 +42,15 @@ public class Job extends org.apache.hadoop.mapreduce.Job {
     }
 
     // sets the jobname to the class containing the main, placing the params in squared brackets
-    private void setJobName(Object... params) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(ClassTools.getMainClass().getCanonicalName()).append(" ");
-        for (Object o : params) {
-            sb.append(PrintTools.sprintf("[%s]", o));
+    public void setJobName(Object... params) {
+        if (params.length > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(ClassTools.getMainClass().getCanonicalName()).append(" ");
+            for (Object o : params) {
+                sb.append(PrintTools.sprintf("[%s]", o));
+            }
+            setJobName(sb.toString());
         }
-        setJobName(sb.toString());
     }
 
     public FileSystem getFileSystem() {
@@ -73,7 +77,7 @@ public class Job extends org.apache.hadoop.mapreduce.Job {
                         log.exception(ex1, "mintorAndPrintJob");
                     }
                 }
-            } catch (IOException|IllegalStateException ex1) { 
+            } catch (IOException | IllegalStateException ex1) {
                 try {
                     this.killJob();
                 } catch (IOException ex2) {

@@ -16,6 +16,10 @@ public class HashMapList<K, V> extends HashMap<K, ArrayList<V>> {
       super();
    }
    
+   public HashMapList( int size ) {
+      super( size );
+   }
+   
    public void add(K k, V v) {
        ArrayList<V> list = getList(k);
        list.add(v);

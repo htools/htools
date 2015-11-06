@@ -13,7 +13,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- *
+ * Writer to a (compressed) archive file. Currently only .tar.lz4 is supported with
+ * compression levels 1 (fast) or 9 (hc). Note that 9 compresses 10x slower 
+ * but decompresses faster.
  * @author Jeroen
  */
 public abstract class ArchiveFileWriter {

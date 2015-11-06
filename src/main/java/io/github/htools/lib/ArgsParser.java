@@ -56,7 +56,7 @@ public class ArgsParser {
         for (int i = 0; i < args.length; i++) {
             if (flag.match(args[i]) || booleanflag.match(args[i])) {
                 Parameter f = flags.get(args[i]);
-                //log.info("args %s %s %d %s", f.name, f.tag, f.type, f.values);
+                log.info("args %s %s %d %s", f.name, f.tag, f.type, f.values);
                 if (f == null) {
                     log.exit("undefined flag '%s'", args[i]);
                 }
@@ -151,7 +151,7 @@ public class ArgsParser {
                     names.add(p.toString().trim());
                     break;
                 case 0: // optional argument
-                    names.add(ByteTools.toTrimmedString(bmessage, p.start + 1, p.end - 2));
+                    names.add(ByteTools.toTrimmedString(bmessage, p.start + 1, p.end - 1));
                     break;
                 case 3: // flag - switch flag for description name
                     names.add(p.toString().trim());
@@ -160,7 +160,7 @@ public class ArgsParser {
                     names.add(p.toString().trim());
                     break;
                 case 1: // repeated group, can only be last in list (or use flags)
-                    names.add(ByteTools.toTrimmedString(bmessage, p.start + 1, p.end - 2));
+                    names.add(ByteTools.toTrimmedString(bmessage, p.start + 1, p.end - 1));
             }
         }
         return names;
