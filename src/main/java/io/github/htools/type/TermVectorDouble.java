@@ -2,6 +2,7 @@ package io.github.htools.type;
 
 import io.github.htools.collection.HashMapDouble;
 import io.github.htools.fcollection.FHashMapObjectDouble;
+import io.github.htools.lib.Profiler;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Collection;
@@ -76,12 +77,15 @@ public class TermVectorDouble extends FHashMapObjectDouble<String> implements Te
     }
 
     public double cossim(TermVectorDouble v) {
+        Profiler.startTime("TermVectorDouble.Cosine");
         double dotproduct = 0;
         for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
             dotproduct += v.getDouble(entry.getKey()) * entry.getValue();
         }
         double magnitude = magnitude() * v.magnitude();
-        return (magnitude == 0) ? 0 : dotproduct / magnitude;
+        double result = (magnitude == 0) ? 0 : dotproduct / magnitude;
+        Profiler.addTime("TermVectorDouble.Cosine");
+        return result;
     }
 
     public double cossim(TermVectorInt v) {
@@ -93,6 +97,20 @@ public class TermVectorDouble extends FHashMapObjectDouble<String> implements Te
         return (magnitude == 0) ? 0 : dotproduct / magnitude;
     }
 
+    public double cossimDebug(TermVectorDouble v) {
+        if (this.size() > v.size()) {
+            return v.cossimDebug(this);
+        }
+        double dotproduct = 0;
+        for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
+            dotproduct += v.getDouble(entry.getKey()) * entry.getDoubleValue();
+            log.info("%s %f %f %s", entry.getKey(), v.getDouble(entry.getKey()), entry.getDoubleValue(), dotproduct);
+        }
+        double magnitude = magnitude() * v.magnitude();
+        log.info("magnitude %s %s %s", magnitude(), v.magnitude(), dotproduct / magnitude);
+        return (magnitude == 0) ? 0 : dotproduct / magnitude;
+    }
+    
     public TermVectorDouble multiply(Map<String, Double> v) {
         if (size() > v.size() && v instanceof TermVector)
             return ((TermVector)v).multiply(this);

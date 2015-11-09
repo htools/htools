@@ -268,6 +268,10 @@ public class TermVectorInt extends FHashMapObjectInt<String> implements BufferSe
 
     @Override
     public double cossim(TermVector v) {
+        if (v instanceof TermVectorDouble)
+            return cossim((TermVectorDouble)v);
+        else if (v instanceof TermVectorInt)
+            return cossim((TermVectorInt)v);
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

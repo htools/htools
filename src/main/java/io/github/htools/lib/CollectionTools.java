@@ -188,5 +188,4 @@ public enum CollectionTools {;
             return result;
         }
     }
-    
 }

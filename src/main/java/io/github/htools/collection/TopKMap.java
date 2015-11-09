@@ -46,7 +46,7 @@ public class TopKMap<K extends Comparable, V> extends TopK<Map.Entry<K, V>> {
         this(Math.abs(k), (k > 0) ? new StdComparator<K, V>() : new DescComparator<K, V>());
     }
 
-    public TopKMap(int k, AbstractMap<K, V> map) {
+    public TopKMap(int k, Map<K, V> map) {
         this(k, map.entrySet(), new StdComparator<K, V>());
     }
 

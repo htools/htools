@@ -89,7 +89,7 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Map<K, V> {
         return -1;
     }
 
-    public static <K, V> ArrayMap<K, V> invert(AbstractMap<V, K> c) {
+    public static <K, V> ArrayMap<K, V> invert(Map<V, K> c) {
         return invert(c.entrySet());
     }
 

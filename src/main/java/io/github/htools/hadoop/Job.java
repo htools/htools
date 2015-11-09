@@ -38,7 +38,6 @@ public class Job extends org.apache.hadoop.mapreduce.Job {
         super(configuration);
         setJobName(parameters);
         this.setJarByClass(ClassTools.getMainClass());
-        log.info("Job %s", this.getJobName());
     }
 
     // sets the jobname to the class containing the main, placing the params in squared brackets
@@ -59,6 +58,7 @@ public class Job extends org.apache.hadoop.mapreduce.Job {
 
     @Override
     public void submit() throws IOException, InterruptedException, ClassNotFoundException {
+        log.info("Job %s", this.getJobName());
         setJarByClass(this.getMapperClass());
         super.submit();
     }

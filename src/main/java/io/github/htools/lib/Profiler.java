@@ -11,12 +11,12 @@ import java.util.HashMap;
  * <p>
  * @author jeroen
  */
-public enum Profiler {;
+public class Profiler {
 
     public static Datafile out;
     public static PrintStream systemout = System.out;
     private static boolean trace;
-    private static HashMap<String, Profile> profiles = new HashMap();
+    private static HashMap<String, Profiler> profiles = new HashMap();
     private static long startTime = System.currentTimeMillis();
     
 
@@ -42,23 +42,32 @@ public enum Profiler {;
         trace = false;
     }
 
-    public static void startTime(String name) throws IOException {
+    public static Profiler getProfiler(String name) {
+        Profiler p = profiles.get(name);
+        if (p == null) {
+            p = new Profiler(name);
+            profiles.put(name, p);
+        }
+        return p;
+    }
+    
+    public static void startTime(String name) {
         if (trace) {
            out("startTime %s", name);
         }
-        Profile p = profiles.get(name);
+        Profiler p = profiles.get(name);
         if (p == null) {
-            p = new Profile(name);
+            p = new Profiler(name);
             profiles.put(name, p);
         }
         p.startTime();
         p.count++;
     }
 
-    public static void addTime(String name) throws IOException {
-        Profile p = profiles.get(name);
+    public static void addTime(String name) {
+        Profiler p = profiles.get(name);
         if (p == null) {
-            p = new Profile(name);
+            p = new Profiler(name);
             profiles.put(name, p);
         }
         p.addTime();
@@ -66,34 +75,61 @@ public enum Profiler {;
             reportProfile();
     }
 
-    public static void addCounter(String name) {
-        Profile p = profiles.get(name);
+    public static void addAvgTime(String name) {
+        Profiler p = profiles.get(name);
         if (p == null) {
-            p = new Profile(name);
+            p = new Profiler(name);
+            profiles.put(name, p);
+        }
+        p.addAvgTime();
+        if (trace)
+            reportProfile();
+    }
+
+    public static void addCounter(String name) {
+        Profiler p = profiles.get(name);
+        if (p == null) {
+            p = new Profiler(name);
             profiles.put(name, p);
         }
         p.addCount(1);
     }
 
     public static void addCounter(String name, int count) {
-        Profile p = profiles.get(name);
+        Profiler p = profiles.get(name);
         if (p == null) {
-            p = new Profile(name);
+            p = new Profiler(name);
             profiles.put(name, p);
         }
         p.addCount(count);
     }
 
-    public static long timePassed(String name) {
-        Profile p = profiles.get(name);
+    public static double totalTimeSeconds(String name) {
+        Profiler p = profiles.get(name);
         if (p != null) {
-            return p.timePassed();
+            return p.getTotalTimeSeconds();
+        }
+        return 0;
+    }
+
+    public static long totalTimeMs(String name) {
+        Profiler p = profiles.get(name);
+        if (p != null) {
+            return p.getTotalTimeMs();
+        }
+        return 0;
+    }
+
+    public static double totalAvgTimeSeconds(String name) {
+        Profiler p = profiles.get(name);
+        if (p != null) {
+            return p.getAvgTimeSeconds();
         }
         return 0;
     }
 
     public static long getCount(String name) {
-        Profile p = profiles.get(name);
+        Profiler p = profiles.get(name);
         if (p != null) {
             return p.getCount();
         }
@@ -104,71 +140,93 @@ public enum Profiler {;
         out = file;
     }
 
-    public final static void reportProfile() throws IOException {
-        for (Profile p : profiles.values()) {
+    public final static void reportProfile() {
+        for (Profiler p : profiles.values()) {
             out("%s( count=%d sec=%f )", p.name, p.count, p.time / 1000.0);
         }
     }
 
     public final static String reportProfileString() {
         StringBuilder sb = new StringBuilder();
-        for (Profile p : profiles.values()) {
+        for (Profiler p : profiles.values()) {
             sb.append(sprintf("%s( count=%d sec=%f )\n", p.name, p.count, p.time / 1000.0));
         }
         return sb.toString();
     }
 
-    protected static void out(String s, Object... args) throws IOException {
+    protected static void out(String s, Object... args) {
         if (out == null) {
             systemout.println(sprintf(s, args));
         } else {
-            out.printf(s + "\n", args);
-            out.flush();
+            try {
+                out.printf(s + "\n", args);
+                out.flush();
+            } catch (IOException ex) {
+                log.exception(ex, "out " + s, args);
+            }
         }
     }
 
-    public static void print(String s) throws IOException {
+    public static void print(String s) {
         if (out == null) {
             systemout.println(s);
         } else {
-            out.printf(s + "\n");
-            out.flush();
+            try {
+                out.printf(s + "\n");
+                out.flush();
+            } catch (IOException ex) {
+                log.exception(ex, "printf %s", s);
+            }
         }
     }
 
-    public static void printf(String message, Object... args) throws IOException {
+    public static void printf(String message, Object... args) {
         print(System.currentTimeMillis() - startTime + " " + sprintf(message, args));
     }
-
-    static class Profile {
 
         int count = 0;
         long time = 0;
         long starttime = 0;
         final String name;
 
-        Profile(String name) {
+        Profiler(String name) {
             this.name = name;
         }
 
-        void startTime() {
+        public void startTime() {
             starttime = System.currentTimeMillis();
         }
 
-        void addCount(int a) {
+        public void addCount(int a) {
             count += a;
         }
 
-        int getCount() {
+        public int getCount() {
             return count;
         }
 
-        void addTime() {
+        public void addTime() {
             time += System.currentTimeMillis() - starttime;
         }
         
-        long timePassed() {
+        public void addAvgTime() {
+            time += System.currentTimeMillis() - starttime;
+            count++;
+        }
+        
+        public double getTotalTimeSeconds() {
+            return time / 1000.0;
+        }
+        
+        public long getTotalTimeMs() {
+            return time;
+        }
+        
+        public double getAvgTimeSeconds() {
+            return time / (count * 1000.0);
+        }
+        
+        public long timePassed() {
             return System.currentTimeMillis() - starttime;
         }
-    }
 }

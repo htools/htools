@@ -56,10 +56,10 @@ public class ArgsParser {
         for (int i = 0; i < args.length; i++) {
             if (flag.match(args[i]) || booleanflag.match(args[i])) {
                 Parameter f = flags.get(args[i]);
-                log.info("args %s %s %d %s", f.name, f.tag, f.type, f.values);
                 if (f == null) {
                     log.exit("undefined flag '%s'", args[i]);
                 }
+                //log.info("args %s %s %d %s", f.name, f.tag, f.type, f.values);
                 switch (f.type) {
                     case 4:
                         f.values.add(TRUEBOOLEAN);
