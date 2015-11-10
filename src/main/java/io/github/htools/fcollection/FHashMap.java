@@ -17,6 +17,10 @@ public class FHashMap<K, V> extends
       super();
    }
    
+   public FHashMap( int size ) {
+      super( size );
+   }
+   
    public FHashMap( Map<K, V> map ) {
       super(map);
    }

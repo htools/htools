@@ -421,6 +421,10 @@ public enum ArrayTools {;
       return "[ " + toStringList(list, separator) + " ]";
    }
 
+   public static String toString(double[] list, String separator) {
+      return toString(list, 0, list.length, separator);
+   }
+
    public static String toStringList(Collection list, String separator) {
       if (list.size() < 1)
          return "";

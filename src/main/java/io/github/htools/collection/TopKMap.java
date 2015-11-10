@@ -77,6 +77,12 @@ public class TopKMap<K extends Comparable, V> extends TopK<Map.Entry<K, V>> {
         }
     }
 
+    public void addInvert(Map<V, K> c) {
+        for (Map.Entry<V, K> entry : c.entrySet()) {
+            add(entry.getValue(), entry.getKey());
+        }
+    }
+
     private static class StdComparator<K extends Comparable, V> implements Comparator<Map.Entry<K, V>> {
 
         @Override
