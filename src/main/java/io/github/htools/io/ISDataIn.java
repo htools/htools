@@ -142,7 +142,7 @@ public class ISDataIn implements DataIn {
     }
     
     @Override
-    public InputStream getInputStream() throws IOException {
+    public InputStream getInputStream() {
         return inputstream;
     }
 

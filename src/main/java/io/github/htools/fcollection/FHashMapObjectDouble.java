@@ -43,6 +43,10 @@ public class FHashMapObjectDouble<K> extends Object2DoubleOpenHashMap<K> impleme
         return clone;
     }
     
+    public Map<Double, Object> invert() {
+        return new InvertedMap(this);
+    }
+    
     public void add(K key, double value) {
         put(key, this.getDouble(key) + value);
     }

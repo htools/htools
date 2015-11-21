@@ -43,6 +43,10 @@ public class FHashMapObjectInt<K> extends Object2IntOpenHashMap<K> implements ja
         return clone;
     }
 
+    public Map<Integer, Object> invert() {
+        return new InvertedMap(this);
+    }
+    
     protected FHashMapObjectInt create() {
         return new FHashMapObjectInt();
     }

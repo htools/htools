@@ -21,6 +21,10 @@ public class FastMap<K, V> extends AbstractMap<K, V> implements Map<K, V> {
       list = new ArrayList<Entry<K, V>>();
    }
 
+   public Map<V, K> invert() {
+       return new InvertedMap(this);
+   }
+   
    static class Entry<K, V> implements Map.Entry<K, V> {
 
       protected K key;

@@ -20,7 +20,7 @@ public abstract class StructuredFileSortHashRecord extends StructuredFileSortRec
    }
    
    @Override
-   public final void write() throws IOException {
+   public final void write() {
       ((StructuredFileSortHash) file).hashcode.write(getBucketIndex());
       writeRecordData();
    }
@@ -38,7 +38,7 @@ public abstract class StructuredFileSortHashRecord extends StructuredFileSortRec
    }
    
    @Override
-   public final void writeFinal() throws IOException {
+   public final void writeFinal() {
       //log.info("writeHash file %s bucket %d offset %d", file.datafile.getFilename(), getBucketIndex(), file.getOffset());
       //if (getBucketIndex() < ((StructuredFileSortHash) file).hashfile.currentbucketindex)
       //   log.info("%s", this.toString());
@@ -72,12 +72,12 @@ public abstract class StructuredFileSortHashRecord extends StructuredFileSortRec
 
    public abstract boolean equals(Object r);
 
-   public final StructuredFileSortHashRecord findMem() throws IOException {
+   public final StructuredFileSortHashRecord findMem() {
       HashMap table = ((StructuredFileSortHash)file).getMemoryTable();
       return (StructuredFileSortHashRecord)table.get(this);
    }
    
-   public final StructuredFileSortHashRecord find() throws IOException {
+   public final StructuredFileSortHashRecord find() {
       ((StructuredFileSortHash) file).resetNextField();
       //log.info("file %d %b %d", getBucketIndex(), ((StructuredFileSortHash) file).gotoBucket(getBucketIndex()), file.getOffset());
       if (((StructuredFileSortHash) file).gotoBucket(getBucketIndex())) {

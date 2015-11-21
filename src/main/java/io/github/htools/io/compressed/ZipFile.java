@@ -13,7 +13,7 @@ import java.util.zip.ZipInputStream;
 public class ZipFile extends ArchiveByteFile<ZipEntry> {
     ZipInputStream zipInputStream;
 
-    public ZipFile(InputStream is) throws IOException {
+    public ZipFile(InputStream is) {
         super(is);
     }
 

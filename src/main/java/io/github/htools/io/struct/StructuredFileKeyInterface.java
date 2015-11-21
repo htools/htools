@@ -8,9 +8,9 @@ public interface StructuredFileKeyInterface<R extends StructuredFileKeyValueReco
    
    public R newRecord();
    
-   public void openRead()  throws IOException;
+   public void openRead();
 
-   public void closeRead() throws IOException;
+   public void closeRead();
 
    public void setKeyBufferSize(int size);
 
@@ -42,19 +42,19 @@ public interface StructuredFileKeyInterface<R extends StructuredFileKeyValueReco
    
    public long getCeiling();
 
-   public R find(R r) throws IOException;
+   public R find(R r);
    
-   public boolean exists(R r) throws IOException;
+   public boolean exists(R r);
    
-   public void write(R r) throws IOException;
+   public void write(R r);
 
-   public void remove(Iterable<R> r) throws IOException;
+   public void remove(Iterable<R> r);
 
-   public void closeWrite() throws IOException;
+   public void closeWrite();
    
-   public void openAppend() throws IOException;
+   public void openAppend();
    
-   public void openWrite() throws IOException;
+   public void openWrite();
    
-   public Collection<R> getKeys() throws IOException;
+   public Collection<R> getKeys();
 }

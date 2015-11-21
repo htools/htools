@@ -30,13 +30,13 @@ public abstract class ArchiveFile<E> implements Iterator<ArchiveEntry>, Iterable
     static ByteRegex zipFile = ByteRegex.create("\\.zip$");
     static ByteSearch suffix = ByteRegex.combine(tarLz4File, tarFile, zipFile);
 
-    public ArchiveFile(InputStream is) throws IOException {
+    public ArchiveFile(InputStream is) {
         BufferedInputStream bis = new BufferedInputStream(is, 1024 * 1024);
         initialize(bis);
         entry = new ArchiveEntry(this);
     }
 
-    public static ArchiveByteFile getReader(String file, InputStream is) throws IOException {
+    public static ArchiveByteFile getReader(String file, InputStream is)  {
         ByteSearchPosition pos = suffix.findLastPos(file);
         if (pos.found()) {
             switch (pos.pattern) {
@@ -48,7 +48,8 @@ public abstract class ArchiveFile<E> implements Iterator<ArchiveEntry>, Iterable
                     return new ZipFile(is);
             }
         }
-        throw new IOException("Not supported extension for file " + file);
+        log.fatal("Not supported extension for file " + file);
+        return null;
     }
 
     public static ArchiveByteFile getReader(String file) throws IOException {
@@ -62,19 +63,19 @@ public abstract class ArchiveFile<E> implements Iterator<ArchiveEntry>, Iterable
      * not supported.
      * @throws IOException
      */
-    public static ArchiveByteFile getReader(Configuration conf, String file) throws IOException {
+    public static ArchiveByteFile getReader(Configuration conf, String file) {
         return ArchiveFile.getReader(file, new HDFSIn(conf, file).getInputStream());
     }
 
-    public static ArchiveByteFile getReader(Configuration conf, Path file) throws IOException {
+    public static ArchiveByteFile getReader(Configuration conf, Path file) {
         return ArchiveFile.getReader(conf, file.toString());
     }
 
-    public static ArchiveByteFile getReader(Datafile file) throws IOException {
+    public static ArchiveByteFile getReader(Datafile file) {
         return ArchiveFile.getReader(file.getCanonicalPath(), file.getInputStream());
     }
 
-    protected abstract void initialize(BufferedInputStream bis) throws IOException;
+    protected abstract void initialize(BufferedInputStream bis);
 
     @Override
     public ArchiveEntry next() {

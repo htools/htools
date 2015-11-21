@@ -40,7 +40,7 @@ public interface HPath extends DirComponent, Iterable<DirComponent> {
 
    HPath getParentPath();
 
-   public ArrayList<Datafile> getFiles(ByteSearch pattern) throws IOException;
+   public ArrayList<Datafile> getFiles(ByteSearch pattern);
    
    boolean mkdirs();
 
@@ -56,38 +56,38 @@ public interface HPath extends DirComponent, Iterable<DirComponent> {
    
     public Iterator<DirComponent> iterator();
 
-    public Iterator<DirComponent> iteratorRecursive() throws IOException;
+    public Iterator<DirComponent> iteratorRecursive();
 
-    public Iterator<HPath> iteratorDirs() throws IOException;
+    public Iterator<HPath> iteratorDirs();
 
-    public Iterator<Datafile> iteratorFiles() throws IOException;
+    public Iterator<Datafile> iteratorFiles();
 
-    public Iterator<HPath> iteratorDirs(ByteSearch pattern) throws IOException;
+    public Iterator<HPath> iteratorDirs(ByteSearch pattern);
 
-    public Iterator<Datafile> iteratorFiles(ByteSearch pattern) throws IOException;
+    public Iterator<Datafile> iteratorFiles(ByteSearch pattern);
     
-    public Iterator<DirComponent> iterator(ByteSearch pattern) throws IOException;
+    public Iterator<DirComponent> iterator(ByteSearch pattern);
 
-    public Iterator<DirComponent> wildcardIterator() throws IOException;
+    public Iterator<DirComponent> wildcardIterator();
 
-    public ArrayList<DirComponent> get() throws IOException;
+    public ArrayList<DirComponent> get();
 
-    public ArrayList<DirComponent> getRecursive() throws IOException;
+    public ArrayList<DirComponent> getRecursive();
 
-    public ArrayList<DirComponent> get(ByteSearch pattern) throws IOException;
+    public ArrayList<DirComponent> get(ByteSearch pattern);
 
-    public ArrayList<Datafile> getFiles() throws IOException;
+    public ArrayList<Datafile> getFiles();
 
-    public ArrayList<Datafile> getFilesNewerThan(long lastupdate) throws IOException;
+    public ArrayList<Datafile> getFilesNewerThan(long lastupdate);
 
-    public ArrayList<String> getFilenames() throws IOException;
+    public ArrayList<String> getFilenames();
 
-    public ArrayList<String> getFilepathnames() throws IOException;
+    public ArrayList<String> getFilepathnames();
 
-    public ArrayList<? extends HPath> getDirs() throws IOException;
+    public ArrayList<? extends HPath> getDirs();
 
-    public ArrayList<? extends HPath> getDirs(ByteSearch pattern) throws IOException;
+    public ArrayList<? extends HPath> getDirs(ByteSearch pattern);
     
-    public ArrayList<String> getDirnames() throws IOException;
+    public ArrayList<String> getDirnames();
 
 }

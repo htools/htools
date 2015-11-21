@@ -30,10 +30,7 @@ public class RestoreMap extends CopyMap {
             log.info("%s -> %s", key, value);
             long intime = HDFSPath.getLastModified(fs, key);
             long outtime = 0;
-            try {
-                outtime = HDFSPath.getLastModified(fs, value);
-            } catch (IOException ex) {
-            }
+            outtime = HDFSPath.getLastModified(fs, value);
             if (outtime > intime) {
                 HDFSPath.copy(fs, key, value);
             }

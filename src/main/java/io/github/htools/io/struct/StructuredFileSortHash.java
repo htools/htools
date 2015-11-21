@@ -22,7 +22,7 @@ public abstract class StructuredFileSortHash<R extends StructuredFileSortHashRec
    int tablesize;
    public StructuredFileHash hashfile;
 
-   public StructuredFileSortHash(Datafile df, int tablesize) throws IOException {
+   public StructuredFileSortHash(Datafile df, int tablesize) {
       super(df);
       setTableSize(tablesize);
    }
@@ -30,7 +30,7 @@ public abstract class StructuredFileSortHash<R extends StructuredFileSortHashRec
    @Override
    public abstract StructuredFile clone();
 
-   public HashMap<StructuredFileSortHashRecord, StructuredFileSortHashRecord> getMemoryTable() throws IOException {
+   public HashMap<StructuredFileSortHashRecord, StructuredFileSortHashRecord> getMemoryTable() {
       if (memorytable == null) {
          memorytable = new HashMap<StructuredFileSortHashRecord, StructuredFileSortHashRecord>(tablesize);
          setOffset(0);
@@ -45,7 +45,7 @@ public abstract class StructuredFileSortHash<R extends StructuredFileSortHashRec
    }
 
    @Override
-   public void closeWrite() throws IOException {
+   public void closeWrite() {
       super.closeWrite();
       if (hashfile != null) {
          hashfile.closeWrite();
@@ -62,7 +62,7 @@ public abstract class StructuredFileSortHash<R extends StructuredFileSortHashRec
    }
 
    @Override
-   public void openWriteFinal() throws IOException {
+   public void openWriteFinal() {
       hashfile = new StructuredFileHash(new Datafile(this.destfile.getSubFile(".hash")), tablesize);
       hashfile.openWrite();
       this.remove(hashcode);
@@ -70,7 +70,7 @@ public abstract class StructuredFileSortHash<R extends StructuredFileSortHashRec
    }
 
    @Override
-   public void openRead() throws IOException {
+   public void openRead() {
       if (getDatafile().isClosed() && getDatafile().existsDir()) {
          this.remove(hashcode);
          this.setBufferSize(1000);
@@ -93,7 +93,7 @@ public abstract class StructuredFileSortHash<R extends StructuredFileSortHashRec
       return (comp != 0) ? comp : 1;
    }
 
-   public final ArrayList<R> listHashCode(R record) throws IOException {
+   public final ArrayList<R> listHashCode(R record) {
       ArrayList<R> list = new ArrayList<R>();
       if (gotoBucket(record.getBucketIndex())) {
          while (nextRecord()) {
@@ -107,7 +107,7 @@ public abstract class StructuredFileSortHash<R extends StructuredFileSortHashRec
       return list;
    }
 
-   public final boolean gotoBucket(int bucketindex) throws IOException {
+   public final boolean gotoBucket(int bucketindex) {
       if (getDatafile().isClosed()) {
          openRead();
       }

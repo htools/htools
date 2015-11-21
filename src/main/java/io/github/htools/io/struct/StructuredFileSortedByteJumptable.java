@@ -16,7 +16,7 @@ public abstract class StructuredFileSortedByteJumptable extends StructuredFileSo
     StructuredFileByteJumptableInternal idfile;
     protected int id = 0;
 
-    public StructuredFileSortedByteJumptable(Datafile df) throws IOException {
+    public StructuredFileSortedByteJumptable(Datafile df) {
         super(df);
     }
 
@@ -25,7 +25,7 @@ public abstract class StructuredFileSortedByteJumptable extends StructuredFileSo
     }
 
     @Override
-    public void closeWrite() throws IOException {
+    public void closeWrite() {
         super.closeWrite();
         if (idfile != null) {
             idfile.closeWrite();
@@ -33,7 +33,7 @@ public abstract class StructuredFileSortedByteJumptable extends StructuredFileSo
     }
 
     @Override
-    public void openWriteFinal() throws IOException {
+    public void openWriteFinal() {
         log.info("openWriteFinal()");
         id = 0;
         idfile = new StructuredFileByteJumptableInternal(new Datafile(this.destfile.getSubFile(".jumparray")));
@@ -43,7 +43,7 @@ public abstract class StructuredFileSortedByteJumptable extends StructuredFileSo
     }
 
     @Override
-    public void openRead() throws IOException {
+    public void openRead() {
         try {
             super.openRead();
             residenttable = new BufferReaderWriter(this.getDatafile().readFully());

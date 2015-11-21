@@ -19,11 +19,11 @@ public class StructuredFileSortReader implements Comparable<Object> {
       this.segment = segment;
    }
 
-   public void openRead() throws IOException {
+   public void openRead() {
       index.openReadTemp();
    }
 
-   public boolean next() throws IOException {
+   public boolean next() {
       return index.hasNext() && index.nextRecord();
    }
 

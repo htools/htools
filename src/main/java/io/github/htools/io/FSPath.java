@@ -239,12 +239,12 @@ public class FSPath extends File implements HPath {
     }
 
     @Override
-    public ListIterator<HPath> iteratorDirs(ByteSearch regexstring) throws IOException {
+    public ListIterator<HPath> iteratorDirs(ByteSearch regexstring) {
         return new ListIterator(getDirs(regexstring));
     }
 
     @Override
-    public ListIterator<DirComponent> iterator(ByteSearch regex) throws IOException {
+    public ListIterator<DirComponent> iterator(ByteSearch regex) {
         return new ListIterator(get(regex));
     }
 
@@ -408,7 +408,7 @@ public class FSPath extends File implements HPath {
     }
 
     @Override
-    public ArrayList<FSPath> getDirs(ByteSearch pattern) throws IOException {
+    public ArrayList<FSPath> getDirs(ByteSearch pattern) {
         ArrayList<FSPath> results = new ArrayList();
         for (String name : list()) {
             if (pattern.exists(name)) {
@@ -436,7 +436,7 @@ public class FSPath extends File implements HPath {
     }
 
     @Override
-    public Iterator<Datafile> iteratorFiles(ByteSearch pattern) throws IOException {
+    public Iterator<Datafile> iteratorFiles(ByteSearch pattern) {
         return new ListIterator(getFiles(pattern));
     }
 

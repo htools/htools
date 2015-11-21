@@ -50,7 +50,7 @@ public class OrderedQueueMap<K extends Comparable, V> extends OrderedQueueSet<Ma
     public OrderedQueueMap() {
         super(new StdComparator<K, V>());
     }
-
+    
     public boolean add(K key, V value) {
         return super.add(new KV<K, V>(key, value));
     }

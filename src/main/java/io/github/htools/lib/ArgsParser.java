@@ -1,5 +1,6 @@
 package io.github.htools.lib;
 
+import io.github.htools.io.Datafile;
 import io.github.htools.search.ByteRegex;
 import io.github.htools.search.ByteSearchPosition;
 import java.util.ArrayList;
@@ -180,6 +181,10 @@ public class ArgsParser {
     public String get(String name) {
         ArrayList<String> list = getParameter(name);
         return (list == null || list.size() == 0) ? null : list.get(0);
+    }
+    
+    public Datafile getDatafile(String name) {
+        return new Datafile(get(name));
     }
 
     public String get(String name, String defaultValue) {

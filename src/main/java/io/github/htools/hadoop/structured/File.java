@@ -30,7 +30,7 @@ public abstract class File<J extends Writable> extends StructuredFile implements
     }
 
    @Override
-    public void setDatafile(Datafile df) throws IOException {
+    public void setDatafile(Datafile df) {
         super.setDatafile(df);
     }
     
@@ -40,7 +40,7 @@ public abstract class File<J extends Writable> extends StructuredFile implements
     }
 
     @Override
-    public void write(J record) throws IOException {
+    public void write(J record) {
         record.write(this);
     }
 

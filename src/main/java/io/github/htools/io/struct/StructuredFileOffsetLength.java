@@ -15,13 +15,13 @@ public abstract class StructuredFileOffsetLength extends StructuredFile {
    public LongField offset = this.addLong("offset");
    public IntField length = this.addInt("length");
 
-   public StructuredFileOffsetLength(Datafile basefile) throws IOException {
+   public StructuredFileOffsetLength(Datafile basefile) {
       super(basefile);
    }
 
    protected abstract StructuredFile getSource();
 
-   public void find(int pos) throws EOCException, IOException {
+   public void find(int pos) throws EOCException {
       int newceiling = 12 * (pos+1);
       if (getCeiling() != newceiling) {
          StructuredFile source = getSource();
@@ -40,7 +40,7 @@ public abstract class StructuredFileOffsetLength extends StructuredFile {
       }
    }
 
-   public long findOffset(int pos) throws EOCException, IOException {
+   public long findOffset(int pos) throws EOCException {
       int newceiling = 12 * (pos+1);
       if (getCeiling() != newceiling) {
          StructuredFile source = getSource();
@@ -59,7 +59,7 @@ public abstract class StructuredFileOffsetLength extends StructuredFile {
       return -1;
    }
 
-   public void writeRecordOffset(StructuredFile record) throws IOException {
+   public void writeRecordOffset(StructuredFile record) {
       //if (getOffset() / 12 < 500000)
       //   log.info("write id %d offset %d length %d", getOffset() / 12, record.getOffsetTupleStart(), (record.getOffetTupleEnd() - record.getOffsetTupleStart()));
       offset.write(record.getOffsetTupleStart());

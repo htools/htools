@@ -6,10 +6,6 @@ import io.github.htools.io.EOCException;
 import io.github.htools.io.FileIntegrityException;
 import io.github.htools.lib.Log;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This Structure is intended to store a static set of records, that are
@@ -27,7 +23,7 @@ public abstract class StructuredFileCollision extends StructuredFileSort {
     int tablesize;
     StructuredFileCollisionInternal hashfile;
 
-    public StructuredFileCollision(Datafile df) throws IOException {
+    public StructuredFileCollision(Datafile df) {
         super(df);
         setLoadFactor(3);
     }
@@ -45,7 +41,7 @@ public abstract class StructuredFileCollision extends StructuredFileSort {
     }
 
     @Override
-    public void closeWrite() throws IOException {
+    public void closeWrite() {
         super.closeWrite();
         if (hashfile != null) {
             hashfile.closeWrite(bucketcapacity);
@@ -53,7 +49,7 @@ public abstract class StructuredFileCollision extends StructuredFileSort {
     }
 
     @Override
-    public void openWriteFinal() throws IOException {
+    public void openWriteFinal() {
         hashfile = new StructuredFileCollisionInternal(new Datafile(this.destfile.getSubFile(".hash")));
         hashfile.openWrite();
         this.remove(bucketindex);
@@ -62,7 +58,7 @@ public abstract class StructuredFileCollision extends StructuredFileSort {
     }
 
     @Override
-    public void openRead() throws FileIntegrityException, IOException {
+    public void openRead() throws FileIntegrityException {
         try {
             this.remove(bucketindex);
             super.openRead();
@@ -98,7 +94,7 @@ public abstract class StructuredFileCollision extends StructuredFileSort {
 
     public abstract int secondaryCompare(StructuredFileSortRecord o1, StructuredFileSortRecord o2);
 
-    public StructuredFileCollisionRecord find(StructuredFileCollisionRecord r) throws IOException {
+    public StructuredFileCollisionRecord find(StructuredFileCollisionRecord r) {
         //log.info("bucketindex %d", r.bucketindex);
         long offset = hashfile.getOffset(r.getBucketIndex());
         residenttable.setOffset(offset);

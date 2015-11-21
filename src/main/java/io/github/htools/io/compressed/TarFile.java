@@ -15,7 +15,7 @@ public class TarFile extends ArchiveByteFile<org.apache.commons.compress.archive
     public static Log log = new Log(TarFile.class);
     TarArchiveInputStream tar;
 
-    public TarFile(InputStream is) throws IOException {
+    public TarFile(InputStream is) {
         super(is);
     }
 

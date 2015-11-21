@@ -23,6 +23,10 @@ public class HashMapDouble<K> extends HashMap<K, Double> {
         super(map);
     }
     
+    public Map<Double, K> invert() {
+        return new InvertedMap(this);
+    }
+    
     public void add(K key, double value) {
         Double oldvalue = get(key);
         put(key, oldvalue == null ? value : oldvalue + value);

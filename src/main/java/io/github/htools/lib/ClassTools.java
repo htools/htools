@@ -171,7 +171,7 @@ public enum ClassTools {
         try {
             o = c.newInstance(params);
         } catch (Exception ex) {
-            log.fatalexception(ex, "construct( %s, %s )", c, params);
+            log.fatalexception(ex, "construct( %s, %s )", c, ArrayTools.toString(params));
         }
         return o;
     }

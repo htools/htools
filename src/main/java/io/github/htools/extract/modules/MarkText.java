@@ -35,7 +35,7 @@ public class MarkText extends SectionMarker {
         int tagclose = findQuoteSafeTagEnd(section) + 1;
         if (tagclose > 0) {
             ByteSearchPosition end = endmarker.findPos(section, tagclose);
-            log.info("MarkText %d %d %d %b", section.innerstart, tagclose, end.start, end.found());
+            //log.info("MarkText %d %d %d %b", section.innerstart, tagclose, end.start, end.found());
             if (end.found()) {
                 return content.addSectionPos(outputsection, content.content, section.start, tagclose, end.start, section.end);
             }

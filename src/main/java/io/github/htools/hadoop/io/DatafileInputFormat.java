@@ -1,74 +1,95 @@
 package io.github.htools.hadoop.io;
 
-import io.github.htools.collection.HashMapList;
-import io.github.htools.hadoop.Job;
-import static io.github.htools.hadoop.io.ConstInputFormat.map;
+import io.github.htools.hadoop.InputFormat;
+import static io.github.htools.hadoop.io.FileInputFormat.TESTINPUT;
 import io.github.htools.io.Datafile;
-import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.Log;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.JobContext;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
-public class DatafileInputFormat extends ConstInputFormat<String, String> {
+public class DatafileInputFormat extends FileInputFormat<Long, Datafile> {
 
     public static Log log = new Log(DatafileInputFormat.class);
 
     @Override
-    protected MRInputSplit<String, String> createSplit(String key) {
-        return new StringStringInputSplit(key);
+    public RecordReader<Long, Datafile> createRecordReader(InputSplit is, TaskAttemptContext tac) {
+        return new Records();
     }
 
-    public static void add(Job job, Collection<HDFSPath> path) throws IOException {
-        HashMapList<String, String> distributeFiles = HDFSPath.distributePath(job.getFileSystem(), path);
-        for (Map.Entry<String, ArrayList<String>> entry : distributeFiles.entrySet()) {
-            for (String file : entry.getValue()) {
-                add(job, entry.getKey(), file);
-            }
+    public class Records extends RecordReader<Long, Datafile> {
+
+        Datafile df;
+        float progress;
+
+        @Override
+        public void initialize(InputSplit is, TaskAttemptContext tac) {
+            initialize(is, tac.getConfiguration());
+        }
+
+        public final void initialize(InputSplit is, Configuration conf) {
+            //log.info("initialize");
+            FileSplit fileSplit = (FileSplit) is;
+            Path file = fileSplit.getPath();
+            long start = fileSplit.getStart();
+            long end = fileSplit.getStart() + fileSplit.getLength();
+            df = new Datafile(conf, file.toString());
+            df.setOffset(start);
+            df.setCeiling(end);
+            progress = df.getLength() / 2;
+        }
+
+        /**
+         * Reads the input file, scanning for the next document, setting key and
+         * entitywritable with the offset and byte contents of the document
+         * read.
+         * <p>
+         * @return true if a next document was read
+         */
+        @Override
+        public boolean nextKeyValue() {
+            return df != null;
+        }
+
+        @Override
+        public Long getCurrentKey() {
+            return df.getOffset();
+        }
+
+        @Override
+        public Datafile getCurrentValue() {
+            Datafile result = df;
+            df = null;
+            return result;
+        }
+
+        /**
+         * NB this indicates progress as the data that has been read, for some
+         * MapReduce tasks processing the data continues for some startTime,
+         * causing the progress indicator to halt at 100%.
+         * <p>
+         * @return @throws IOException
+         * @throws InterruptedException
+         */
+        @Override
+        public float getProgress() {
+            return (df == null) ? progress : 0;
+        }
+
+        @Override
+        public void close() {
         }
     }
 
-    public static void addFiles(Job job, Collection<Datafile> path) throws IOException {
-        HashMapList<String, String> distributeFiles = HDFSPath.distributeDatafiles(job.getFileSystem(), path);
-        for (Map.Entry<String, ArrayList<String>> entry : distributeFiles.entrySet()) {
-            for (String file : entry.getValue()) {
-                add(job, entry.getKey(), file);
-            }
-        }
-    }
-
-    @Override
-    public List<InputSplit> getSplits(JobContext context) throws IOException, InterruptedException {
-        ArrayList<InputSplit> splits = new ArrayList();
-        if (cansplit) {
-            for (Map.Entry<Object, MRInputSplit> s : map.entrySet()) {
-                int splitsneeded = s.getValue().size() / 50 + 1;
-                if (splitsneeded == 1) {
-                    s.getValue().hosts = new String[]{(String) s.getKey()};
-                } else {
-                    int splitsize = s.getValue().size() / splitsneeded;
-                    int p = 0;
-                    for (int i = 0; i < splitsneeded; i++) {
-                        MRInputSplit<String, String> newsplit = createSplit((String) s.getKey());
-                        for (; p < i * splitsize && p < s.getValue().size(); p++) {
-                            newsplit.add((String) s.getValue().get(p));
-                        }
-                        newsplit.hosts = new String[]{(String) s.getKey()};
-                        splits.add(newsplit);
-                    }
-                }
-            }
-        } else {
-            MRInputSplit singlesplit = createSplit("");
-            for (MRInputSplit s : map.values()) {
-                singlesplit.addAll(s.list);
-            }
-            splits.add(singlesplit);
-        }
-        return splits;
-    }
 }

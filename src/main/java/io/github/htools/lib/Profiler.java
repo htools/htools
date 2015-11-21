@@ -158,12 +158,8 @@ public class Profiler {
         if (out == null) {
             systemout.println(sprintf(s, args));
         } else {
-            try {
                 out.printf(s + "\n", args);
                 out.flush();
-            } catch (IOException ex) {
-                log.exception(ex, "out " + s, args);
-            }
         }
     }
 
@@ -171,12 +167,8 @@ public class Profiler {
         if (out == null) {
             systemout.println(s);
         } else {
-            try {
                 out.printf(s + "\n");
                 out.flush();
-            } catch (IOException ex) {
-                log.exception(ex, "printf %s", s);
-            }
         }
     }
 

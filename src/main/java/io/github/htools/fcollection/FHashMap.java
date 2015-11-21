@@ -1,5 +1,6 @@
 package io.github.htools.fcollection;
 
+import io.github.htools.collection.InvertedMap;
 import io.github.htools.lib.Log;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
@@ -32,5 +33,9 @@ public class FHashMap<K, V> extends
    
    public FHashMap( final int expected, float loadfactor ) {
       super(expected, loadfactor);
+   }
+   
+   public Map<V, K> invert() {
+       return new InvertedMap(this);
    }
 }

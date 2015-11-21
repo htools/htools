@@ -3,6 +3,7 @@ package io.github.htools.collection;
 import io.github.htools.lib.Log;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A HashMap with a ArrayList of values, that supports adding values to existing keys
@@ -18,6 +19,10 @@ public class HashMapList<K, V> extends HashMap<K, ArrayList<V>> {
    
    public HashMapList( int size ) {
       super( size );
+   }
+   
+   public Map<ArrayList<V>, K> invert() {
+       return new InvertedMap(this);
    }
    
    public void add(K k, V v) {

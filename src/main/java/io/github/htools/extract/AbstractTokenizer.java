@@ -59,6 +59,23 @@ public abstract class AbstractTokenizer extends Extractor {
        this.addProcess("tokenize", clazz);
    }
    
+   public void insertPipeline(Class clazz, Class beforeclass) {
+       try {
+           ExtractorProcessor newp = createUnboundProcessor("tokenize", clazz);
+           ArrayList<ExtractorProcessor> tokenizelist = this.processor.get("tokenize");
+           for (int i =0; i < tokenizelist.size(); i++) {
+               ExtractorProcessor p = tokenizelist.get(i);
+               if (beforeclass.isInstance(p)) {
+                   tokenizelist.add(i, newp);
+                   return;
+               }
+           }
+           this.addEndPipeline(clazz);
+       } catch (ClassNotFoundException ex) {
+           log.fatalexception(ex, "insertPipeline(%s)", clazz.getCanonicalName());
+       }
+   }
+   
    public void addEndPipeline(ExtractorProcessor processor) {
        this.addProcess("tokenize", processor);
    }

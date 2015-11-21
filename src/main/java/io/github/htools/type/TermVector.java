@@ -23,4 +23,6 @@ public interface TermVector {
     public TermVectorDouble normalize();
     
     public Set<String> keySet();
+    
+    public int size();
 }

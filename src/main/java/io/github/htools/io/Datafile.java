@@ -114,7 +114,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         lockfile = null;
     }
 
-    public Datafile(Datafile df) throws IOException {
+    public Datafile(Datafile df) {
         this(df.filename);
         this.type = df.type;
         this.fs = df.fs;
@@ -188,15 +188,10 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
 
     public long getLastModified() {
         if (fs != null) {
-            try {
-                return HDFSPath.getLastModified(fs, filename);
-            } catch (IOException ex) {
-                log.exception(ex, "delete() when deleting file %s using FileSystem %s", filename, fs);
-            }
+            return HDFSPath.getLastModified(fs, filename);
         } else {
             return FSPath.getLastModified(filename);
         }
-        return NULLLONG;
     }
 
     /**
@@ -236,7 +231,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
             return FSPath.exists(lockfile) || FSFile.exists(filename);
         }
     }
-    
+
     public boolean existsFile() {
         if (this.fs != null) {
             try {
@@ -366,7 +361,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     @Override
-    public void setOffset(long offset) throws IOException {
+    public void setOffset(long offset) {
         //openRead();
         rwbuffer.setOffset(offset);
     }
@@ -404,11 +399,11 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         rwbuffer.hasmore = true;
     }
 
-    public void openWrite() throws IOException {
+    public void openWrite() {
         open(STATUS.WRITE);
     }
 
-    public void openAppend() throws IOException {
+    public void openAppend() {
         open(STATUS.APPEND);
     }
 
@@ -424,7 +419,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return status == STATUS.WRITE;
     }
 
-    public void openRead() throws IOException {
+    @Override
+    public void openRead() {
         if (status == STATUS.READ) {
             return;
         }
@@ -480,7 +476,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return null;
     }
 
-    protected void open(STATUS newstatus) throws IOException {
+    protected void open(STATUS newstatus) {
         //log.info("openFirst %s %s", newstatus, this.getfilename());
         if (status == newstatus) {
             return;
@@ -496,8 +492,14 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
                 if (!lockIsMine && isLocked()) {
                     waitForUnlock();
                 }
-                rwbuffer.setDataIn(getDataIn());
-                status = newstatus;
+                 {
+                    try {
+                        rwbuffer.setDataIn(getDataIn());
+                        status = newstatus;
+                    } catch (IOException ex) {
+                        log.fatalexception(ex, "openWrite()");
+                    }
+                }
                 break;
             case WRITE:
                 delete();
@@ -893,7 +895,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         }
         return rwbuffer.readLong();
     }
-    
+
     /**
      * reads an 16 byte long from the current file position. The file position
      * advances by 8. If the file was not in buffered reading or random access
@@ -1167,7 +1169,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
             log.fatal("DataFile has to be put in a specific write mode before writing");
         }
     }
-    
+
     /**
      * writes an 16 byte long to the file at the current file position. The file
      * position advances by 8. This only works in buffered writing or random
@@ -1467,7 +1469,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         }
     }
 
-    public void printf(String format, Object... args) throws IOException {
+    public void printf(String format, Object... args) {
         if (!isWriteOpen()) {
             this.openWrite();
         }
@@ -1476,7 +1478,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         rwbuffer.print(s);
     }
 
-    public void print(String s) throws IOException {
+    public void print(String s) {
         if (!isWriteOpen()) {
             this.openWrite();
         }
@@ -1497,7 +1499,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return null;
     }
 
-    public InputStream getInputStream() throws IOException {
+    public InputStream getInputStream() {
         if (!isReadOpen()) {
             this.openRead();
         }
@@ -1534,6 +1536,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     static ByteSearch EOL = ByteSearch.create("\n");
+
     public String readLine() throws EOCException {
         return readStringUntil(EOL);
     }
@@ -1634,19 +1637,20 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         rwbuffer.movePast(section);
     }
 
-    public Iterable<String> readLines() throws IOException {
+    public Iterable<String> readLines() {
         return new LineIterator(this);
     }
-    
+
     static class LineIterator implements Iterator<String>, Iterable<String> {
+
         Datafile df;
         String next;
-        
-        public LineIterator(Datafile df) throws IOException {
+
+        public LineIterator(Datafile df) {
             this.df = new Datafile(df);
             this.df.openRead();
         }
-        
+
         @Override
         public boolean hasNext() {
             return df.getOffset() < df.getLength();
@@ -1667,5 +1671,5 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
             throw new UnsupportedOperationException("Delete operation not supported.");
         }
     }
-    
+
 }

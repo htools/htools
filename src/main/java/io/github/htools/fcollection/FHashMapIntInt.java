@@ -46,6 +46,10 @@ public class FHashMapIntInt extends Int2IntOpenHashMap implements java.util.Map<
         return clone;
     }
 
+    public Map<Integer, Integer> invert() {
+        return new InvertedMap(this);
+    }
+    
     protected FHashMapIntInt create() {
         return new FHashMapIntInt();
     }

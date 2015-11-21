@@ -3,7 +3,7 @@ package io.github.htools.hadoop.io.backup;
 import io.github.htools.hadoop.Conf;
 import io.github.htools.lib.Log;
 import io.github.htools.hadoop.Job;
-import io.github.htools.hadoop.io.DatafileInputFormat;
+import io.github.htools.hadoop.io.ListInputFormat;
 import io.github.htools.hadoop.io.FilePairInputFormat;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.HDFSPath;

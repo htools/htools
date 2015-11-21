@@ -13,12 +13,12 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    boolean loaded = false;
    private int id = 0;
 
-   public StructuredFileShortJumpTable(Datafile df) throws IOException {
+   public StructuredFileShortJumpTable(Datafile df) {
       super(df);
    }
 
    @Override
-   public void closeWrite() throws IOException {
+   public void closeWrite() {
       super.closeWrite();
       if (jumparray != null) {
          jumparray.closeWrite();
@@ -26,7 +26,7 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    }
 
    @Override
-   public void setDatafile(Datafile df) throws IOException {
+   public void setDatafile(Datafile df){
       super.setDatafile(df);
       jumparray = new StructuredFileShortJumptableInternal(new Datafile(this.getDatafile().getSubFile(".jumparray")));
       id = 0;
@@ -34,7 +34,7 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    }
 
    @Override
-   public void openWrite() throws IOException {
+   public void openWrite() {
       super.openWrite();
       //log.info("openWrite()");
       id = 0;
@@ -42,12 +42,12 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    }
 
    @Override
-   public void hookRecordWritten() throws IOException {
+   public void hookRecordWritten() {
       jumparray.write(id++, this);
    }
 
    @Override
-   public void openRead() throws IOException {
+   public void openRead(){
       super.openRead();
       jumparray.openRead();
    }
@@ -60,14 +60,14 @@ public abstract class StructuredFileShortJumpTable extends StructuredFile implem
    }
 
    @Override
-   public void read(int id) throws IOException {
+   public void read(int id) {
       find(id);
       //log.info("read offset %d", this.datafile.getOffset());
       nextRecord();
    }
 
    @Override
-   public void find(int id) throws IOException {
+   public void find(int id) {
       jumparray.openRead();
       long offset = jumparray.getOffset(id);
       //log.info("find id %d offset %d", id, offset);

@@ -16,7 +16,7 @@ public abstract class StructuredFileSortJumptableRecord extends StructuredFileSo
    }
 
    @Override
-   protected void writeFinal() throws IOException {
+   protected void writeFinal() {
       //setHashCode();
       //RecordSortJumpArray tt = (RecordSortJumpArray) file;
       //int recordstart = (int)t.getOffset();

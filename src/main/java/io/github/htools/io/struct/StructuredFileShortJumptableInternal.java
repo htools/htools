@@ -16,19 +16,19 @@ import java.io.IOException;
    int lengthsize = 2;
    BufferReaderWriter rw;
 
-   public StructuredFileShortJumptableInternal(Datafile df) throws IOException {
+   public StructuredFileShortJumptableInternal(Datafile df) {
       super(df);
    }
 
    @Override
-   public void openWrite() throws IOException {
+   public void openWrite() {
       super.openWrite();
       currenttable = new byte[subpointers * lengthsize];
       rw = new BufferReaderWriter(currenttable);
    }
 
    @Override
-   protected void writeJump(int id, StructuredFile rec) throws IOException {
+   protected void writeJump(int id, StructuredFile rec) {
       int jumpindex = getJumpIndex(id);
       rw.bufferpos = (jumpindex - 1) * lengthsize;
       int oldoffset = lastoffset;
@@ -45,7 +45,7 @@ import java.io.IOException;
       return markers * (4 + subpointers * lengthsize);
    }
 
-   public long getOffset(int id) throws IOException {
+   public long getOffset(int id) {
       long offset = -1;
       try {
          int marker = getMarkerOffset(id);

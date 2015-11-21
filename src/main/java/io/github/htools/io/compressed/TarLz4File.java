@@ -21,9 +21,13 @@ public class TarLz4File extends ArchiveByteFile<org.apache.commons.compress.arch
     }
 
     @Override
-    protected void initialize(BufferedInputStream is) throws IOException {
-        lz4Stream = new LZ4FrameInputStream(is);
-        tar = new TarArchiveInputStream(lz4Stream);
+    protected void initialize(BufferedInputStream is) {
+        try {
+            lz4Stream = new LZ4FrameInputStream(is);
+            tar = new TarArchiveInputStream(lz4Stream);
+        } catch (IOException ex) {
+            log.fatalexception(ex, "initialize");
+        }
     }
 
     @Override

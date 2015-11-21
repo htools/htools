@@ -12,7 +12,7 @@ class StructuredFileSequentialIndex extends StructuredFileOffsetLength {
    public Log log = new Log(StructuredFileSequentialIndex.class);
    StructuredFileSequential array;
 
-   public StructuredFileSequentialIndex(StructuredFileSequential array) throws IOException {
+   public StructuredFileSequentialIndex(StructuredFileSequential array) {
       super(array.getDatafile().getSubFile(".index"));
       this.array = array;
    }

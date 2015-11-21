@@ -21,8 +21,9 @@ import static org.apache.hadoop.mapreduce.lib.input.FileInputFormat.INPUT_DIR;
 import org.apache.hadoop.util.StringUtils;
 
 /**
- * InputFormat extends FileInputFormat to supply Hadoop with the
- * input to process.
+ * InputFormat extends FileInputFormat to supply Hadoop with the input to
+ * process.
+ *
  * @author jeroen
  */
 public abstract class InputFormat<W> extends FileInputFormat<LongWritable, W> {
@@ -53,8 +54,27 @@ public abstract class InputFormat<W> extends FileInputFormat<LongWritable, W> {
     }
 
     public static void setNonSplitable(Job job) {
-        job.getConfiguration().setBoolean(SPLITABLE, false);
-        job.getConfiguration().setLong("mapreduce.input.fileinputformat.split.minsize", Long.MAX_VALUE);
+        setNonSplitable(job.getConfiguration());
+    }
+
+    public static long getSplitSize(Job job) {
+        return getSplitSize(job.getConfiguration());
+    }
+
+    public static void setNonSplitable(Configuration conf) {
+        setSplitSize(conf, Long.MAX_VALUE);
+    }
+
+    public static void setSplitSize(Configuration conf, long size) {
+        conf.setBoolean(SPLITABLE, size < Long.MAX_VALUE);
+        conf.setLong("mapreduce.input.fileinputformat.split.minsize", size);
+    }
+
+    public static long getSplitSize(Configuration conf) {
+        if (conf.getBoolean(SPLITABLE, false)) {
+            return conf.getLong("mapreduce.input.fileinputformat.split.minsize", Long.MAX_VALUE);
+        }
+        return Long.MAX_VALUE;
     }
 
     public static void addFileList(Job job, String file) throws IOException {
@@ -70,6 +90,33 @@ public abstract class InputFormat<W> extends FileInputFormat<LongWritable, W> {
         }
     }
 
+    /**
+     * @param job
+     * @param list
+     * @return a list of Datafiles of maximum SplitSize length, by splitting 
+     * longer Datafiles into several files with offset and ceiling set to
+     * cover all data in disjoint files.
+     */
+    public static ArrayList<Datafile> split(Job job, ArrayList<Datafile> list) {
+        long splitsize = getSplitSize(job);
+        ArrayList<Datafile> result = new ArrayList();
+        for (Datafile d : list) {
+            if (d.getLength() > splitsize) {
+                int parts = 1 + (int) (d.getLength() / splitsize);
+                long partlength = d.getLength() / parts;
+                for (int i = 0; i < parts; i++) {
+                    Datafile partfile = new Datafile(d);
+                    partfile.setOffset(i * partlength);
+                    partfile.setCeiling(Math.min(d.getLength(), (i + 1) * partlength));
+                    result.add(partfile);
+                }
+            } else {
+                result.add(d);
+            }
+        }
+        return result;
+    }    
+    
     public static ArrayList<String> topDirs(Configuration conf) throws IOException {
         Path[] inputPaths = getInputPaths(conf);
         HashSet<String> dirs = new HashSet();
@@ -89,7 +136,7 @@ public abstract class InputFormat<W> extends FileInputFormat<LongWritable, W> {
         }
         return result;
     }
-    
+
     public static void setFileFilter(FileFilter filter) {
         filefilter = filter;
     }

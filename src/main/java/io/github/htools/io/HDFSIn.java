@@ -62,29 +62,29 @@ public class HDFSIn extends ISDataIn {
     }
 
     public void mustMoveBack() {
-        try {
             close();
             resetOffset();
             getInputStream();
-        } catch (IOException ex) {
-            log.fatalexception(ex, "mustMoveBack() %s", this.path.toString());
-        }
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
+    public InputStream getInputStream() {
         if (inputstream == null) {
-            inputstream = fs.open(path, 1000000);
-            if (path.getName().endsWith(".lz4")) {
-                inputstream = new LZ4FrameInputStream(inputstream);
-                isCompressed = true;
-            } else {
-                CompressionCodecFactory compressionCodecs = new CompressionCodecFactory(fs.getConf());
-                CompressionCodec codec = compressionCodecs.getCodec(path);
-                if (codec != null) {
-                    inputstream = codec.createInputStream(inputstream);
+            try {
+                inputstream = fs.open(path, 1000000);
+                if (path.getName().endsWith(".lz4")) {
+                    inputstream = new LZ4FrameInputStream(inputstream);
                     isCompressed = true;
+                } else {
+                    CompressionCodecFactory compressionCodecs = new CompressionCodecFactory(fs.getConf());
+                    CompressionCodec codec = compressionCodecs.getCodec(path);
+                    if (codec != null) {
+                        inputstream = codec.createInputStream(inputstream);
+                        isCompressed = true;
+                    }
                 }
+            } catch (IOException ex) {
+                log.fatalexception(ex, "getInputStream()");
             }
         }
         return inputstream;

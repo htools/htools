@@ -6,17 +6,17 @@ import java.io.IOException;
 
 public interface StructuredFileIntID {
 
-   public void openRead() throws IOException ;
+   public void openRead();
 
-   public void closeRead() throws IOException;
+   public void closeRead();
 
-   public void closeWrite() throws IOException;
+   public void closeWrite();
 
-   public void openWrite() throws IOException;
+   public void openWrite();
 
-   public void read(int id) throws EOCException, IOException;
+   public void read(int id) throws EOCException;
 
-   public void find(int id) throws EOCException, IOException;
+   public void find(int id) throws EOCException;
 
    public void setBufferSize(int size);
 
@@ -24,7 +24,7 @@ public interface StructuredFileIntID {
 
    public boolean hasNext();
 
-   public boolean nextRecord() throws IOException;
+   public boolean nextRecord();
 
    public boolean skipRecord();
    
@@ -32,9 +32,9 @@ public interface StructuredFileIntID {
    
    public long getCeiling();
    
-   public void readResident(int id) throws EOCException, IOException;
+   public void readResident(int id) throws EOCException;
    
-   public void readResident() throws EOCException, IOException;
+   public void readResident() throws EOCException;
    
    public boolean isReadResident();
    

@@ -19,7 +19,7 @@ public interface StructureReader extends ByteSearchReader {
 
    public long getOffset();
 
-   public void setOffset(long l) throws IOException;
+   public void setOffset(long l);
 
    public void setCeiling(long s);
 

@@ -290,6 +290,11 @@ public class ByteSearchSection extends ByteSearchPosition implements ByteSearchR
         }
         return ByteTools.toString(haystack, start + pos, start + end);
     }
+    
+    public void erase() {
+        for (int i = start; i < end; i++)
+            haystack[i] = 0;
+    }
 
     public ByteSearchSection trim() {
         int istart = innerstart;

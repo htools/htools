@@ -30,7 +30,7 @@ public abstract class StructuredFileKeyRecord<F extends StructuredFileKey, D ext
    }
    
    @Override
-   public void write( F file ) throws IOException {
+   public void write( F file ) {
       file.offset.write(offset);
       file.length.write(length);
       writeKeys( file );

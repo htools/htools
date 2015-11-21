@@ -16,26 +16,26 @@ public class StructuredFileHash extends StructuredFile {
    public int currentbucketindex = -1;
    public LongField offset = this.addLong("offset");
 
-   public StructuredFileHash(Datafile df, int tablesize) throws IOException {
+   public StructuredFileHash(Datafile df, int tablesize) {
       super(df);
       this.setCapacity(tablesize);
    }
 
    @Override
-   public void openWrite() throws IOException {
+   public void openWrite() {
       super.openWrite();
       currentbucketindex = -1;
    }
 
    @Override
-   public void closeWrite() throws IOException {
+   public void closeWrite() {
       for (; currentbucketindex < bucketcapacity - 1; currentbucketindex++) {
          this.offset.write(0l);
       }
       super.closeWrite();
    }
 
-   public void writeHash(int bucketindex, long offset) throws IOException {
+   public void writeHash(int bucketindex, long offset) {
       for (; currentbucketindex < bucketindex - 1; currentbucketindex++) {
          this.offset.write(-1l);
       }

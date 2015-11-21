@@ -3,6 +3,7 @@ package io.github.htools.collection;
 import io.github.htools.lib.Log;
 import io.github.htools.type.Tuple2;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A HashMap with a Double value, that supports adding values to existing keys
@@ -15,6 +16,10 @@ public class HashMapMax<K, V> extends HashMap<K, Tuple2<Integer, V>> {
    
    public HashMapMax( ) {
       super();
+   }
+   
+   public Map<V, K> invert() {
+       return new InvertedMap(this);
    }
    
    public void add(K k, Integer d, V v) {

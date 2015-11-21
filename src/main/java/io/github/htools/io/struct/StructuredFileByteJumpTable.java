@@ -27,12 +27,12 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
    private int id;
    private boolean loaded;
 
-   public StructuredFileByteJumpTable(Datafile df) throws IOException {
+   public StructuredFileByteJumpTable(Datafile df) {
       super(df);
    }
 
    @Override
-   public void closeWrite() throws IOException {
+   public void closeWrite() {
       super.closeWrite();
       if (jumparray != null) {
          jumparray.closeWrite();
@@ -40,7 +40,7 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
    }
 
    @Override
-   public void setDatafile(Datafile df) throws IOException {
+   public void setDatafile(Datafile df) {
       super.setDatafile(df);
       jumparray = new StructuredFileByteJumptableInternal(new Datafile(this.getDatafile().getSubFile(".jumparray")));
       id = 0;
@@ -48,7 +48,7 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
    }
 
    @Override
-   public void openWrite() throws IOException {
+   public void openWrite() {
       super.openWrite();
       //log.info("openWrite()");
       id = 0;
@@ -56,13 +56,13 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
    }
 
    @Override
-   public void hookRecordWritten() throws IOException {
+   public void hookRecordWritten() {
       //log.info("hookRecordWrittern id %d offset %d", id, getOffset());
       jumparray.write(id++, this);
    }
 
    @Override
-   public void openRead() throws FileIntegrityException, IOException {
+   public void openRead() throws FileIntegrityException {
       super.openRead();
       jumparray.openRead();
    }
@@ -97,14 +97,14 @@ public abstract class StructuredFileByteJumpTable extends StructuredFile impleme
       jumparray.closeRead();
    }
 
-   public void read(int id) throws IOException {
+   public void read(int id) {
       find(id);
       //log.info("read offset %d", this.datafile.getOffset());
       nextRecord();
    }
 
    @Override
-   public void find(int id) throws IOException {
+   public void find(int id) {
       jumparray.openRead();
       long offset = jumparray.getOffset(id);
       //log.info("find id %d offset %d", id, offset);

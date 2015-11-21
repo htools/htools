@@ -29,7 +29,7 @@ public interface DataIn {
 
    void openRead() throws IOException;
 
-   InputStream getInputStream() throws IOException;
+   InputStream getInputStream();
    
    boolean isCompressed();
 }

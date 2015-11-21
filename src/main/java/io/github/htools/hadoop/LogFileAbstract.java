@@ -75,7 +75,7 @@ public abstract class LogFileAbstract extends StructuredTextTSV {
     }
 
     @Override
-    public void write() throws IOException {
+    public void write() {
         super.write();
         this.datafile.flush();
     }

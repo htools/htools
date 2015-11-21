@@ -18,7 +18,7 @@ public abstract class StructuredFileSortRecord implements Comparable<StructuredF
       return file.compareKeys(this, o);
    }
 
-   public abstract void write() throws IOException;
+   public abstract void write();
 
-   protected abstract void writeFinal() throws IOException;
+   protected abstract void writeFinal();
 }

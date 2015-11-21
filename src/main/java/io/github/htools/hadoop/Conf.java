@@ -481,7 +481,7 @@ public class Conf extends JobConf {
      * @return Datafile for the pathstring set under the key on HDFS. Fails when
      * the key is not set. This is short for new Datafile(conf, conf.get(key)).
      */
-    public Datafile getHDFSFile(String key) throws IOException {
+    public Datafile getHDFSFile(String key) {
         return new Datafile(this, get(key));
     }
 
@@ -490,7 +490,7 @@ public class Conf extends JobConf {
      * @return Datafile for the pathstring set under the key on local FS. Fails
      * when the key is not set. This is short for new Datafile(conf.get(key)).
      */
-    public Datafile getFSFile(String key) throws IOException {
+    public Datafile getFSFile(String key) {
         return new Datafile(get(key));
     }
 

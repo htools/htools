@@ -40,7 +40,7 @@ public abstract class StructuredFile extends StructuredDataStream {
     * <p>
     * @param datafile
     */
-   public StructuredFile(Datafile datafile) throws IOException {
+   public StructuredFile(Datafile datafile) {
       super(datafile.rwbuffer);
       setDatafile(datafile);
    }
@@ -66,7 +66,7 @@ public abstract class StructuredFile extends StructuredDataStream {
       super(new BufferReaderWriter(bytes));
    }
 
-   protected void setDatafile(Datafile df) throws IOException {
+   protected void setDatafile(Datafile df) {
       this.datafile = df;
       if (df != null) {
          this.writer = df.rwbuffer;
@@ -79,7 +79,7 @@ public abstract class StructuredFile extends StructuredDataStream {
       }
    }
 
-    public void write() throws IOException {
+    public void write() {
        if (writer != null) {
          try {
             Field first = start.nextField();
@@ -141,7 +141,7 @@ public abstract class StructuredFile extends StructuredDataStream {
     * <p>
     * @param offset
     */
-   public void setOffset(long offset) throws IOException {
+   public void setOffset(long offset) {
       reader.setOffset(offset);
    }
 
@@ -318,7 +318,7 @@ public abstract class StructuredFile extends StructuredDataStream {
      * @param f
     */
    @Override
-   public void writeDone(Field f) throws IOException {
+   public void writeDone(Field f) {
       if (f == start.next) {
          this.tuplestart = f.lastoffset;
       }
@@ -335,13 +335,13 @@ public abstract class StructuredFile extends StructuredDataStream {
     * sort records before being written.
     * <p>
     */
-   public void hookRecordWritten() throws IOException {
+   public void hookRecordWritten() {
    }
 
    /**
     * open a StructuredFile in writing mode.
     */
-   public void openWrite() throws IOException {
+   public void openWrite() {
       if (datafile != null) {
          datafile.openWrite();
          this.writer = datafile.rwbuffer;
@@ -350,7 +350,7 @@ public abstract class StructuredFile extends StructuredDataStream {
       tupleswritten = 0;
    }
 
-   public void openAppend() throws IOException {
+   public void openAppend() {
       if (datafile != null) {
          datafile.openAppend();
          this.writer = datafile.rwbuffer;
@@ -362,7 +362,7 @@ public abstract class StructuredFile extends StructuredDataStream {
    /**
     * open a StructuredFile in reading mode
     */
-   public void openRead() throws IOException {
+   public void openRead() {
       if (datafile != null && datafile.isClosed() && datafile.existsDir()) {
          datafile.openRead();
          this.reader = datafile.rwbuffer;
@@ -384,7 +384,7 @@ public abstract class StructuredFile extends StructuredDataStream {
    /**
     * closes the StructuredFile stream.
     */
-   public void closeWrite() throws IOException {
+   public void closeWrite() {
       if (nextField != start.next) {
          log.fatal("Cannot close a Tuple without completing the current record");
       }
@@ -425,7 +425,7 @@ public abstract class StructuredFile extends StructuredDataStream {
     * <p>
     * @return true is a record was read, or false if EOF or ceiling was reached.
     */
-   public boolean nextRecord() throws IOException {
+   public boolean nextRecord() {
       //log.info("next() %d", this.getOffset());
       if (reader != null && reader.hasMore()) {
          try {

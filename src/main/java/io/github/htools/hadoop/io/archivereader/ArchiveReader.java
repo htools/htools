@@ -2,16 +2,10 @@ package io.github.htools.hadoop.io.archivereader;
 
 import io.github.htools.io.Datafile;
 import io.github.htools.extract.Content;
-import io.github.htools.fcollection.FHashSet;
-import io.github.htools.fcollection.FHashSetInt;
-import io.github.htools.fcollection.FHashSetLong;
-import io.github.htools.hadoop.Conf;
 import io.github.htools.io.ByteReader;
 import io.github.htools.io.compressed.ArchiveByteFile;
 import io.github.htools.lib.Log;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;

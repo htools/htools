@@ -93,7 +93,7 @@ public abstract class StructuredTextPig extends StructuredTextCSV {
         }
 
         @Override
-        protected void write(ArrayList list) throws IOException {
+        protected void write(ArrayList list) {
             if (list != null && list.size() > 0) {
                 if (openlabel.length() > 0) {
                     datafile.printf("%s", openlabel);

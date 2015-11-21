@@ -19,13 +19,13 @@ public abstract class StructuredFileCollisionRecord extends StructuredFileSortRe
    public abstract int hashCode();
    
    @Override
-   public void write() throws IOException {
+   public void write() {
       ((StructuredFileCollision)file).bucketindex.write(getBucketIndex());
       writeTempRecordData();
    }
 
    @Override
-   protected void writeFinal() throws IOException {
+   protected void writeFinal() {
       int oldoffset = (int) file.getOffset();
       ((StructuredFileCollision)file).hashfile.writeHash(getBucketIndex(), oldoffset, (int) file.getOffset());
       writeRecordData();

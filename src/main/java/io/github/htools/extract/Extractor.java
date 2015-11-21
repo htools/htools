@@ -36,14 +36,14 @@ import io.github.htools.lib.ByteTools;
 public class Extractor {
 
     public static Log log = new Log(Extractor.class);
-    protected boolean neverused = true;
+    protected boolean rebuildSectionMarkers = true;
     protected ArrayList<ExtractorProcessor> preprocess = new ArrayList();
     protected HashMap<String, ArrayList<ExtractorProcessor>> processor = new HashMap();
     protected HashSet<String> processes = new HashSet();
     protected ArrayList<String> inputsections = new ArrayList();
     protected ArrayList<String> allsections = new ArrayList();
     protected HashMap<String, ArrayList<SectionMarker>> sectionmarkers = new HashMap();
-    protected ArrayList<ExtractorPatternMatcher> patternmatchers = new ArrayList();
+    protected ArrayList<ExtractorPatternMatcher> patternmatchers;
     protected ArrayList<SectionMarker> markers = new ArrayList();
     protected ArrayList<SectionProcess> processors = new ArrayList();
     protected ByteRegex sectionstart;
@@ -86,6 +86,7 @@ public class Extractor {
     }
 
     private void createPatternMatchers() {
+        patternmatchers = new ArrayList();
         for (String section : inputsections) {
             patternmatchers.add(new ExtractorPatternMatcher(this, section, sectionmarkers.get(section)));
         }
@@ -136,6 +137,7 @@ public class Extractor {
      */
     public void addSectionMarker(Class sectionmarker, String inputsection, String outputsection) {
         try {
+            rebuildSectionMarkers = true;
             Constructor c = ClassTools.getAssignableConstructor(sectionmarker, SectionMarker.class, Extractor.class, String.class, String.class);
             SectionMarker marker = (SectionMarker) ClassTools.construct(c, this, inputsection, outputsection);
             ArrayList<SectionMarker> list = sectionmarkers.get(inputsection);
@@ -218,7 +220,7 @@ public class Extractor {
                 proc.process(content, content.getAll(), null);
             }
             this.processSectionMarkers(content);
-            preProcess(content);
+            preTokenizerProcess(content);
             for (SectionProcess p : this.processors) {
                 for (ByteSearchSection section : content.getSectionPos(p.section)) {
                     //log.info("section %d %d", section.start, section.innerstart);
@@ -232,7 +234,7 @@ public class Extractor {
         }
     }
     
-    protected void preProcess(Content content) {}
+    protected void preTokenizerProcess(Content content) {}
 
     public Content process(byte content[]) {
         Content entity = new Content();
@@ -255,11 +257,11 @@ public class Extractor {
             }
         }
     }
-
+    
     protected void processSectionMarkers(Content content) {
-        //log.info("process sessionmarkers %d ", inputsections.size());
-        if (neverused) {
-            neverused = false;
+        log.info("process sessionmarkers %s %d ", getClass().getCanonicalName(), inputsections.size());
+        if (rebuildSectionMarkers) {
+            rebuildSectionMarkers = false;
             createPatternMatchers();
         }
         content.getAll();

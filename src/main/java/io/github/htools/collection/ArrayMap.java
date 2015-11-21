@@ -1,7 +1,6 @@
 package io.github.htools.collection;
 
 import io.github.htools.collection.MapKeyIterator;
-import io.github.htools.lib.ArrayTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.MapTools;
 import io.github.htools.lib.RandomTools;
@@ -14,13 +13,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 
 /**
  * An ArrayMap is similar to a Map in that it stores Map.Entry&lt;K,V&gt;,
@@ -52,7 +48,7 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Map<K, V> {
         list = new ArrayList(c);
     }
 
-    public ArrayMap(AbstractMap<K, V> c) {
+    public ArrayMap(Map<K, V> c) {
         this();
         for (Map.Entry<K, V> entry : c.entrySet()) {
             add(entry.getKey(), entry.getValue());
@@ -63,7 +59,7 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Map<K, V> {
         list = new ArrayList(initialsize);
     }
 
-    public static <K, V> ArrayMap<K, V> invert(Iterable<? extends Map.Entry<V, K>> c) {
+    public static <K, V> Map<K, V> invert(Iterable<? extends Map.Entry<V, K>> c) {
         ArrayMap<K, V> map = new ArrayMap();
         for (Map.Entry<V, K> entry : c) {
             map.add(entry.getValue(), entry.getKey());
@@ -71,6 +67,10 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Map<K, V> {
         return map;
     }
 
+    public Map<V, K> invert() {
+        return new InvertedMap(this);
+    }
+    
     public int indexOfValue(V value) {
         for (int i = 0; i < size(); i++) {
             if (ArrayMap.this.get(i).getValue().equals(value)) {
@@ -89,10 +89,6 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Map<K, V> {
         return -1;
     }
 
-    public static <K, V> ArrayMap<K, V> invert(Map<V, K> c) {
-        return invert(c.entrySet());
-    }
-
     /**
      * @return a shallow copy, i.e. the elements are not cloned.
      */
@@ -100,6 +96,13 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Map<K, V> {
     public ArrayMap<K, V> clone() {
         ArrayMap<K, V> n = new ArrayMap();
         n.list = (ArrayList<Map.Entry<K, V>>) list.clone();
+        return n;
+    }
+
+    public ArrayMap<V, K> cloneInverted() {
+        ArrayMap<V, K> n = new ArrayMap(list.size());
+        for (Map.Entry<K, V> entry : list)
+            n.add(entry.getValue(), entry.getKey());
         return n;
     }
 

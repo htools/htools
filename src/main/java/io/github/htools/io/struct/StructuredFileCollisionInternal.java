@@ -22,12 +22,12 @@ class StructuredFileCollisionInternal extends StructuredFile {
    private IntField offset = this.addInt("offset");
    private FixedMemField suboffset = this.addFixedMem("suboffset", jumptable);
 
-   public StructuredFileCollisionInternal(Datafile df) throws IOException {
+   public StructuredFileCollisionInternal(Datafile df) {
       super(df);
    }
 
    @Override
-   public void openRead() throws FileIntegrityException, IOException {
+   public void openRead() throws FileIntegrityException {
        try {
            super.openRead();
            residenttable = new BufferReaderWriter(getDatafile().readFully());
@@ -38,7 +38,7 @@ class StructuredFileCollisionInternal extends StructuredFile {
    }
 
    @Override
-   public void openWrite() throws IOException {
+   public void openWrite() {
       super.openWrite();
       currenthash = -1;
       lastoffset = 0;
@@ -46,7 +46,7 @@ class StructuredFileCollisionInternal extends StructuredFile {
       currenttable = new byte[jumptable];
    }
 
-   public void closeWrite(int hashcapacity) throws IOException {
+   public void closeWrite(int hashcapacity) {
       while (currenthash < hashcapacity - 1) {
          writeHash(currenthash + 1, lastoffset, lastoffset);
       }
@@ -56,7 +56,7 @@ class StructuredFileCollisionInternal extends StructuredFile {
       super.closeWrite();
    }
 
-   public void writeHash(int hash, int oldoffset, int newoffset) throws IOException {
+   public void writeHash(int hash, int oldoffset, int newoffset) {
       //log.info("hash %d offset %d currenthash %d ", hash, oldoffset, currenthash);
       while (currenthash < hash) {
          writeHash(oldoffset);
@@ -64,7 +64,7 @@ class StructuredFileCollisionInternal extends StructuredFile {
       perhapsJump(oldoffset, newoffset);
    }
 
-   private void writeHash(int oldoffset) throws IOException {
+   private void writeHash(int oldoffset) {
       if (currenthash - lastnojumphash == jumptable) {
          writeMarker(oldoffset);
       } else {
@@ -72,14 +72,14 @@ class StructuredFileCollisionInternal extends StructuredFile {
       }
    }
 
-   private void writeMarker(int offset) throws IOException {
+   private void writeMarker(int offset) {
       //log.info("Marker %d %d %d hashfile %d offset %d", currenthash, lastnojumphash, jumptable, this.getOffset(), offset);
       this.offset.write(offset);
       lastoffset = offset;
       lastnojumphash = ++currenthash;
    }
 
-   private void writeJump(int oldoffset) throws IOException {
+   private void writeJump(int oldoffset) {
       int jumpindex = getJumpIndex(++currenthash);
       currenttable[ jumpindex - 1] = (byte) (oldoffset - lastoffset);
       lastoffset = oldoffset;
@@ -88,7 +88,7 @@ class StructuredFileCollisionInternal extends StructuredFile {
       }
    }
 
-   private void perhapsJump(int oldoffset, int newoffset) throws IOException {
+   private void perhapsJump(int oldoffset, int newoffset) {
       if (newoffset - oldoffset > 255) {
          log.fatal("Record size cannot exceed 255");
       }
@@ -106,7 +106,7 @@ class StructuredFileCollisionInternal extends StructuredFile {
       return markers * (4 + jumptable);
    }
 
-   public long getOffset(int bucketindex) throws IOException {
+   public long getOffset(int bucketindex) {
       long offset = -1;
       try {
          int marker = getMarkerOffset(bucketindex);

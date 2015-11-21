@@ -31,10 +31,11 @@ public class HPathWildcardIterator implements IteratorIterable<DirComponent> {
         components = new ArrayDeque();
         components.addFirst(path.getName());
         path = path.getParentPath();
+        //log.info("set %s %b %b", path.toString(), path.toString().equals("~"), path.existsDir());
         while (!path.toString().equals("~") && !path.existsDir()) {
             components.addFirst(path.getName());
             path = path.getParentPath();
-            log.info("component %s %s", path.getName(), path.toString());
+            //log.info("component %s %s", path.getName(), path.toString());
         }
         hpath = path;
     }
@@ -50,30 +51,26 @@ public class HPathWildcardIterator implements IteratorIterable<DirComponent> {
     }
 
     public boolean setupIterator(HPath p, int i) {
-        try {
-            ByteSearch r = regex.get(i);
-            Iterator<? extends DirComponent> iter;
-            if (i < regex.size() - 1) {
-                iter = p.iteratorDirs(r);
-            } else {
-                iter = p.iterator(r);
-            }
-            contents.add(iter);
-            if (iter.hasNext()) {
-                DirComponent next = iter.next();
-                if (next instanceof HPath) {
-                    p = (HPath) next;
-                    if (i < regex.size() - 1) {
-                        return setupIterator(p, i + 1);
-                    }
+        ByteSearch r = regex.get(i);
+        Iterator<? extends DirComponent> iter;
+        if (i < regex.size() - 1) {
+            iter = p.iteratorDirs(r);
+        } else {
+            iter = p.iterator(r);
+        }
+        contents.add(iter);
+        if (iter.hasNext()) {
+            DirComponent next = iter.next();
+            if (next instanceof HPath) {
+                p = (HPath) next;
+                if (i < regex.size() - 1) {
+                    return setupIterator(p, i + 1);
                 }
-                if (i == regex.size() - 1) {
-                    lastcomponent = next;
-                    return true;
-               }
             }
-        } catch (IOException ex) {
-            log.exception(ex, "setupIterator [%s] [%d]", p.getCanonicalPath(), i);
+            if (i == regex.size() - 1) {
+                lastcomponent = next;
+                return true;
+            }
         }
         return false;
     }

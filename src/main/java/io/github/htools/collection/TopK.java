@@ -95,6 +95,10 @@ public class TopK<T> extends PriorityQueue<T> {
         return list;
     }
 
+    public int getK() {
+        return k;
+    }
+    
     public static class StdComparator implements Comparator {
 
         @Override

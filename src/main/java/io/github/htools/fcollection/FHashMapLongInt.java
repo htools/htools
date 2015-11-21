@@ -1,5 +1,6 @@
 package io.github.htools.fcollection;
 
+import io.github.htools.collection.InvertedMap;
 import io.github.htools.lib.Log;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -29,5 +30,9 @@ public class FHashMapLongInt extends Long2IntOpenHashMap implements java.util.Ma
     @Override
     public FHashMapLongInt clone() {
         return new FHashMapLongInt(this);
+    }
+    
+    public Map<Integer, Long> invert() {
+        return new InvertedMap(this);
     }
 }

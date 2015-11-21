@@ -14,7 +14,7 @@ public class StructuredFileSequential extends StructuredFile implements Structur
 
    public StructuredFileSequentialIndex index;
 
-   public StructuredFileSequential(Datafile df) throws IOException {
+   public StructuredFileSequential(Datafile df) {
       super(df);
       index = new StructuredFileSequentialIndex(this);
    }
@@ -24,7 +24,7 @@ public class StructuredFileSequential extends StructuredFile implements Structur
     * offsets of records.
     */
    @Override
-   public void openRead() throws IOException {
+   public void openRead() {
       super.openRead();
       index.openRead();
    }
@@ -35,42 +35,42 @@ public class StructuredFileSequential extends StructuredFile implements Structur
    }
 
    @Override
-   public void openWrite() throws IOException {
+   public void openWrite() {
       super.openWrite();
       index.openWrite();
    }
 
    @Override
-   public void closeWrite() throws IOException {
+   public void closeWrite() {
       super.closeWrite();
       index.closeWrite();
    }
 
    @Override
-   public void hookRecordWritten() throws IOException {
+   public void hookRecordWritten() {
       index.writeRecordOffset(this);
    }
 
    @Override
-   public void read(int id) throws EOCException, IOException {
+   public void read(int id) throws EOCException {
       find(id);
       nextRecord();
    }
 
    @Override
-   public void find(int id) throws EOCException, IOException {
+   public void find(int id) throws EOCException {
       index.openRead();
       index.find(id);
       super.openRead();
    }
 
-   public long findOffset(int id) throws EOCException, IOException {
+   public long findOffset(int id) throws EOCException {
       index.openRead();
       return index.findOffset(id);
    }
 
    @Override
-   public void readResident(int id) throws EOCException, IOException {
+   public void readResident(int id) throws EOCException {
       find(id);
       setBufferSize((int)(this.getCeiling() - this.getOffset()));
       super.openRead();
@@ -78,7 +78,7 @@ public class StructuredFileSequential extends StructuredFile implements Structur
    }
    
    @Override
-   public void readResident() throws EOCException, IOException {
+   public void readResident() throws EOCException {
       setBufferSize((int)(this.getLength()));
       super.openRead();
       reader.fillBuffer();

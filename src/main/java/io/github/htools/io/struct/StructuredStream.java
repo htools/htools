@@ -196,7 +196,7 @@ public abstract class StructuredStream {
     /**
      * provides a hook after a field was written
      */
-    public void writeDone(Field f) throws IOException {
+    public void writeDone(Field f) {
     }
 
 //   @Override
@@ -323,9 +323,9 @@ public abstract class StructuredStream {
          * <p>
          * @throws EOCException when EOF or ceiling is encountered
          */
-        public abstract void readNoReturn() throws EOCException, IOException;
+        public abstract void readNoReturn();
 
-        public abstract void write() throws EOCException, IOException;
+        public abstract void write();
 
         /**
          * skips reading this field and moves the offset to the next Field
@@ -354,7 +354,8 @@ public abstract class StructuredStream {
             last.next = this;
         }
 
-        public void readNoReturn() throws EOCException {
+        @Override
+        public void readNoReturn() {
             throw new EOCException("StartField should never be read");
         }
 

@@ -254,7 +254,7 @@ public class FSFile extends FileGeneric {
       }
    }
 
-   public InputStream getInputStream() throws IOException {
+   public InputStream getInputStream() {
       try {
          if (inputstream == null) {
             inputstream = new FileInputStream(getFullPathName());
@@ -264,6 +264,8 @@ public class FSFile extends FileGeneric {
             }
          }
       } catch (FileNotFoundException ex) {
+         log.exception(ex, "getInputStream()");
+      } catch (IOException ex) {
          log.exception(ex, "getInputStream()");
       }
       return inputstream;

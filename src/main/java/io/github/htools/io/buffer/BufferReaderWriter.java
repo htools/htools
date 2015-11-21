@@ -325,7 +325,7 @@ public class BufferReaderWriter implements StructureData {
     }
 
     @Override
-    public void setOffset(long offset) throws IOException {
+    public void setOffset(long offset) {
         //log.info("setOffset off %d end %d pos %d newoff %d", this.offset, end, bufferpos, offset);
         if (offset >= this.offset && offset < this.offset + end) {
             bufferpos = (int) (offset - this.offset);
@@ -334,7 +334,11 @@ public class BufferReaderWriter implements StructureData {
             }
         } else {
             if (offset < this.offset && datain != null) {
-                datain.mustMoveBack();
+                try {
+                    datain.mustMoveBack();
+                } catch (IOException ex) {
+                    log.fatal("setOffset(%d): cannot move to a prior offset, was %d", offset, this.offset);
+                }
             }
             this.offset = offset;
             this.bufferpos = 0;

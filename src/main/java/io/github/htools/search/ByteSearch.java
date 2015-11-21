@@ -294,6 +294,14 @@ public abstract class ByteSearch {
         return findPos.found() ? findPos.toString() : null;
     }
 
+    public ArrayList<String> extractAll(byte haystack[]) {
+        ArrayList<String> matches = new ArrayList();
+        for (ByteSearchPosition pos : findAllPos(haystack, 0, haystack.length)) {
+            matches.add(pos.toString());
+        }
+        return matches;
+    }
+
     public byte[] extractBytes(byte haystack[]) {
         ByteSearchPosition findPos = findPos(haystack, 0, haystack.length);
         return findPos.found() ? findPos.toBytes() : null;

@@ -93,7 +93,7 @@ public abstract class StructuredTextCSV extends StructuredTextFile {
       }
       
       @Override
-      protected void write(ArrayList list) throws IOException {
+      protected void write(ArrayList list) {
          if (list != null) {
             for (NodeValue v : (ArrayList<NodeValue>) list) {
                if (openlabel.length() > 0) {

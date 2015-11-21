@@ -88,6 +88,16 @@ public class TermVectorDouble extends FHashMapObjectDouble<String> implements Te
         return result;
     }
 
+    public double dotproduct(TermVectorDouble v) {
+        Profiler.startTime("TermVectorDouble.DotProduct");
+        double dotproduct = 0;
+        for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
+            dotproduct += v.getDouble(entry.getKey()) * entry.getValue();
+        }
+        Profiler.addTime("TermVectorDouble.DotProduct");
+        return dotproduct;
+    }
+
     public double cossim(TermVectorInt v) {
         double dotproduct = 0;
         for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {

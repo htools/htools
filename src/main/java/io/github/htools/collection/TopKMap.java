@@ -35,7 +35,7 @@ public class TopKMap<K extends Comparable, V> extends TopK<Map.Entry<K, V>> {
         this(k);
         addAll(collection);
     }
-
+    
     public void addAll(Iterable<Map.Entry<K, V>> collection) {
         for (Map.Entry<K, V> entry : collection) {
             add(entry);

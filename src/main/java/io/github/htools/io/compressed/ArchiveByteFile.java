@@ -15,7 +15,7 @@ public abstract class ArchiveByteFile<E> extends ArchiveFile<E> implements ByteR
     public static Log log = new Log(ArchiveByteFile.class);
     long offset;
    
-    public ArchiveByteFile(InputStream is) throws IOException {
+    public ArchiveByteFile(InputStream is) {
         super(is);
     }
 

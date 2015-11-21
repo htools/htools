@@ -255,11 +255,8 @@ public class Log {
             System.out.print(progress);
             progresslength = progress.length();
         } else {
-            try {
-                out.printf(reportString + "\n", args);
+            out.printf(reportString + "\n", args);
                 out.flush();
-            } catch (IOException ex) {
-            }
         }
     }
 
@@ -274,11 +271,8 @@ public class Log {
         if (out == null) {
             System.out.println(sprintf(formatString, args));
         } else {
-            try {
                 out.printf(formatString + "\n", args);
                 out.flush();
-            } catch (IOException ex) {
-            }
         }
     }
 
@@ -293,11 +287,8 @@ public class Log {
         if (out == null) {
             System.out.println(prefix + level.name() + " " + messageprefix + sprintf(formatString, args));
         } else {
-            try {
                 out.printf(formatString + "\n", args);
                 out.flush();
-            } catch (IOException ex) {
-            }
         }
     }
 
@@ -310,11 +301,8 @@ public class Log {
         if (out == null) {
             System.out.println(message);
         } else {
-            try {
                 out.printf(message + "\n");
                 out.flush();
-            } catch (IOException ex) {
-            }
         }
     }
 
@@ -327,11 +315,8 @@ public class Log {
         if (out == null) {
             System.err.println(s);
         } else {
-            try {
                 out.print(s + "\n");
                 out.flush();
-            } catch (IOException ex) {
-            }
         }
     }
 
@@ -339,11 +324,8 @@ public class Log {
         if (out == null) {
             System.err.println(prefix + level.name() + " " + messageprefix + sprintf(s, args));
         } else {
-            try {
                 out.printf(s + "\n", args);
                 out.flush();
-            } catch (IOException ex) {
-            }
         }
     }
 

@@ -44,7 +44,7 @@ class StructuredFileByteJumptableInternal extends StructuredFile {
    protected IntField offset = this.addInt("offset");
    protected FixedMemField length = this.addFixedMem("suboffset", subpointers);
 
-   public StructuredFileByteJumptableInternal(Datafile df) throws IOException {
+   public StructuredFileByteJumptableInternal(Datafile df) {
       super(df);
       setLoadFactor(10);
    }
@@ -54,7 +54,7 @@ class StructuredFileByteJumptableInternal extends StructuredFile {
     * offsets of records.
     */
    @Override
-   public void openRead() throws FileIntegrityException, IOException {
+   public void openRead() throws FileIntegrityException {
       if (residenttable == null) {
           try {
               super.openRead();
@@ -72,7 +72,7 @@ class StructuredFileByteJumptableInternal extends StructuredFile {
    }
 
    @Override
-   public void openWrite() throws IOException {
+   public void openWrite() {
       super.openWrite();
       //log.info("openWrite() %s", this.getDatafile().getFullPath());
       lastoffset = 0;
@@ -80,7 +80,7 @@ class StructuredFileByteJumptableInternal extends StructuredFile {
    }
 
    @Override
-   public void closeWrite() throws IOException {
+   public void closeWrite() {
       if (this.nextField == length) {
          this.length.write(currenttable);
       }
@@ -95,7 +95,7 @@ class StructuredFileByteJumptableInternal extends StructuredFile {
     * @param id
     * @param recordstart
     */
-   public void write(int id, StructuredFile rec) throws IOException {
+   public void write(int id, StructuredFile rec) {
       //log.info("id %d offset %d ", id, rec.getOffsetTupleStart());
       if ((id % ((subpointers + 1) * loadfactor)) == 0) {
          writeMarker(id, rec);
@@ -104,13 +104,13 @@ class StructuredFileByteJumptableInternal extends StructuredFile {
       }
    }
 
-   protected void writeMarker(int id, StructuredFile rec) throws IOException {
+   protected void writeMarker(int id, StructuredFile rec) {
       //log.info("Marker %d %d %d hashfile %d offset %d", currenthash, lastnojumphash, subpointers, this.getOffset(), offset);
       lastoffset = (int) rec.getOffsetTupleStart();
       this.offset.write(lastoffset);
    }
 
-   protected void writeJump(int id, StructuredFile rec) throws IOException {
+   protected void writeJump(int id, StructuredFile rec) {
       int jumpindex = getJumpIndex(id);
       //log.info("%s %s", currenttable, rec);
       currenttable[ jumpindex - 1] = (byte) (rec.getOffsetTupleStart() - lastoffset);
@@ -148,7 +148,7 @@ class StructuredFileByteJumptableInternal extends StructuredFile {
     * @return the offset in the datafile of the record(group) that contains the
     * record with the given ID.
     */
-   public long getOffset(int id) throws IOException {
+   public long getOffset(int id) {
       long offset = -1;
       try {
          int marker = getMarkerOffset(id);

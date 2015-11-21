@@ -25,6 +25,10 @@ public class HashMapInt<K> extends HashMap<K, Integer> {
         super(map);
     }
     
+    public Map<Integer, K> invert() {
+        return new InvertedMap(this);
+    }
+    
     protected HashMapInt create() {
         return new HashMapInt();
     }
