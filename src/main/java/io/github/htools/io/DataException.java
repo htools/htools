@@ -1,7 +1,5 @@
 package io.github.htools.io;
 
-import io.github.htools.lib.PrintTools;
-
 /**
  * Indicates an exception while accessing a Buffer/Datafile
  * @author Jeroen Vuurens

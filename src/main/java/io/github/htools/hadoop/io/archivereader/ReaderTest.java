@@ -1,16 +1,17 @@
-package io.github.htools.hadoop.io.archivereader; 
+package io.github.htools.hadoop.io.archivereader;
 
+import io.github.htools.extract.Content;
 import io.github.htools.extract.ExtractChannel;
 import io.github.htools.extract.ExtractorConf;
-import io.github.htools.io.HDFSPath;
-import io.github.htools.io.HDFSIn;
-import io.github.htools.lib.Log;
-import io.github.htools.extract.Content;
 import io.github.htools.hadoop.Conf;
-import java.io.IOException;
-import java.util.Map;
+import io.github.htools.io.HDFSIn;
+import io.github.htools.io.HDFSPath;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  *

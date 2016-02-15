@@ -1,11 +1,13 @@
 package io.github.htools.fcollection;
 
-import io.github.htools.collection.*;
+import io.github.htools.collection.InvertedMap;
+import io.github.htools.collection.TopKMap;
 import io.github.htools.lib.CollectionTools;
 import io.github.htools.lib.Log;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
 import java.util.Collection;
 import java.util.Map;
 

@@ -2,6 +2,7 @@ package io.github.htools.io.struct;
 
 import com.google.gson.JsonObject;
 import io.github.htools.type.Long128;
+
 import java.io.DataOutput;
 import java.lang.reflect.Type;
 import java.util.ArrayList;

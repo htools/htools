@@ -1,6 +1,5 @@
 package io.github.htools.collection;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
 

@@ -1,6 +1,7 @@
 package io.github.htools.type;
 
 import io.github.htools.lib.MathTools;
+
 import java.util.Map;
 
 public class Tuple3Comparable<R extends Comparable, S extends Comparable, T extends Comparable> 

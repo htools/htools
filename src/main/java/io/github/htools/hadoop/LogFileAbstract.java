@@ -1,19 +1,17 @@
 package io.github.htools.hadoop;
 
+import io.github.htools.hadoop.io.OutputFormat;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.io.HPath;
-import io.github.htools.lib.Log;
-import static io.github.htools.lib.PrintTools.sprintf;
 import io.github.htools.io.struct.StructuredTextTSV;
-import io.github.htools.hadoop.io.OutputFormat;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.conf.Configuration;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.TaskAttemptID;
 import org.apache.hadoop.mapreduce.TaskType;
+
+import static io.github.htools.lib.PrintTools.sprintf;
 
 /**
  *
@@ -29,7 +27,7 @@ public abstract class LogFileAbstract extends StructuredTextTSV {
     }
 
     public LogFileAbstract(Datafile outputfile) {
-        super(getDatafile(outputfile));
+        super(outputfile);
     }
 
     public static void setOutputPath(Configuration conf, String outpath) {
@@ -66,12 +64,6 @@ public abstract class LogFileAbstract extends StructuredTextTSV {
         } else {
             return "other";
         }
-    }
-
-    public static Datafile getDatafile(Datafile df) {
-        HPath dir = df.getDir();
-        df = dir.getFile(sprintf("_log/%s", df.getName()));
-        return df;
     }
 
     @Override

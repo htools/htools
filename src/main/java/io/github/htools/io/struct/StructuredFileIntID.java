@@ -1,7 +1,7 @@
 package io.github.htools.io.struct;
 
 import io.github.htools.io.EOCException;
-import io.github.htools.lib.Log;
+
 import java.io.IOException;
 
 public interface StructuredFileIntID {

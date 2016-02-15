@@ -1,5 +1,6 @@
 package UnitTest;
-import io.github.htools.lib.Log; 
+
+import io.github.htools.lib.Log;
 import io.github.htools.lib.MathTools;
 
 /**

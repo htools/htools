@@ -15,7 +15,6 @@
  */
 package test;
 
-import io.github.htools.hadoop.Job;
 import io.github.htools.lib.Log;
 /**
  *

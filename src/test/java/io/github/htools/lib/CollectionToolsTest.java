@@ -15,14 +15,12 @@
  */
 package io.github.htools.lib;
 
-import io.github.htools.lib.RandomTools;
-import io.github.htools.lib.CollectionTools;
-import io.github.htools.lib.Log;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *

@@ -2,11 +2,10 @@ package io.github.htools.hadoop.io.buffered;
 
 import io.github.htools.io.buffer.BufferDelayedWriter;
 import io.github.htools.io.buffer.BufferReaderWriter;
-import io.github.htools.hadoop.tsv.File;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import org.apache.hadoop.io.WritableComparator;
 
 /**
  * Generic Writable that can transport multiple in/output types. Typically this

@@ -1,5 +1,7 @@
 package io.github.htools.collection;
+
 import io.github.htools.lib.RandomTools;
+
 import java.util.Comparator;
 
 /**

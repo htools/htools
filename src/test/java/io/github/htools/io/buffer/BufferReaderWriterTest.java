@@ -15,11 +15,15 @@
  */
 package io.github.htools.io.buffer;
 
+import io.github.htools.io.BytesIn;
+import io.github.htools.io.BytesOut;
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -30,20 +34,22 @@ public class BufferReaderWriterTest {
 
     @Test
     public void testReadBytes() throws IOException {
-        Datafile df = new Datafile("/Users/jeroen/bufferreaderwritertest");
+        BytesOut b = new BytesOut();
+        Datafile df = new Datafile(b);
         df.openWrite();
-        for (int i = 0; i < 10; i++)
-            df.write(getSample(i));
+        for (int i = 0; i < 10; i++) {
+            byte[] sample = getSample(i);
+            df.write(sample);
+        }
         df.closeWrite();
-        df.openRead();
+        byte[] content = b.toByteArray();
+        BytesIn in = new BytesIn(content);
+        df = new Datafile(in);
         for (int i = 0; i < 10; i++) {
             byte[] readByteArray = df.readByteArray();
-            //log.printf("");
-            //log.memoryDump(readByteArray);
             assertEquals(true, checkSample(i, readByteArray));
         }
         df.closeRead();
-        df.delete();
     }
     
     private byte[] getSample(int i) {
@@ -51,7 +57,6 @@ public class BufferReaderWriterTest {
         for (int p = 0 ; p < 20000 - i; p++) {
             b[p] = (byte)(p & 0xff);
         }
-        //log.memoryDump(b);
         return b;
     }
     

@@ -1,18 +1,11 @@
 package io.github.htools.collection;
 
-import io.github.htools.collection.ArrayMapDouble.Entry;
 import io.github.htools.lib.Log;
-import io.github.htools.lib.MapTools;
-import io.github.htools.lib.RandomTools;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectMap;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Map;
+
+import java.util.*;
 
 /**
  * An ArrayMap is similar to a Map in that it stores Map.Entry&lt;K,V&gt;,

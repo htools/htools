@@ -1,6 +1,5 @@
 package io.github.htools.hadoop;
 
-import io.github.htools.lib.Log;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 

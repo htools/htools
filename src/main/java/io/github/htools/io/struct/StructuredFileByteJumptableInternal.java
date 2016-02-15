@@ -1,13 +1,10 @@
 package io.github.htools.io.struct;
 
-import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.FileIntegrityException;
+import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This internal helping class stores compressed offsets to tiny records

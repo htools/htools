@@ -1,11 +1,8 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteSearch;
-import io.github.htools.search.ByteSearchPosition;
-import io.github.htools.search.ByteSearchSingle;
-import io.github.htools.search.ByteSearchSingleClass;
 import io.github.htools.extract.ExtractorConf;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearchSingleClass;
 
 /**
  * By configuring extractor.&lt;tokenname&gt;.regex, you can give the rule to match

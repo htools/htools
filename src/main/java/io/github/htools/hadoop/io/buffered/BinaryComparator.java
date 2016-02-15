@@ -1,6 +1,5 @@
 package io.github.htools.hadoop.io.buffered;
 
-import io.github.htools.lib.Log;
 import org.apache.hadoop.io.WritableComparator;
 /**
  *

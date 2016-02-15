@@ -1,6 +1,5 @@
 package io.github.htools.lib;
 
-import io.github.htools.lib.Log;
 import java.util.ArrayList;
 
 public class MemoryManager {

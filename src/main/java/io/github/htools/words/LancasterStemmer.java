@@ -1,9 +1,8 @@
 package io.github.htools.words;
 
 import io.github.htools.lib.Log;
-import java.io.*;
-import java.lang.*;
-import java.util.*;
+
+import java.util.Vector;
 
 /**
  * LancasterStemmer: Implements the Lancaster (Paice/Husk) word stemmer.

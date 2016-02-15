@@ -1,6 +1,7 @@
 package io.github.htools.collection;
 
 import io.github.htools.lib.IteratorIterable;
+
 import java.util.Iterator;
 
 public class ListIterator<T> implements IteratorIterable<T> {

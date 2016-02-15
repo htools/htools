@@ -1,10 +1,10 @@
 package io.github.htools.hadoop.json;
 
 import com.google.gson.Gson;
-import io.github.htools.hadoop.io.buffered.DelayedWritable;
 import io.github.htools.io.buffer.BufferDelayedWriter;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.struct.StructuredRecordFile;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

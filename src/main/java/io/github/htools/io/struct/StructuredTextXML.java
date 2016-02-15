@@ -1,15 +1,12 @@
 package io.github.htools.io.struct;
 
-import io.github.htools.io.buffer.BufferReaderWriter;
-import io.github.htools.search.ByteRegex;
-import io.github.htools.search.ByteSearch;
-import io.github.htools.search.ByteSearchPosition;
-import io.github.htools.search.ByteSearchSection;
-import io.github.htools.search.ByteSection;
 import io.github.htools.io.Datafile;
+import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
+import io.github.htools.search.*;
+
 import java.util.ArrayList;
 
 /**

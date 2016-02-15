@@ -2,8 +2,6 @@ package io.github.htools.extract;
 
 import io.github.htools.extract.modules.ConvertPDFHyphen;
 import io.github.htools.extract.modules.TokenPDF;
-import io.github.htools.extract.modules.TokenWord;
-import io.github.htools.extract.modules.TokenizerRegexConf;
 import io.github.htools.lib.Log;
 /**
  *

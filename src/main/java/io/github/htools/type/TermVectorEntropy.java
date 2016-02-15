@@ -1,21 +1,14 @@
 package io.github.htools.type;
 
-import io.github.htools.collection.HashMapInt;
 import io.github.htools.fcollection.FHashMapObjectInt;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.struct.StructureReader;
-import io.github.htools.io.struct.StructureWriter;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.MathTools;
-import io.github.htools.type.TermVectorInt;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 /**
  *

@@ -1,12 +1,12 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteRegex;
-import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
-import io.github.htools.search.ByteSearch;
-import io.github.htools.search.ByteSearchSection;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteRegex;
+import io.github.htools.search.ByteSearch;
+import io.github.htools.search.ByteSearchPosition;
+import io.github.htools.search.ByteSearchSection;
 
 /**
  * Marks &lt;ITAG tagnum=56&gt; sections, which is used in some news wires to
@@ -14,12 +14,12 @@ import io.github.htools.lib.Log;
  * <p>
  * @author jbpvuurens
  */
-public class MarkITAG56 extends SectionMarker {
+public class MarkITAG10 extends SectionMarker {
 
-    public static Log log = new Log(MarkITAG56.class);
+    public static Log log = new Log(MarkITAG10.class);
     public ByteSearch endmarker = ByteSearch.create("</ITAG>");
 
-    public MarkITAG56(Extractor extractor, String inputsection, String outputsection) {
+    public MarkITAG10(Extractor extractor, String inputsection, String outputsection) {
         super(extractor, inputsection, outputsection);
     }
 

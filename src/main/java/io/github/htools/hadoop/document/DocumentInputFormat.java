@@ -1,6 +1,5 @@
 package io.github.htools.hadoop.document;
 
-import io.github.htools.lib.Log;
 import io.github.htools.hadoop.InputFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;

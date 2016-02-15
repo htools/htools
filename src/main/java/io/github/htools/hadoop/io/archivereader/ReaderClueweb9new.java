@@ -1,15 +1,16 @@
 package io.github.htools.hadoop.io.archivereader;
 
 import io.github.htools.extract.Content;
-import io.github.htools.search.ByteSearch;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
-import io.github.htools.search.ByteSection;
 import io.github.htools.lib.Log;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import io.github.htools.search.ByteSearch;
+import io.github.htools.search.ByteSection;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * An implementation of Reader that reads the ClueWeb09 collection. In this

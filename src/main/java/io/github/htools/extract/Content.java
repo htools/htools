@@ -1,9 +1,9 @@
 package io.github.htools.extract;
 
 import io.github.htools.collection.HashMapList;
-import io.github.htools.search.ByteSearchSection;
-import io.github.htools.hadoop.io.archivereader.*;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearchSection;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;

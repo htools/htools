@@ -1,14 +1,15 @@
 package io.github.htools.extract.modules;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
-import io.github.htools.search.ByteSearchSection;
-import io.github.htools.lib.Log;
-import io.github.htools.words.englishStemmer;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
 import io.github.htools.lib.ArrayTools;
 import io.github.htools.lib.BoolTools;
 import io.github.htools.lib.ByteTools;
+import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearchSection;
+import io.github.htools.words.englishStemmer;
+
 import java.util.HashMap;
 
 /**

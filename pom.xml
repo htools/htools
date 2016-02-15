@@ -4,8 +4,11 @@
     <groupId>io.github.htools</groupId>
     <packaging>jar</packaging>
     <name>htools</name>
-    <version>0.27-SNAPSHOT</version>
+    <version>0.27</version>
     <url>http://htools.github.io</url>
+    <description>Collection of tools that facilitate working with Hadoop, and storing structured files independent
+    of the underlying filesystem (HDFS, FS, RAM).
+    </description>
    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -47,8 +50,8 @@
                         <artifactId>antlr4-maven-plugin</artifactId>
                         <version>4.3</version>
                         <configuration>
-                            <sourceDirectory>${basedir}/src/main/java/io/github/repir/tools/search</sourceDirectory>
-                            <outputDirectory>${basedir}/src/main/java/io/github/repir/tools/search</outputDirectory>
+                            <sourceDirectory>${basedir}/src/main/java/io/github/htools/search</sourceDirectory>
+                            <outputDirectory>${basedir}/src/main/java/io/github/htools/search</outputDirectory>
                         </configuration>
                         <executions>
                             <execution>
@@ -196,17 +199,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4</artifactId>
-            <version>4.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.antlr</groupId>
-                    <artifactId>antlr-runtime</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>it.unimi.dsi</groupId>
             <artifactId>fastutil</artifactId>
             <version>7.0.6</version>
@@ -273,6 +265,11 @@
             <artifactId>lz4</artifactId>
             <version>1.3.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.3</version>
+        </dependency>
     </dependencies>
     
     <dependencyManagement>
@@ -333,6 +330,7 @@
                     <source>1.7</source>
                     <target>1.7</target>
                     <debug>false</debug>
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
         </plugins>

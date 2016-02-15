@@ -1,13 +1,11 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteRegex;
-import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
-import io.github.htools.search.ByteSearch;
-import io.github.htools.search.ByteSearchSection;
 import io.github.htools.lib.Log;
-import java.util.ArrayList;
+import io.github.htools.search.ByteSearch;
+import io.github.htools.search.ByteSearchPosition;
+import io.github.htools.search.ByteSearchSection;
 
 /**
  * Extract and restore HTML Metadata for the keywords and description field.

@@ -1,11 +1,10 @@
 package io.github.htools.io.struct;
 
-import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.FileIntegrityException;
+import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 
 /**
  * Stores an array of variable size records, so that a record can be found

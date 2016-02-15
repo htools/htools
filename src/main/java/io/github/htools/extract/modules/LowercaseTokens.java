@@ -1,12 +1,10 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteSearchSection;
-import io.github.htools.lib.Log;
-import io.github.htools.words.englishStemmer;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.ExtractChannel;
 import io.github.htools.extract.Extractor;
-import java.util.HashMap;
+import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearchSection;
 
 /**
  * Processes all tokens in the supplied EntityChannel (i.e. after tokenization)

@@ -1,7 +1,8 @@
 package io.github.htools.words;
 
-import io.github.htools.lib.Log;
 import io.github.htools.extract.DefaultTokenizer;
+import io.github.htools.lib.Log;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 

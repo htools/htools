@@ -1,9 +1,10 @@
 package io.github.htools.hadoop.hashjoin;
 
-import io.github.htools.lib.Log;
 import io.github.htools.hadoop.io.MultiReduceWritable;
-import java.io.IOException;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.conf.Configuration;
+
+import java.io.IOException;
 
 /**
  *

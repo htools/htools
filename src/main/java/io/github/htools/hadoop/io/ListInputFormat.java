@@ -2,17 +2,17 @@ package io.github.htools.hadoop.io;
 
 import io.github.htools.collection.HashMapList;
 import io.github.htools.hadoop.Job;
-import static io.github.htools.hadoop.io.ConstInputFormat.map;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.Log;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.JobContext;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.apache.hadoop.mapreduce.InputSplit;
-import org.apache.hadoop.mapreduce.JobContext;
 
 public class ListInputFormat extends ConstInputFormat<String, String> {
 
@@ -44,7 +44,7 @@ public class ListInputFormat extends ConstInputFormat<String, String> {
     @Override
     public List<InputSplit> getSplits(JobContext context) throws IOException, InterruptedException {
         ArrayList<InputSplit> splits = new ArrayList();
-        if (cansplit) {
+        if (split) {
             for (Map.Entry<Object, MRInputSplit> s : map.entrySet()) {
                 int splitsneeded = s.getValue().size() / 50 + 1;
                 if (splitsneeded == 1) {

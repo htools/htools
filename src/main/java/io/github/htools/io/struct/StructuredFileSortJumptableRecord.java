@@ -1,5 +1,5 @@
 package io.github.htools.io.struct;
-import java.io.IOException;
+
 import java.lang.reflect.Method;
 
 public abstract class StructuredFileSortJumptableRecord extends StructuredFileSortRecord {

@@ -1,21 +1,21 @@
-// Generated from ByteRegex.g4 by ANTLR 4.2.2
+// Generated from ByteRegex.g4 by ANTLR 4.3
 
     package io.github.htools.search;
-    import io.github.htools.search.Node.*; 
-    import java.util.ArrayList;
-    import io.github.htools.lib.Log;
 
-import org.antlr.v4.runtime.Lexer;
+import io.github.htools.lib.Log;
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.atn.*;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.RuntimeMetaData;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.LexerATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ByteRegexLexer extends Lexer {
+	static { RuntimeMetaData.checkVersion("4.3", RuntimeMetaData.VERSION); }
+
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
@@ -28,9 +28,10 @@ public class ByteRegexLexer extends Lexer {
 	};
 
 	public static final String[] tokenNames = {
-		"<INVALID>",
-		"'|'", "LITERAL", "CASE", "'*'", "'?'", "'+'", "'.'", "'$'", "CHAR", "'('", 
-		"')'", "'{'", "'}'", "'['", "']'", "'^'", "'-'", "LOOKAHEAD", "LOOKBEHIND"
+		"'\\u0000'", "'\\u0001'", "'\\u0002'", "'\\u0003'", "'\\u0004'", "'\\u0005'", 
+		"'\\u0006'", "'\\u0007'", "'\b'", "'\t'", "'\n'", "'\\u000B'", "'\f'", 
+		"'\r'", "'\\u000E'", "'\\u000F'", "'\\u0010'", "'\\u0011'", "'\\u0012'", 
+		"'\\u0013'"
 	};
 	public static final String[] ruleNames = {
 		"OR", "LITERAL", "CASE", "STAR", "QUES", "PLUS", "DOT", "END", "CHAR", 

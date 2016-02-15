@@ -1,10 +1,9 @@
 package io.github.htools.io.struct;
 
 import io.github.htools.lib.Log;
+
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Iterates over a StructuredRecordFile, returning the generic Record. 

@@ -3,13 +3,14 @@ package io.github.htools.hadoop.io;
 import io.github.htools.hadoop.ContextTools;
 import io.github.htools.lib.DateTools;
 import io.github.htools.lib.Log;
-import java.text.ParseException;
-import java.util.Date;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer.Context;
+
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  *

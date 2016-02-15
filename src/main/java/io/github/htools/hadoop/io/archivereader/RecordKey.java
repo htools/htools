@@ -1,17 +1,17 @@
 package io.github.htools.hadoop.io.archivereader;
 
-import io.github.htools.hadoop.io.archivereader.RecordKey.Type;
+import io.github.htools.io.EOCException;
 import io.github.htools.io.buffer.BufferDelayedWriter;
 import io.github.htools.io.buffer.BufferReaderWriter;
-import io.github.htools.io.EOCException;
 import io.github.htools.lib.Log;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
 import org.apache.hadoop.mapreduce.Partitioner;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
 /**
  *

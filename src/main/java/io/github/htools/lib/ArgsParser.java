@@ -1,8 +1,10 @@
 package io.github.htools.lib;
 
 import io.github.htools.io.Datafile;
+import io.github.htools.io.FSPath;
 import io.github.htools.search.ByteRegex;
 import io.github.htools.search.ByteSearchPosition;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -185,6 +187,10 @@ public class ArgsParser {
     
     public Datafile getDatafile(String name) {
         return new Datafile(get(name));
+    }
+
+    public FSPath getPath(String name) {
+        return new FSPath(get(name, "."));
     }
 
     public String get(String name, String defaultValue) {

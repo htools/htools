@@ -1,10 +1,10 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteSearchSection;
-import io.github.htools.lib.Log;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
 import io.github.htools.lib.BoolTools;
+import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearchSection;
 
 /**
  * Convert all whitespace to a single space, ignoring \0

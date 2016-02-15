@@ -1,23 +1,16 @@
 package io.github.htools.hadoop.io;
 
-import io.github.htools.hadoop.InputFormat;
-import static io.github.htools.hadoop.io.FileInputFormat.TESTINPUT;
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.InputSplit;
-import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.IOException;
 
 public class DatafileInputFormat extends FileInputFormat<Long, Datafile> {
 
@@ -34,17 +27,17 @@ public class DatafileInputFormat extends FileInputFormat<Long, Datafile> {
         float progress;
 
         @Override
-        public void initialize(InputSplit is, TaskAttemptContext tac) {
+        public void initialize(InputSplit is, TaskAttemptContext tac) throws IOException {
             initialize(is, tac.getConfiguration());
         }
 
-        public final void initialize(InputSplit is, Configuration conf) {
+        public final void initialize(InputSplit is, Configuration conf) throws IOException {
             //log.info("initialize");
             FileSplit fileSplit = (FileSplit) is;
             Path file = fileSplit.getPath();
             long start = fileSplit.getStart();
             long end = fileSplit.getStart() + fileSplit.getLength();
-            df = new Datafile(conf, file.toString());
+            df = new Datafile(FileSystem.newInstance(conf), file.toString());
             df.setOffset(start);
             df.setCeiling(end);
             progress = df.getLength() / 2;

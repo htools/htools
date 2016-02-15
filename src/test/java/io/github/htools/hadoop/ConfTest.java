@@ -1,11 +1,12 @@
 package io.github.htools.hadoop;
 
-import io.github.htools.hadoop.Conf;
-import static io.github.htools.lib.ArgsParserTest.log;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static io.github.htools.lib.ArgsParserTest.log;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  *

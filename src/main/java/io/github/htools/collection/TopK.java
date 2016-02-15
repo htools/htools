@@ -1,14 +1,9 @@
 package io.github.htools.collection;
 
-import io.github.htools.lib.ArrayTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.RandomTools;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.PriorityQueue;
+
+import java.util.*;
 
 /**
  * This collection retains the TopK objects that are added. Instantiate with any
@@ -77,6 +72,7 @@ public class TopK<T> extends PriorityQueue<T> {
      *
      * @return
      */
+    @Override
     public T poll() {
         return super.poll();
     }

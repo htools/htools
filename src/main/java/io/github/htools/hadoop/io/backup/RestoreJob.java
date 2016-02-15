@@ -1,15 +1,16 @@
 package io.github.htools.hadoop.io.backup;
 
 import io.github.htools.hadoop.Conf;
-import io.github.htools.lib.Log;
 import io.github.htools.hadoop.io.FilePairInputFormat;
-import static io.github.htools.hadoop.io.backup.BackupJob.fileList;
 import io.github.htools.io.Datafile;
-import io.github.htools.io.DirComponent;
 import io.github.htools.io.HDFSPath;
+import io.github.htools.lib.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static io.github.htools.hadoop.io.backup.BackupJob.fileList;
 
 /**
  * @author jeroen

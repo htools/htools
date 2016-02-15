@@ -1,11 +1,8 @@
 package io.github.htools.search;
 
-import io.github.htools.search.ByteSearchSection;
-import io.github.htools.search.ByteSection;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
-import java.util.ArrayList;
 
 /**
  * Finds sections marked by a start and end {@link ByteSearch}, that do not 

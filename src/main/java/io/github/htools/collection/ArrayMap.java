@@ -1,22 +1,12 @@
 package io.github.htools.collection;
 
-import io.github.htools.collection.MapKeyIterator;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.MapTools;
 import io.github.htools.lib.RandomTools;
 import io.github.htools.type.KV;
 import io.github.htools.type.Tuple2;
-import java.util.AbstractCollection;
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 /**
  * An ArrayMap is similar to a Map in that it stores Map.Entry&lt;K,V&gt;,
@@ -59,7 +49,7 @@ public class ArrayMap<K, V> implements Iterable<Map.Entry<K, V>>, Map<K, V> {
         list = new ArrayList(initialsize);
     }
 
-    public static <K, V> Map<K, V> invert(Iterable<? extends Map.Entry<V, K>> c) {
+    public static <K, V> ArrayMap<K, V> invert(Iterable<? extends Map.Entry<V, K>> c) {
         ArrayMap<K, V> map = new ArrayMap();
         for (Map.Entry<V, K> entry : c) {
             map.add(entry.getValue(), entry.getKey());

@@ -15,19 +15,14 @@
  */
 package UnitTest;
 
-import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
-import io.github.htools.io.struct.StructuredFile;
-import io.github.htools.io.struct.StructuredFileSort;
-import io.github.htools.io.struct.StructuredFileCollision;
-import io.github.htools.io.struct.StructuredFileCollisionRecord;
-import io.github.htools.io.struct.StructuredFileSortRecord;
+import io.github.htools.io.buffer.BufferReaderWriter;
+import io.github.htools.io.struct.*;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.RandomTools;
+
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

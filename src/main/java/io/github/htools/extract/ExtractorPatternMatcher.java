@@ -1,10 +1,11 @@
 package io.github.htools.extract;
 
+import io.github.htools.extract.modules.SectionMarker;
+import io.github.htools.lib.Log;
 import io.github.htools.search.ByteRegex;
 import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.search.ByteSearchSection;
-import io.github.htools.extract.modules.SectionMarker;
-import io.github.htools.lib.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -18,7 +19,7 @@ public class ExtractorPatternMatcher {
    Extractor extractor;
    String section;
    ArrayList<SectionMarker> markers = new ArrayList<SectionMarker>();
-   ByteRegex patternmatcher;
+   private ByteRegex patternmatcher;
 
    public ExtractorPatternMatcher(Extractor extractor, String section, ArrayList<SectionMarker> markers) {
       this.extractor = extractor;
@@ -27,6 +28,7 @@ public class ExtractorPatternMatcher {
       this.markers = markers;
       for (SectionMarker p : markers) {
          regex.add(p.getStartMarker());
+         //log.info("new ExtractorPatternMatcher %s %s", p.getClass().getCanonicalName(), p.startmarker);
       }
       patternmatcher = ByteRegex.combine(regex.toArray(new ByteRegex[regex.size()]));
    }

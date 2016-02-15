@@ -1,10 +1,10 @@
 package io.github.htools.io;
 
+import io.github.htools.lib.ByteTools;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.search.ByteSearchSection;
 import io.github.htools.search.ByteSection;
-import io.github.htools.lib.ByteTools;
 
 /**
  *

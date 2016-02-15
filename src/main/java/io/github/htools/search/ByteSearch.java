@@ -4,6 +4,7 @@ import io.github.htools.lib.ArrayTools;
 import io.github.htools.lib.BoolTools;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ public abstract class ByteSearch {
     public static Log log = new Log(ByteSearch.class);
     public boolean quotesafe;
     public static ByteSearch WHITESPACE = ByteSearch.create("\\s+");
+    public static ByteSearch NEWLINE = ByteSearch.create("\\n+");
     public static ByteSearch EMPTY = new ByteSearchEmpty();
 
     public static ByteSearch create(String pattern) {
@@ -150,6 +152,10 @@ public abstract class ByteSearch {
         return match(section.haystack, section.innerstart, section.innerend);
     }
 
+    public boolean match(ByteSearchSection section, int start) {
+        return match(section.haystack, start, section.innerend);
+    }
+
     public boolean exists(ByteSearchSection section) {
         return exists(section.haystack, section.innerstart, section.innerend);
     }
@@ -242,6 +248,18 @@ public abstract class ByteSearch {
         return matchPos(b, 0, b.length);
     }
 
+    public ByteSearchPosition matchPos(ByteSearchSection section) {
+        return matchPos(section.haystack, section.innerstart, section.innerend);
+    }
+
+    public ByteSearchPosition matchPos(ByteSearchSection section, int start) {
+        return matchPos(section.haystack, start, section.innerend);
+    }
+
+    public ByteSearchPosition matchPos(ByteSearchSection section, int start, int end) {
+        return matchPos(section.haystack, start, end);
+    }
+
     public String extractMatch(String s) {
         if (s == null) {
             return null;
@@ -294,10 +312,27 @@ public abstract class ByteSearch {
         return findPos.found() ? findPos.toString() : null;
     }
 
+    public String extract(byte haystack[], int pos) {
+        ByteSearchPosition findPos = this.matchPos(haystack, pos, haystack.length);
+        return findPos.found() ? findPos.toString() : null;
+    }
+
     public ArrayList<String> extractAll(byte haystack[]) {
+        return extractAll(haystack, 0, haystack.length);
+    }
+
+    public ArrayList<String> extractAll(byte haystack[], int start, int end) {
         ArrayList<String> matches = new ArrayList();
-        for (ByteSearchPosition pos : findAllPos(haystack, 0, haystack.length)) {
+        for (ByteSearchPosition pos : findAllPos(haystack, start, end)) {
             matches.add(pos.toString());
+        }
+        return matches;
+    }
+
+    public ArrayList<String> extractAll(ByteSearchSection section) {
+        ArrayList<String> matches = new ArrayList();
+        for (ByteSearchPosition pos : findAllPos(section)) {
+            matches.add(pos.toFullTrimmedString());
         }
         return matches;
     }
@@ -393,7 +428,8 @@ public abstract class ByteSearch {
 
     /**
      * @return all matching positions, without overlap, so "\w+" used on "word"
-     * will return 1 exists.
+     * will return 1 position. Every postion must have at least one matching character,
+     * so "\w*" will not match an empty string.
      */
     public ArrayList<ByteSearchPosition> findAllPos(byte b[], int start, int end) {
         ArrayList<ByteSearchPosition> list = new ArrayList<ByteSearchPosition>();
@@ -415,7 +451,7 @@ public abstract class ByteSearch {
     }
 
     /**
-     * @return all matching positions, without overlap, so "\w+" used on "word"
+     * @return first count matching positions, without overlap, so "\w+" used on "word"
      * will return 1 exists.
      */
     public ArrayList<ByteSearchPosition> findPos(byte b[], int start, int end, int count) {

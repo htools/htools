@@ -1,7 +1,5 @@
 package io.github.htools.io.struct;
 
-import java.io.IOException;
-
 public interface StructuredFileKeyValueRecord<F extends StructuredFileKeyInterface> {
    
    @Override

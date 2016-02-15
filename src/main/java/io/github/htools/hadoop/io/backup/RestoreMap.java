@@ -3,8 +3,9 @@ package io.github.htools.hadoop.io.backup;
 import io.github.htools.hadoop.ContextTools;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 import org.apache.hadoop.fs.FileSystem;
+
+import java.io.IOException;
 
 /**
  * Clusters the titles of one single day, starting with the clustering results

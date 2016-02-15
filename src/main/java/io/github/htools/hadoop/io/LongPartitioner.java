@@ -1,7 +1,6 @@
 package io.github.htools.hadoop.io;
 
 import io.github.htools.lib.MathTools;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 
 /**

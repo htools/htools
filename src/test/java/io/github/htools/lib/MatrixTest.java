@@ -15,7 +15,6 @@
  */
 package io.github.htools.lib;
 
-import io.github.htools.lib.ArrayTools;
 import io.github.htools.type.Matrix;
 import io.github.htools.type.SparseDoubleArray;
 import io.github.htools.type.SparseDoubleMatrix;

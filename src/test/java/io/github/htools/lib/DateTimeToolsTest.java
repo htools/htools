@@ -15,11 +15,12 @@
  */
 package io.github.htools.lib;
 
-import io.github.htools.lib.DateTools;
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.util.Date;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -31,7 +32,7 @@ public class DateTimeToolsTest {
     public void testToY_M_D() throws ParseException {
         String time = "2013-02-13T23:54:58.000000Z";
         Date parse = DateTools.FORMAT.DATETIMETSZ6.toDate(time);
-        assertEquals(1360797066, parse.getTime());
+        assertEquals(1360799698l * 1000, parse.getTime());
     }
     
 }

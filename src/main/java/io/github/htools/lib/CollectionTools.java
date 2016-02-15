@@ -3,14 +3,9 @@ package io.github.htools.lib;
 import io.github.htools.type.KV3;
 import io.github.htools.type.Tuple2;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  *

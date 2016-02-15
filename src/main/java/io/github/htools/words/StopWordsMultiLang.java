@@ -1,10 +1,11 @@
 package io.github.htools.words;
 
-import io.github.htools.lib.Log;
-import java.util.HashSet;
 import io.github.htools.extract.DefaultTokenizer;
-import java.util.ArrayList;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.conf.Configuration;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * List of stop words, which is not stored as a feature, but rather configured.

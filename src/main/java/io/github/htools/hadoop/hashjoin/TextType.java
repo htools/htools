@@ -1,14 +1,14 @@
 package io.github.htools.hadoop.hashjoin;
 
-import io.github.htools.lib.Log;
 import io.github.htools.hadoop.io.TextCaseless;
+import io.github.htools.lib.Log;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.WritableComparator;
+import org.apache.hadoop.io.WritableUtils;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.WritableComparator;
-import static org.apache.hadoop.io.WritableComparator.compareBytes;
-import org.apache.hadoop.io.WritableUtils;
 
 /**
  * Adds an int type to a text key, to support secondary sorting the values.

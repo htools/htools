@@ -2,7 +2,6 @@ package io.github.htools.io.buffer;
 
 import io.github.htools.io.EOCException;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -15,6 +14,8 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.IOException;
 
 /**
  * This is a general class to read and write binary data to an in memory buffer
@@ -81,7 +82,7 @@ public class BufferRecordReader extends BufferReaderWriter {
       } catch (IOException ex) {
       }
       hasmore = false;
-      throw new EOCException("EOF reached");
+      throw new EOCException();
    }
 
    public void setBufferSize(int buffersize) {
@@ -256,6 +257,7 @@ public class BufferRecordReader extends BufferReaderWriter {
       public synchronized void close() throws IOException {
          if (fileIn != null) {
             fileIn.close();
+            fileIn = null;
          }
       }
 

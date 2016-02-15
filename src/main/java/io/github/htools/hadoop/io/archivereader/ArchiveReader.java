@@ -1,11 +1,10 @@
 package io.github.htools.hadoop.io.archivereader;
 
-import io.github.htools.io.Datafile;
 import io.github.htools.extract.Content;
 import io.github.htools.io.ByteReader;
+import io.github.htools.io.Datafile;
 import io.github.htools.io.compressed.ArchiveByteFile;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -14,6 +13,8 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.IOException;
 
 /**
  * A document reader read an input file, identifying document markers to store

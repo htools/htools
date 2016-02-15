@@ -1,7 +1,7 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.lib.Log;
 import io.github.htools.extract.ExtractorConf;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.conf.Configuration;
 
 /**

@@ -2,20 +2,20 @@ package io.github.htools.hadoop.io;
 
 import io.github.htools.hadoop.ContextTools;
 import io.github.htools.io.buffer.BufferDelayedWriter;
-import java.io.IOException;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import io.github.htools.lib.Log;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.util.Iterator;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  *

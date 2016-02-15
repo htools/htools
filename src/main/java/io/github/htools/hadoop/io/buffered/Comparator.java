@@ -17,9 +17,10 @@ package io.github.htools.hadoop.io.buffered;
 
 import io.github.htools.lib.ClassTools;
 import io.github.htools.lib.Log;
+import org.apache.hadoop.io.WritableComparator;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import org.apache.hadoop.io.WritableComparator;
 
 /**
  *

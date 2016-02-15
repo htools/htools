@@ -1,6 +1,4 @@
 package io.github.htools.io.struct;
-import io.github.htools.lib.Log;
-import java.io.IOException;
 
 public abstract class StructuredFileSortRecord implements Comparable<StructuredFileSortRecord> {
    protected StructuredFileSort file;

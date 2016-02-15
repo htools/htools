@@ -2,13 +2,14 @@ package io.github.htools.hadoop.io.archivereader;
 
 import io.github.htools.extract.Content;
 import io.github.htools.io.Datafile;
+import io.github.htools.io.EOCException;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearch;
+import io.github.htools.search.ByteSection;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
-import io.github.htools.search.ByteSearch;
-import io.github.htools.io.EOCException;
-import io.github.htools.search.ByteSection;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 

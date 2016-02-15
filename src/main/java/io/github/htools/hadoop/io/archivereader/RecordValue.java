@@ -1,13 +1,14 @@
 package io.github.htools.hadoop.io.archivereader;
 
+import io.github.htools.io.EOCException;
 import io.github.htools.io.buffer.BufferDelayedWriter;
 import io.github.htools.io.buffer.BufferReaderWriter;
-import io.github.htools.io.EOCException;
 import io.github.htools.lib.Log;
+import org.apache.hadoop.io.BytesWritable;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import org.apache.hadoop.io.BytesWritable;
 
 /**
  * @author jeroen

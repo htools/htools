@@ -1,20 +1,17 @@
 package io.github.htools.hadoop.multivalue;
 
+import io.github.htools.hadoop.Job;
+import io.github.htools.hadoop.io.MultiReduceWritable;
 import io.github.htools.hadoop.io.buffered.DelayedWritable;
-import io.github.htools.search.ByteSearch;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.HDFSPath;
+import io.github.htools.io.struct.StructuredRecordFile;
 import io.github.htools.lib.ArrayTools;
 import io.github.htools.lib.ClassTools;
 import io.github.htools.lib.Log;
-import static io.github.htools.lib.PrintTools.sprintf;
-import io.github.htools.io.struct.StructuredRecordFile;
+import io.github.htools.search.ByteSearch;
 import io.github.htools.type.Tuple2;
-import io.github.htools.hadoop.io.MultiReduceWritable;
-import io.github.htools.hadoop.Job;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -24,7 +21,12 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
-import org.apache.hadoop.conf.Configuration;
+
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+
+import static io.github.htools.lib.PrintTools.sprintf;
 
 /**
  * @author jeroen

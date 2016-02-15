@@ -1,9 +1,10 @@
 package io.github.htools.io;
 
-import io.github.htools.search.ByteSearch;
 import io.github.htools.lib.IteratorIterable;
 import io.github.htools.lib.Log;
-import java.io.IOException;
+import io.github.htools.search.ByteSearch;
+import org.apache.hadoop.fs.Path;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,9 +23,11 @@ public class HPathWildcardIterator implements IteratorIterable<DirComponent> {
     private ArrayList<ByteSearch> regex = new ArrayList();
     private ArrayList<Iterator<? extends DirComponent>> contents = new ArrayList();
     DirComponent lastcomponent;
+    FileFilter filter;
 
-    protected HPathWildcardIterator(HPath path) {
+    protected HPathWildcardIterator(HPath path, FileFilter filter) {
         set(path);
+        this.filter = filter;
     }
 
     protected void set(HPath path) {
@@ -93,7 +96,9 @@ public class HPathWildcardIterator implements IteratorIterable<DirComponent> {
                 if (iter.hasNext()) {
                     HPath next = (HPath) iter.next();
                     setupIterator(next, i + 1);
-                    break;
+                    if (filter.allow(new Path(next.getCanonicalPath()))) {
+                        break;
+                    }
                 } else {
                     contents.remove(i);
                 }

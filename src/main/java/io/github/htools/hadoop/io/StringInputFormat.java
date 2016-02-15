@@ -12,6 +12,10 @@ public class StringInputFormat extends ConstInputFormat<String, String> {
     }
    
     public static void add(Job job, String key) {
-        add(job, key, key);
+        ConstInputFormat.add(job, key, key);
+    }
+    
+    public static void add(Job job, String key, String value) {
+        ConstInputFormat.add(job, key, value);
     }
 }

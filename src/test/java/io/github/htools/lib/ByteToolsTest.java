@@ -1,9 +1,8 @@
 package io.github.htools.lib;
 
-import io.github.htools.lib.ByteTools;
-import io.github.htools.lib.Log;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *

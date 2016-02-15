@@ -1,13 +1,12 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteRegex;
-import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
-import io.github.htools.search.ByteSearch;
-import io.github.htools.search.ByteSearchSection;
 import io.github.htools.lib.Log;
-import java.util.ArrayList;
+import io.github.htools.search.ByteRegex;
+import io.github.htools.search.ByteSearch;
+import io.github.htools.search.ByteSearchPosition;
+import io.github.htools.search.ByteSearchSection;
 
 /**
  * Marks &lt;text&gt; sections, which are used in some news wires to tag the
@@ -19,7 +18,6 @@ public class MarkText extends SectionMarker {
 
     public static Log log = new Log(MarkText.class);
     public ByteSearch endmarker = ByteSearch.create("</text>");
-    public ByteRegex startmarker = new ByteRegex("<text");
 
     public MarkText(Extractor extractor, String inputsection, String outputsection) {
         super(extractor, inputsection, outputsection);
@@ -27,12 +25,12 @@ public class MarkText extends SectionMarker {
 
     @Override
     public ByteRegex getStartMarker() {
-        return startmarker;
+        return new ByteRegex("<text");
     }
 
     @Override
     public ByteSearchSection process(Content content, ByteSearchSection section) {
-        int tagclose = findQuoteSafeTagEnd(section) + 1;
+        int tagclose = findQuoteSafeTagEnd(section);
         if (tagclose > 0) {
             ByteSearchPosition end = endmarker.findPos(section, tagclose);
             //log.info("MarkText %d %d %d %b", section.innerstart, tagclose, end.start, end.found());

@@ -5,17 +5,18 @@ import com.google.gson.JsonObject;
 import io.github.htools.io.struct.StructureWriter;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
-import static io.github.htools.lib.PrintTools.sprintf;
 import io.github.htools.type.Long128;
+
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeSet;
+
+import static io.github.htools.lib.PrintTools.sprintf;
 
 /**
  * This class is intended to remove all the Java fuzz regarding files. There is

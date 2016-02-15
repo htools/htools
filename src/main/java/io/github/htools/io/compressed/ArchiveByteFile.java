@@ -3,6 +3,7 @@ package io.github.htools.io.compressed;
 import io.github.htools.io.ByteReader;
 import io.github.htools.io.EOCException;
 import io.github.htools.lib.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -62,6 +63,6 @@ public abstract class ArchiveByteFile<E> extends ArchiveFile<E> implements ByteR
             return entry.readByte();
         }
         // there is no new entry, throw an EndOfContent exception to signal
-        throw new EOCException("");
+        throw new EOCException();
     }
 }

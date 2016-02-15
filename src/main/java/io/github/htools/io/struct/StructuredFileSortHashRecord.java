@@ -1,10 +1,9 @@
 package io.github.htools.io.struct;
 
+import io.github.htools.lib.Log;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import io.github.htools.lib.Log;
-import io.github.htools.lib.MathTools;
-import java.io.IOException;
 
 public abstract class StructuredFileSortHashRecord extends StructuredFileSortRecord {
    public static Log log = new Log(StructuredFileSortHashRecord.class);

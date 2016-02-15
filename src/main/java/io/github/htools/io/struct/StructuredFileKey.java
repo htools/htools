@@ -2,10 +2,11 @@ package io.github.htools.io.struct;
 
 import io.github.htools.io.Datafile;
 import io.github.htools.io.FileIntegrityException;
-import java.util.Collection;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
 import io.github.htools.lib.RandomTools;
+
+import java.util.Collection;
 import java.util.HashMap;
 
 /**

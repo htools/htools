@@ -1,14 +1,11 @@
 package io.github.htools.type;
 
-import io.github.htools.io.EOCException;
-import io.github.htools.io.buffer.BufferSerializable;
-import io.github.htools.io.struct.StructureReader;
-import io.github.htools.io.struct.StructureWriter;
+import org.apache.hadoop.io.WritableComparable;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.UUID;
-import org.apache.hadoop.io.WritableComparable;
 
 public class Long128Writable extends Long128 implements WritableComparable<Long128> {
     public Long128Writable() {}

@@ -1,11 +1,9 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.words.StopWordsContractions;
-import io.github.htools.lib.Log;
 import io.github.htools.extract.Extractor;
-import io.github.htools.words.StopWordsLetter;
+import io.github.htools.lib.Log;
+import io.github.htools.words.StopWordsContractions;
 import io.github.htools.words.StopWordsSmart;
-import io.github.htools.words.StopWordsWWW;
 
 /**
  * Processes all tokens in the supplied EntityChannel though the snowball

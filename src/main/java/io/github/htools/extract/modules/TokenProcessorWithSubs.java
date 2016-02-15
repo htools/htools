@@ -1,10 +1,9 @@
 package io.github.htools.extract.modules;
 
 import io.github.htools.extract.ExtractorConf;
-import io.github.htools.lib.ArrayTools;
-import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.ClassTools;
 import io.github.htools.lib.Log;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 

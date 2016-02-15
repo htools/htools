@@ -1,10 +1,9 @@
 package io.github.htools.io.struct;
 
-import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
+import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 
 public abstract class StructuredFileShortJumpTable extends StructuredFile implements StructuredFileIntID {
 

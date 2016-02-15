@@ -1,11 +1,8 @@
 package io.github.htools.type;
 
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import io.github.htools.lib.Log;
+
+import java.util.*;
 
 /**
  * Stores a pair of ints in a single HashSet of long.

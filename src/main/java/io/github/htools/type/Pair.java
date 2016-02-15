@@ -1,7 +1,5 @@
 package io.github.htools.type;
 
-import io.github.htools.lib.Log;
-
 /**
  *
  * @author Jeroen

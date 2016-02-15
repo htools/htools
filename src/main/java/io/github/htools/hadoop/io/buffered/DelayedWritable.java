@@ -1,9 +1,9 @@
 package io.github.htools.hadoop.io.buffered;
 
-import io.github.htools.hadoop.io.buffered.Writable;
+import io.github.htools.hadoop.tsv.File;
 import io.github.htools.io.buffer.BufferDelayedWriter;
 import io.github.htools.io.buffer.BufferReaderWriter;
-import io.github.htools.hadoop.tsv.File;
+
 import java.io.DataInput;
 import java.io.IOException;
 

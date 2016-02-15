@@ -1,10 +1,11 @@
 package io.github.htools.io.compressed;
 
 import io.github.htools.lib.Log;
-import java.io.IOException;
-import java.io.OutputStream;
 import net.jpountz.lz4.LZ4Compressor;
 import net.jpountz.lz4.LZ4Factory;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class LZ4HCFrameOutputStream extends LZ4FrameOutputStream {
     public static Log log = new Log(LZ4HCFrameOutputStream.class); 

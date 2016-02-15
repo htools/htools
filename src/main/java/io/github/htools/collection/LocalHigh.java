@@ -1,10 +1,9 @@
 package io.github.htools.collection;
+
 import io.github.htools.lib.ArrayTools;
-import io.github.htools.lib.ClassTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.RandomTools;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+
 import java.util.Comparator;
 
 /**

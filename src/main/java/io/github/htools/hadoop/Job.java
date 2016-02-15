@@ -1,19 +1,15 @@
 package io.github.htools.hadoop;
 
-import io.github.htools.hadoop.io.OutputFormat;
-import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.ClassTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import javax.ws.rs.core.UriBuilder;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.mapreduce.JobStatus;
 import org.apache.hadoop.mapreduce.JobStatus.State;
 import org.apache.hadoop.mapreduce.Reducer;
+
+import javax.ws.rs.core.UriBuilder;
+import java.io.IOException;
 
 /**
  * Extension of Hadoop Job.

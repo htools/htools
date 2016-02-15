@@ -1,15 +1,16 @@
 package io.github.htools.hadoop.io;
 
+import io.github.htools.hadoop.ContextTools;
+import io.github.htools.hadoop.InputFormat;
+import io.github.htools.hadoop.Job;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.HDFSPath;
-import io.github.htools.lib.Log;
 import io.github.htools.io.struct.StructuredRecordFile;
-import io.github.htools.hadoop.ContextTools;
-import io.github.htools.hadoop.Job;
-import io.github.htools.hadoop.InputFormat;
+import io.github.htools.lib.Log;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 /**
  * Supports creating a single output file per top input folder.

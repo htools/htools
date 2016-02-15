@@ -2,33 +2,31 @@ package io.github.htools.io.buffer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import io.github.htools.search.ByteSearch;
-import io.github.htools.search.ByteSearchPosition;
-import io.github.htools.search.ByteSearchSection;
-import io.github.htools.search.ByteSection;
+import io.github.htools.collection.FastMap;
 import io.github.htools.io.DataIn;
 import io.github.htools.io.DataOut;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.HDFSIn;
 import io.github.htools.io.struct.StructureData;
 import io.github.htools.io.struct.StructureWriter;
-import io.github.htools.collection.FastMap;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
-import static io.github.htools.lib.PrintTools.memoryDump;
-import static io.github.htools.lib.PrintTools.sprintf;
+import io.github.htools.search.ByteSearch;
+import io.github.htools.search.ByteSearchPosition;
+import io.github.htools.search.ByteSearchSection;
+import io.github.htools.search.ByteSection;
 import io.github.htools.type.Long128;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
+
+import static io.github.htools.lib.PrintTools.memoryDump;
+import static io.github.htools.lib.PrintTools.sprintf;
 
 /**
  * This is a general class to read and write binary data to an in memory buffer
@@ -41,6 +39,17 @@ public class BufferReaderWriter implements StructureData {
     public static Log log = new Log(BufferReaderWriter.class);
     private static Gson gson = new Gson();
     static final int[] CIntArrayLength = initClongArrayLength();
+    public EOCException eof;
+    public byte[] buffer;
+    public final int DEFAULTBUFFERSIZE = 4096;
+    private int requestedbuffersize = -1;
+    public long offset = 0;
+    public long ceiling = Long.MAX_VALUE;
+    public boolean hasmore = true;
+    public int bufferpos = 0;
+    public int end = 0;
+    public DataIn datain = null;
+    public DataOut dataout = null;
 
     public static int decodeVIntSize(byte value) {
         if (value >= -112) {
@@ -67,17 +76,6 @@ public class BufferReaderWriter implements StructureData {
         }
         return a;
     }
-    public EOCException eof;
-    public byte[] buffer;
-    public final int DEFAULTBUFFERSIZE = 4096;
-    private int requestedbuffersize = -1;
-    public long offset = 0;
-    public long ceiling = Long.MAX_VALUE;
-    public boolean hasmore = true;
-    public int bufferpos = 0;
-    public int end = 0;
-    public DataIn datain = null;
-    public DataOut dataout = null;
 
     public BufferReaderWriter() {
         buffer = new byte[getRequestedBufferSize()];
@@ -231,14 +229,14 @@ public class BufferReaderWriter implements StructureData {
             fillBuffer();
             if (inBuffer == end - bufferpos) {
                 //log.info("checkin exception pos %d end %d", bufferpos, end);
-                throw new EOCException("EOF reached");
+                throw new EOCException();
             }
         }
     }
 
     @Override
     public void fillBuffer() throws EOCException {
-        log.info("fillBuffer datain %s hasmore %b pos %d end %d buffersize %d", datain, hasmore, bufferpos, end, buffer.length);
+        //log.info("fillBuffer datain %s hasmore %b pos %d end %d buffersize %d", datain, hasmore, bufferpos, end, buffer.length);
         if (datain != null) {
             if (!hasmore || !softFillBuffer()) {
                 throw getEOF();
@@ -252,7 +250,7 @@ public class BufferReaderWriter implements StructureData {
 
     public EOCException getEOF() {
         if (eof == null) {
-            eof = new EOCException("");
+            eof = new EOCException();
         }
         return eof;
     }
@@ -274,6 +272,9 @@ public class BufferReaderWriter implements StructureData {
                     this.eof = ex;
                 }
             }
+        } else {
+            hasmore = false;
+            this.eof = new EOCException();
         }
         return false;
     }
@@ -400,7 +401,9 @@ public class BufferReaderWriter implements StructureData {
     @Override
     public void closeRead() {
         if (datain != null) {
+            //log.info("close");
             datain.close();
+            datain = null;
         }
         setBuffer(null);
     }
@@ -677,7 +680,6 @@ public class BufferReaderWriter implements StructureData {
 
     public byte[] readByteArray() throws EOCException {
         int length = readInt();
-        //log.info("readByteArray %d", length);
         return readBytes(length);
     }
 
@@ -2336,12 +2338,12 @@ public class BufferReaderWriter implements StructureData {
     @Override
     public ByteSearchSection readSection(ByteSection needle) throws EOCException {
         ByteSearchSection pos = needle.findPos(buffer, bufferpos, end);
-        //log.info("readSection %s end %b more %b", needle.toString(), pos.endreached, hasMore());
+        log.info("readSection %s end %b more %b", needle.toString(), pos.endreached, hasMore());
         while (pos.endreached && hasMore()) {
             bufferpos = pos.start;
             softFillBuffer();
             pos = needle.findPos(buffer, bufferpos, end);
-            //log.info("softfill end %b more %b off %d pos %d end %d", pos.endreached, hasMore(), offset, bufferpos, end);
+            log.info("softfill end %b more %b off %d pos %d end %d", pos.endreached, hasMore(), offset, bufferpos, end);
         }
         pos.offset = offset + pos.start;
         bufferpos = (pos.start > -1) ? pos.end : end;

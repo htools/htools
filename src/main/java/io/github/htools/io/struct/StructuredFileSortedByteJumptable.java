@@ -1,12 +1,12 @@
 package io.github.htools.io.struct;
 
-import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
+import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 public abstract class StructuredFileSortedByteJumptable extends StructuredFileSort {
 

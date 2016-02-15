@@ -1,14 +1,14 @@
 package io.github.htools.fcollection;
 
-import io.github.htools.collection.*;
+import io.github.htools.collection.InvertedMap;
+import io.github.htools.collection.TopKMap;
 import io.github.htools.lib.CollectionTools;
 import io.github.htools.lib.Log;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -41,7 +41,7 @@ public class FHashMapIntInt extends Int2IntOpenHashMap implements java.util.Map<
     public FHashMapIntInt clone() {
         FHashMapIntInt clone = new FHashMapIntInt(size());
         for (Int2IntMap.Entry entry : this.int2IntEntrySet()) {
-            add(entry.getIntKey(), entry.getIntValue());
+            put(entry.getIntKey(), entry.getIntValue());
         }
         return clone;
     }
@@ -183,7 +183,7 @@ public class FHashMapIntInt extends Int2IntOpenHashMap implements java.util.Map<
         }
     }
 
-    public void cutAbove(double k) {
+    public void cutAbove(int k) {
         IntIterator iter = values().iterator();
         while (iter.hasNext()) {
             if (iter.nextInt() > k) {

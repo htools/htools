@@ -1,10 +1,9 @@
 package io.github.htools.type;
 
-import io.github.htools.collection.HashMapDouble;
 import io.github.htools.fcollection.FHashMapObjectDouble;
-import io.github.htools.lib.Profiler;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -77,24 +76,22 @@ public class TermVectorDouble extends FHashMapObjectDouble<String> implements Te
     }
 
     public double cossim(TermVectorDouble v) {
-        Profiler.startTime("TermVectorDouble.Cosine");
         double dotproduct = 0;
         for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
             dotproduct += v.getDouble(entry.getKey()) * entry.getValue();
         }
         double magnitude = magnitude() * v.magnitude();
         double result = (magnitude == 0) ? 0 : dotproduct / magnitude;
-        Profiler.addTime("TermVectorDouble.Cosine");
         return result;
     }
 
     public double dotproduct(TermVectorDouble v) {
-        Profiler.startTime("TermVectorDouble.DotProduct");
+        if (size() > v.size())
+            return v.dotproduct(this);
         double dotproduct = 0;
         for (Object2DoubleMap.Entry<String> entry : object2DoubleEntrySet()) {
             dotproduct += v.getDouble(entry.getKey()) * entry.getValue();
         }
-        Profiler.addTime("TermVectorDouble.DotProduct");
         return dotproduct;
     }
 

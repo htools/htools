@@ -1,16 +1,12 @@
 package io.github.htools.io.compressed;
 
 import io.github.htools.io.Datafile;
-import java.io.IOException;
 import io.github.htools.lib.Log;
 import io.github.htools.search.ByteRegex;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchPosition;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+
+import java.io.*;
 
 /**
  * Writer to a (compressed) archive file. Currently only .tar.lz4 is supported with

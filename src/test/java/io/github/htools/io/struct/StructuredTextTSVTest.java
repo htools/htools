@@ -1,16 +1,12 @@
 package io.github.htools.io.struct;
 
-import io.github.htools.io.struct.StructuredTextTSV;
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
-import io.github.htools.lib.PrintTools;
+import org.junit.*;
+
 import java.io.IOException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
 
 public class StructuredTextTSVTest {
     public static Log log = new Log(StructuredTextTSVTest.class);

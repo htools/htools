@@ -2,9 +2,10 @@ package io.github.htools.hbase;
 
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.util.Bytes;
+
+import java.io.IOException;
 
 /**
  *

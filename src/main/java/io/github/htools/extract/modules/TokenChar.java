@@ -1,6 +1,5 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.lib.BoolTools;
 import io.github.htools.lib.Log;
 
 /**

@@ -1,6 +1,5 @@
 package io.github.htools.extract;
 
-import io.github.htools.hadoop.io.archivereader.*;
 import io.github.htools.extract.modules.SectionMarker;
 import io.github.htools.lib.Log;
 import org.apache.hadoop.conf.Configuration;

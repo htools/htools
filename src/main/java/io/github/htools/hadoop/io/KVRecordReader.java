@@ -1,9 +1,11 @@
 package io.github.htools.hadoop.io;
+
 import io.github.htools.lib.Log;
-import java.io.IOException;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+
+import java.io.IOException;
 
 /**
  *

@@ -1,13 +1,16 @@
 package io.github.htools.lib;
 
-import static io.github.htools.lib.Const.*;
-import static io.github.htools.lib.PrintTools.*;
 import io.github.htools.search.ByteSearch;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.TreeMap;
+
+import static io.github.htools.lib.Const.NULLINT;
+import static io.github.htools.lib.PrintTools.printf;
+import static io.github.htools.lib.PrintTools.sprintf;
 
 /**
  *

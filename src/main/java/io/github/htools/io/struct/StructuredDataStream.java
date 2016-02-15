@@ -1,9 +1,8 @@
 package io.github.htools.io.struct;
 
 import io.github.htools.io.EOCException;
-import io.github.htools.io.struct.StructureData;
 import io.github.htools.lib.Log;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Map;
 

@@ -1,7 +1,6 @@
 package io.github.htools.io.struct;
 
 import io.github.htools.lib.Log;
-import java.io.IOException;
 
 public abstract class StructuredFileKeyRecord<F extends StructuredFileKey, D extends StructuredFile> implements StructuredFileKeyValueRecord<F> {
    public static Log log = new Log(StructuredFileKeyRecord.class);

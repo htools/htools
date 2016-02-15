@@ -2,44 +2,35 @@ package io.github.htools.io;
 
 import com.google.gson.JsonObject;
 import io.github.htools.hadoop.Conf;
-import io.github.htools.io.struct.StructureWriter;
-import io.github.htools.io.struct.StructureData;
 import io.github.htools.io.buffer.BufferReaderWriter;
+import io.github.htools.io.struct.StructureData;
+import io.github.htools.io.struct.StructureWriter;
+import io.github.htools.lib.ByteTools;
+import io.github.htools.lib.Log;
+import io.github.htools.lib.PrintTools;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.search.ByteSearchSection;
 import io.github.htools.search.ByteSection;
-import io.github.htools.io.ByteSearchReader;
-import io.github.htools.lib.ByteTools;
-import io.github.htools.lib.Const;
-import static io.github.htools.lib.Const.NULLLONG;
-import io.github.htools.lib.Log;
-import io.github.htools.lib.PrintTools;
-import static io.github.htools.lib.PrintTools.sprintf;
 import io.github.htools.type.Long128;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
+import java.io.*;
+import java.lang.reflect.Type;
+import java.util.*;
+
+import static io.github.htools.lib.Const.NULLLONG;
+import static io.github.htools.lib.PrintTools.sprintf;
+
 /**
  * This class wraps three ways to read/write data to a file: read the whole file
  * buffered in sequence, write the whole file buffered in sequence or random
  * access (go to a position and start reading or writing from there).
- * <p>
+ * <p/>
+ *
  * @author Jeroen
  */
 public class Datafile implements StructureData, Comparable<Datafile>, ByteSearchReader, DirComponent, ByteReader {
@@ -62,6 +53,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         TEMPHDFS,
         IS
     }
+
     private TYPE type;
     private String filename;
     private final String lockfile;
@@ -114,6 +106,13 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         lockfile = null;
     }
 
+    public Datafile(DataOut os) {
+        type = TYPE.IS;
+        rwbuffer.setDataOut(os);
+        status = STATUS.WRITE;
+        lockfile = null;
+    }
+
     public Datafile(Datafile df) {
         this(df.filename);
         this.type = df.type;
@@ -147,7 +146,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         rwbuffer.writeBuffer(writer);
     }
 
-//    public void write(byte[] b, byte[] esc, byte escape) {
+    //    public void write(byte[] b, byte[] esc, byte escape) {
 //        rwbuffer.write(b, esc, escape);
 //    }
 //
@@ -210,6 +209,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return modificationtime > modificationtime_df;
     }
 
+    @Override
     public void closeRead() {
         close();
     }
@@ -492,15 +492,15 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
                 if (!lockIsMine && isLocked()) {
                     waitForUnlock();
                 }
-                 {
-                    try {
-                        rwbuffer.setDataIn(getDataIn());
-                        status = newstatus;
-                    } catch (IOException ex) {
-                        log.fatalexception(ex, "openWrite()");
-                    }
+            {
+                try {
+                    rwbuffer.setDataIn(getDataIn());
+                    status = newstatus;
+                } catch (IOException ex) {
+                    log.fatalexception(ex, "openWrite()");
                 }
-                break;
+            }
+            break;
             case WRITE:
                 delete();
                 if (type == TYPE.FS) {
@@ -510,7 +510,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
                         rwbuffer.setDataOut(new FSFileOutBuffer(filename));
                     }
                 } else if (type == TYPE.HDFS) {
-                    rwbuffer.setDataOut(new HDFSOut(fs, filename, rwbuffer.getBufferSize()));
+                    rwbuffer.setDataOut(new HDFSOut(fs, filename, rwbuffer.getRequestedBufferSize()));
                 } else {
                     log.fatal("attempt to close Datafile type %s", type.toString());
                 }
@@ -606,7 +606,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     /**
      * determines if end of file has not been reached in either buffered reading
      * or random access mode.
-     * <p>
+     * <p/>
+     *
      * @return true if EOF has not been reached false if end of file has been
      * reached, in case of an exception, or if the file was not in buffered
      * reading or random reading mode
@@ -620,7 +621,7 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     }
 
     public void flush() {
-        rwbuffer.flushBuffer();
+        rwbuffer.dataout.flushFile();
     }
 
     public void write(Map<String, String> map) {
@@ -851,7 +852,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
      * reads a 4 byte int from the current file position. The file position
      * advances by 4. If the file was not in buffered reading or random access
      * mode, the file is closed and opened in buffered reading mode.
-     * <p>
+     * <p/>
+     *
      * @return int
      */
     public int readInt() throws EOCException {
@@ -886,7 +888,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
      * reads an 8 byte long from the current file position. The file position
      * advances by 8. If the file was not in buffered reading or random access
      * mode, the file is closed and opened in buffered reading mode.
-     * <p>
+     * <p/>
+     *
      * @return
      */
     public long readLong() throws EOCException {
@@ -900,7 +903,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
      * reads an 16 byte long from the current file position. The file position
      * advances by 8. If the file was not in buffered reading or random access
      * mode, the file is closed and opened in buffered reading mode.
-     * <p>
+     * <p/>
+     *
      * @return
      */
     public Long128 readLong128() throws EOCException {
@@ -1106,7 +1110,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
      * writes a 4 byte int to the file at the current file position. The file
      * position advances by 4. This only works in buffered writing or random
      * access mode.
-     * <p>
+     * <p/>
+     *
      * @param i
      */
     public void write(int i) {
@@ -1136,7 +1141,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
     /**
      * writes 1 byte to the file at the current file position. The file position
      * advances by 1. This only works in buffered writing or random access mode.
-     * <p>
+     * <p/>
+     *
      * @param b
      */
     public void write(byte b) {
@@ -1159,7 +1165,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
      * writes an 8 byte long to the file at the current file position. The file
      * position advances by 8. This only works in buffered writing or random
      * access mode.
-     * <p>
+     * <p/>
+     *
      * @param l
      */
     public void write(long l) {
@@ -1174,7 +1181,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
      * writes an 16 byte long to the file at the current file position. The file
      * position advances by 8. This only works in buffered writing or random
      * access mode.
-     * <p>
+     * <p/>
+     *
      * @param l
      */
     public void write(Long128 l) {
@@ -1334,7 +1342,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
      * position. Then writes the amount of bytes the string consists of. Every
      * character is written as a single byte. The file position advances by 4 +
      * string length. This only works in buffered writing or random access mode.
-     * <p>
+     * <p/>
+     *
      * @param s
      */
     public void write(String s) {
@@ -1363,7 +1372,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
 
     /**
      * writes the StringBuilder as {@link #write(java.lang.String) }
-     * <p>
+     * <p/>
+     *
      * @param s
      */
     public void write(StringBuilder s) {
@@ -1442,7 +1452,8 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
 
     /**
      * returns the current file position of the DataFile.
-     * <p>
+     * <p/>
+     *
      * @return current file position or -1 if closed or an exception occurred.
      */
     public long getOffset() {
@@ -1641,19 +1652,30 @@ public class Datafile implements StructureData, Comparable<Datafile>, ByteSearch
         return new LineIterator(this);
     }
 
+    public ArrayList<String> readAsLineList() {
+        ArrayList<String> result = new ArrayList();
+        for (String line : readLines())
+            result.add(line);
+        return result;
+    }
+
     static class LineIterator implements Iterator<String>, Iterable<String> {
 
         Datafile df;
-        String next;
+        long length;
 
         public LineIterator(Datafile df) {
             this.df = new Datafile(df);
+            length = df.getLength();
             this.df.openRead();
         }
 
         @Override
         public boolean hasNext() {
-            return df.getOffset() < df.getLength();
+            if (df.getOffset() < length)
+                return true;
+            df.closeRead();
+            return false;
         }
 
         @Override

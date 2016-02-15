@@ -2,6 +2,7 @@ package io.github.htools.fcollection;
 
 import io.github.htools.lib.Log;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+
 import java.util.Collection;
 
 /**

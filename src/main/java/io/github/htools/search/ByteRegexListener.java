@@ -1,9 +1,6 @@
-// Generated from ByteRegex.g4 by ANTLR 4.2.2
+// Generated from ByteRegex.g4 by ANTLR 4.3
 
     package io.github.htools.search;
-    import io.github.htools.search.Node.*; 
-    import java.util.ArrayList;
-    import io.github.htools.lib.Log;
 
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
@@ -23,6 +20,17 @@ public interface ByteRegexListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFrag(@NotNull ByteRegexParser.FragContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link ByteRegexParser#character}.
+	 * @param ctx the parse tree
+	 */
+	void enterCharacter(@NotNull ByteRegexParser.CharacterContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ByteRegexParser#character}.
+	 * @param ctx the parse tree
+	 */
+	void exitCharacter(@NotNull ByteRegexParser.CharacterContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link ByteRegexParser#set}.
@@ -47,17 +55,6 @@ public interface ByteRegexListener extends ParseTreeListener {
 	void exitString(@NotNull ByteRegexParser.StringContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link ByteRegexParser#operand}.
-	 * @param ctx the parse tree
-	 */
-	void enterOperand(@NotNull ByteRegexParser.OperandContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ByteRegexParser#operand}.
-	 * @param ctx the parse tree
-	 */
-	void exitOperand(@NotNull ByteRegexParser.OperandContext ctx);
-
-	/**
 	 * Enter a parse tree produced by {@link ByteRegexParser#bracket}.
 	 * @param ctx the parse tree
 	 */
@@ -69,17 +66,6 @@ public interface ByteRegexListener extends ParseTreeListener {
 	void exitBracket(@NotNull ByteRegexParser.BracketContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link ByteRegexParser#character}.
-	 * @param ctx the parse tree
-	 */
-	void enterCharacter(@NotNull ByteRegexParser.CharacterContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ByteRegexParser#character}.
-	 * @param ctx the parse tree
-	 */
-	void exitCharacter(@NotNull ByteRegexParser.CharacterContext ctx);
-
-	/**
 	 * Enter a parse tree produced by {@link ByteRegexParser#startRule}.
 	 * @param ctx the parse tree
 	 */
@@ -89,4 +75,15 @@ public interface ByteRegexListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStartRule(@NotNull ByteRegexParser.StartRuleContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link ByteRegexParser#operand}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperand(@NotNull ByteRegexParser.OperandContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ByteRegexParser#operand}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperand(@NotNull ByteRegexParser.OperandContext ctx);
 }

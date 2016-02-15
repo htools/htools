@@ -2,7 +2,6 @@ package io.github.htools.io.struct;
 
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 
 /**
  * Internal helper class, that stores offsets to a Records in a StructuredFile 

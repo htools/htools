@@ -2,9 +2,10 @@ package io.github.htools.hadoop.io;
 
 import io.github.htools.lib.DateTools;
 import io.github.htools.lib.Log;
-import java.util.Calendar;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.WritableComparator;
+
+import java.util.Calendar;
 
 /**
  * Replaces Text in cases where cases need to be preserved, but for comparison

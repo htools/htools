@@ -1,8 +1,8 @@
 package io.github.htools.hadoop.decompress;
 
-import io.github.htools.lib.Log;
 import io.github.htools.hadoop.Conf;
 import io.github.htools.hadoop.Job;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;

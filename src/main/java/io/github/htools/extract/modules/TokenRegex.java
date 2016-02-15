@@ -1,11 +1,9 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteRegex;
-import io.github.htools.search.ByteSearch;
-import io.github.htools.search.ByteSearchPosition;
-import io.github.htools.extract.Extractor;
 import io.github.htools.extract.ExtractorConf;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearch;
+import io.github.htools.search.ByteSearchPosition;
 
 /**
  * Matches a regular expression in the buffer. This is slower for mass tokenization, 

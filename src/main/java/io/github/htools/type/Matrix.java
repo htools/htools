@@ -1,10 +1,7 @@
 package io.github.htools.type;
 
 import io.github.htools.lib.Log;
-import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
-import io.github.htools.lib.PrintTools;
-import io.github.htools.lib.RandomTools;
 import io.github.htools.lib.RandomTools;
 
 /**

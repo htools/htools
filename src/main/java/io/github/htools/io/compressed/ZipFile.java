@@ -1,7 +1,7 @@
 package io.github.htools.io.compressed;
 
-import java.io.IOException;
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;

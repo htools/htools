@@ -3,6 +3,7 @@ package io.github.htools.hadoop.io.archivereader;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.struct.StructuredFile;
 import io.github.htools.lib.Log;
+
 import java.io.IOException;
 
 /**

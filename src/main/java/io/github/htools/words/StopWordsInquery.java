@@ -1,6 +1,7 @@
 package io.github.htools.words;
 
 import io.github.htools.lib.Log;
+
 import java.util.HashSet;
 
 public class StopWordsInquery {

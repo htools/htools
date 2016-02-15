@@ -6,10 +6,11 @@ import io.github.htools.io.EOCException;
 import io.github.htools.io.HDFSIn;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * An implementation of EntityReader that scans the input for TREC style

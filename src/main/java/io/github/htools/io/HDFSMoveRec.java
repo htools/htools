@@ -2,6 +2,7 @@ package io.github.htools.io;
 
 import io.github.htools.hadoop.Conf;
 import io.github.htools.lib.Log;
+
 import java.io.IOException;
 
 public class HDFSMoveRec {

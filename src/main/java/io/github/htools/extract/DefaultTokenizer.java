@@ -1,15 +1,9 @@
 package io.github.htools.extract;
 
-import io.github.htools.words.StopWordsMultiLang;
-import io.github.htools.extract.modules.ConvertHtmlASCIICodes;
-import io.github.htools.extract.modules.ConvertHtmlSpecialCodes;
-import io.github.htools.extract.modules.ConvertToLowercase;
-import io.github.htools.extract.modules.ConvertUnicodeDiacritics;
-import io.github.htools.extract.modules.RemoveFilteredWords;
-import io.github.htools.extract.modules.RemoveHtmlSpecialCodes;
-import io.github.htools.extract.modules.RemoveNonASCII;
-import io.github.htools.extract.modules.TokenWord;
+import io.github.htools.extract.modules.*;
 import io.github.htools.lib.Log;
+import io.github.htools.words.StopWordsMultiLang;
+
 import java.util.HashSet;
 
 /**

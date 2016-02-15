@@ -1,9 +1,9 @@
 package io.github.htools.extract.modules;
 
 import io.github.htools.extract.Content;
-import io.github.htools.extract.RemovedException;
 import io.github.htools.extract.ExtractChannel;
 import io.github.htools.extract.Extractor;
+import io.github.htools.extract.RemovedException;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchSection;
 

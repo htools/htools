@@ -2,22 +2,17 @@ package io.github.htools.extract;
 
 import io.github.htools.extract.modules.ExtractorProcessor;
 import io.github.htools.extract.modules.SectionMarker;
-import io.github.htools.search.ByteRegex;
-import io.github.htools.search.ByteSearchSection;
+import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.ClassTools;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteRegex;
+import io.github.htools.search.ByteSearchSection;
+
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.TreeSet;
-import io.github.htools.hadoop.io.archivereader.*;
-import io.github.htools.lib.ByteTools;
+import java.util.*;
 
 /**
  * The Extractor is a generic processor that converts {@link Content}s submitted
- * by an {@link Reader} into extracted values to store as features.
  * <p>
  * Extraction proceeds in 3 phases. (1) the raw byte content of the
  * {@link Content} is pre-processed by the modules configured as
@@ -28,8 +23,8 @@ import io.github.htools.lib.ByteTools;
  * "all" to indicate all content. Other {@link SectionMarker}s can process an
  * existing section, to mark subsections. (3) each section can have its own (set
  * of) processing pipeline(s), configured with "extractor.sectionprocess". For
- * the marked sections the modules configured with "extractor.&lt;processname&gt;" are
- * performed sequentially.
+ * the marked sections the modules configured with
+ * "extractor.&lt;processname&gt;" are performed sequentially.
  *
  * @author jeroen
  */
@@ -89,6 +84,7 @@ public class Extractor {
         patternmatchers = new ArrayList();
         for (String section : inputsections) {
             patternmatchers.add(new ExtractorPatternMatcher(this, section, sectionmarkers.get(section)));
+            //log.info("createPatternMatchers %s %s", section, sectionmarkers.get(section));
         }
     }
 
@@ -128,8 +124,8 @@ public class Extractor {
 
     /**
      * Add a SectionMarker, which will produce an outputsection based on match
-     * areas in the inputsection. E.g. MarkMeta will mark &lt;meta ... &gt; tags in
-     * the source section. mark the
+     * areas in the inputsection. E.g. MarkMeta will mark &lt;meta ... &gt; tags
+     * in the source section. mark the
      *
      * @param sectionmarker
      * @param inputsection
@@ -146,6 +142,7 @@ public class Extractor {
                 sectionmarkers.put(inputsection, list);
             }
             list.add(marker);
+            //log.info("addSectionMarker %s", marker.getClass().getCanonicalName());
             if (!inputsections.contains(inputsection)) {
                 inputsections.add(inputsection);
             }
@@ -198,7 +195,7 @@ public class Extractor {
     public <T extends ExtractorProcessor> T findProcessor(String process, Class<T> clazz) {
         for (ExtractorProcessor p : processor.get(process)) {
             if (clazz.equals(p.getClass())) {
-                return (T)p;
+                return (T) p;
             }
         }
         return null;
@@ -215,15 +212,19 @@ public class Extractor {
             return;
         }
         try {
+            //log.info("process %s", ByteTools.toString(content.getContent()));
             for (ExtractorProcessor proc : this.preprocess) {
                 //log.info("PreProcess %s", proc.getClass().getCanonicalName());
                 proc.process(content, content.getAll(), null);
             }
+            //log.info("process %s", ByteTools.toString(content.getContent()));
             this.processSectionMarkers(content);
+            //log.info("after sectionmarkers");
             preTokenizerProcess(content);
+            //log.info("after preTok");
             for (SectionProcess p : this.processors) {
                 for (ByteSearchSection section : content.getSectionPos(p.section)) {
-                    //log.info("section %d %d", section.start, section.innerstart);
+                    //log.info("section %s %d %d", p.process, section.start, section.innerstart);
                     for (ExtractorProcessor proc : processor.get(p.process)) {
                         //log.info("process %s", proc.getClass().getCanonicalName());
                         proc.process(content, section, p.entityattribute);
@@ -233,8 +234,9 @@ public class Extractor {
         } catch (RemovedException ex) {
         }
     }
-    
-    protected void preTokenizerProcess(Content content) {}
+
+    protected void preTokenizerProcess(Content content) {
+    }
 
     public Content process(byte content[]) {
         Content entity = new Content();
@@ -257,22 +259,37 @@ public class Extractor {
             }
         }
     }
-    
+
     protected void processSectionMarkers(Content content) {
-        log.info("process sessionmarkers %s %d ", getClass().getCanonicalName(), inputsections.size());
+        //log.info("processSectionMarkers %b %s %s %s", rebuildSectionMarkers, 
+        //        getClass().getCanonicalName(), inputsections, ByteTools.toString(content.getContent()));
         if (rebuildSectionMarkers) {
             rebuildSectionMarkers = false;
             createPatternMatchers();
+            //log.info("processSectionMarkers pattern matchers %s", patternmatchers);
         }
         content.getAll();
-        for (int section = 0; section < inputsections.size(); section++) {
-            String sectionname = inputsections.get(section);
-            ExtractorPatternMatcher patternmatcher = patternmatchers.get(section);
-            //log.info("process sessionmarkers %s %d %s", sectionname, patternmatcher.markers.size(), entity.getSectionPos(sectionname));
-            for (ByteSearchSection pos : content.getSectionPos(sectionname)) {
-                patternmatcher.processSectionMarkers(content, pos);
+        for (ExtractorPatternMatcher patternmatcher : patternmatchers) {
+            String sectionname = patternmatcher.section;
+            //log.info("processSectionMarkers %s %s", patternmatcher.getClass().getCanonicalName(), sectionname);
+            ArrayList<ByteSearchSection> sectionPos = content.getSectionPos(sectionname);
+            if (sectionPos != null) {
+                //log.info("processSectionMarkers %s %d %s", sectionname,
+                //        patternmatcher.markers.size(), content.getSectionPos(sectionname));
+                for (ByteSearchSection pos : content.getSectionPos(sectionname)) {
+                    patternmatcher.processSectionMarkers(content, pos);
+                }
             }
         }
+//        
+//        for (int section = 0; section < inputsections.size(); section++) {
+//            String sectionname = inputsections.get(section);
+//            ExtractorPatternMatcher patternmatcher = patternmatchers.get(section);
+//            log.info("processSectionMarkers %s %d %s", sectionname, patternmatcher.markers.size(), content.getSectionPos(sectionname));
+//            for (ByteSearchSection pos : content.getSectionPos(sectionname)) {
+//                patternmatcher.processSectionMarkers(content, pos);
+//            }
+//        }
     }
 
     /**
@@ -303,15 +320,15 @@ public class Extractor {
         ByteSearchSection firstother = other.pollFirst();
         while (all.size() > 0) {
             ByteSearchSection s = all.pollFirst();
-            while (s.innerstart < s.end) {
-                int innerstart = s.innerstart;
+            int innerstart = s.innerstart;
+            while (innerstart < s.end) {
                 int start = s.start;
                 for (; firstother != null && firstother.end < innerstart; firstother = other.pollFirst());
                 if (firstother == null || firstother.innerstart >= s.end) {
                     entity.addSectionPos(resultsection, s.haystack, start, innerstart, s.innerend, s.end);
                     innerstart = s.end;
                 } else {
-                    if (firstother.start > s.innerstart) {
+                    if (firstother.start > innerstart) {
                         entity.addSectionPos(resultsection, s.haystack, start, innerstart, firstother.start, firstother.start);
                     }
                     innerstart = firstother.end;

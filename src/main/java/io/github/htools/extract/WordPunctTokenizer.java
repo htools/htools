@@ -3,11 +3,8 @@ package io.github.htools.extract;
 import io.github.htools.extract.modules.ConvertHtmlASCIICodes;
 import io.github.htools.extract.modules.ConvertHtmlAmpersand;
 import io.github.htools.extract.modules.ConvertHtmlSpecialCodes;
-import io.github.htools.extract.modules.TokenInvertedWord;
-import io.github.htools.extract.modules.TokenWord;
 import io.github.htools.extract.modules.TokenWordPunct;
 import io.github.htools.lib.Log;
-import java.util.ArrayList;
 /**
  *
  * @author jeroen

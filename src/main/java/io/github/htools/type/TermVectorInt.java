@@ -2,14 +2,15 @@ package io.github.htools.type;
 
 import io.github.htools.collection.HashMapInt;
 import io.github.htools.fcollection.FHashMapObjectInt;
+import io.github.htools.hadoop.io.buffered.Writable;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.buffer.BufferSerializable;
 import io.github.htools.io.struct.StructureReader;
 import io.github.htools.io.struct.StructureWriter;
 import it.unimi.dsi.fastutil.HashCommon;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 

@@ -3,9 +3,10 @@ package io.github.htools.hadoop.document;
 import io.github.htools.io.EOCException;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
-import java.io.ByteArrayOutputStream;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * An implementation of DocumentAbstractReader that scans the input for TREC style

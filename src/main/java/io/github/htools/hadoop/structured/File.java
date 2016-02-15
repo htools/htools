@@ -1,11 +1,12 @@
 package io.github.htools.hadoop.structured;
 
+import io.github.htools.hadoop.InputFormat;
 import io.github.htools.io.Datafile;
-import io.github.htools.lib.Log;
 import io.github.htools.io.struct.StructuredFile;
 import io.github.htools.io.struct.StructuredRecordFile;
 import io.github.htools.io.struct.StructuredRecordFileIterator;
-import io.github.htools.hadoop.InputFormat;
+import io.github.htools.lib.Log;
+
 import java.io.IOException;
 /**
  * Supports Hadoop access to file storage in a structured binary file. While data

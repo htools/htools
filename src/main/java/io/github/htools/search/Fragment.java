@@ -1,8 +1,10 @@
 package io.github.htools.search;
 
 import io.github.htools.lib.Log;
-import static io.github.htools.lib.PrintTools.sprintf;
+
 import java.util.ArrayList;
+
+import static io.github.htools.lib.PrintTools.sprintf;
 
 public class Fragment {
    public static Log log = new Log(Fragment.class); 

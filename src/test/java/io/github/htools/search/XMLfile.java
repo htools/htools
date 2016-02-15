@@ -1,10 +1,10 @@
 package io.github.htools.search;
 
-import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
-import io.github.htools.io.struct.StructuredTextFile;
+import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.struct.StructuredTextXML;
 import io.github.htools.lib.Log;
+
 import java.io.IOException;
 
 /**

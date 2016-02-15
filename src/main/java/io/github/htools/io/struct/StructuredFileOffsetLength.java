@@ -5,8 +5,8 @@ import io.github.htools.io.EOCException;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.Log;
 import io.github.htools.search.ByteSearch;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.TreeSet;
 
 public abstract class StructuredFileOffsetLength extends StructuredFile {

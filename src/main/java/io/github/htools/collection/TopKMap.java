@@ -3,12 +3,11 @@ package io.github.htools.collection;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.MapTools;
 import io.github.htools.type.KV;
-import java.util.AbstractMap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This collection retains the top-K Key-Value entries that are added. By

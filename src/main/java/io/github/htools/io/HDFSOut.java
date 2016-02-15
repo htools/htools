@@ -2,11 +2,12 @@ package io.github.htools.io;
 
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
-import java.io.IOException;
-import java.io.OutputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * This class is intended to remove all the Java fuzz regarding files. There is
@@ -106,7 +107,7 @@ public class HDFSOut implements DataOut {
     public void flushFile() {
         try {
             flushBuffer(buffer);
-            fsout.sync();
+            fsout.hflush();
         } catch (IOException ex) {
             log.fatal(ex);
         }

@@ -1,11 +1,10 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteRegex;
-import io.github.htools.search.ByteSearchPosition;
-import io.github.htools.search.ByteSearchSection;
-import io.github.htools.lib.Log;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
+import io.github.htools.lib.Log;
+import io.github.htools.search.ByteRegex;
+import io.github.htools.search.ByteSearchSection;
 
 /**
  * Find mediawiki macro's e.g. "{{cite ...}}" that spans more than one line.
@@ -47,7 +46,7 @@ public class MarkWikipediaMLMacro extends SectionMarker {
                 }
             }
         }
-        if (macroopen == 0 && entity.content[pos - 2] == '}' && newlines > 1) {
+        if (macroopen == 0 && entity.content[pos - 2] == '}') {
             return entity.addSectionPos(outputsection, entity.content, section.start, section.innerstart, pos - 2, pos);
         }
         return null;

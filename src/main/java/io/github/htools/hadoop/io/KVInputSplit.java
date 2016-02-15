@@ -4,12 +4,13 @@ import io.github.htools.collection.ArrayMap;
 import io.github.htools.io.buffer.BufferDelayedWriter;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.mapreduce.InputSplit;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
-import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapreduce.InputSplit;
 
 /**
  * A custom implementation of Hadoop's InputSplit used by RetrieverMR. 

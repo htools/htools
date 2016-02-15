@@ -1,6 +1,7 @@
 package io.github.htools.lib;
 
 import io.github.htools.search.ByteSearch;
+
 import java.util.Arrays;
 
 /**
@@ -105,6 +106,12 @@ public enum BoolTools {;
               createASCIIAcceptRange('0', '9'));
    }
    
+   public static boolean[] character() {
+      return combineRanges(
+              createASCIIAcceptRange('A', 'Z'), 
+              createASCIIAcceptRange('a', 'z'));
+   }
+   
    public static boolean[] vowel() {
       return createASCIIAccept('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U');
    }
@@ -130,6 +137,11 @@ public enum BoolTools {;
    
    public static boolean[] word0() {
       return combineRanges(word(),
+              createASCIIAccept((char)0));
+   }
+   
+   public static boolean[] character0() {
+      return combineRanges(character(),
               createASCIIAccept((char)0));
    }
    

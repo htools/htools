@@ -4,6 +4,7 @@ import io.github.htools.extract.Content;
 import io.github.htools.io.EOCException;
 import io.github.htools.lib.Log;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 

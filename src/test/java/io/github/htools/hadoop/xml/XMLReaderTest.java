@@ -18,16 +18,12 @@ package io.github.htools.hadoop.xml;
 
 import io.github.htools.io.struct.XMLReader;
 import io.github.htools.lib.Log;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.HashMap;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.StartElement;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.xml.stream.XMLStreamException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  *

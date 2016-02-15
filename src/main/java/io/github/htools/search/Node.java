@@ -2,8 +2,8 @@ package io.github.htools.search;
 
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Helper class for ByteRegex. An expression is parsed into a tree of Nodes

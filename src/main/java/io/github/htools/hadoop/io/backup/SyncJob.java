@@ -1,9 +1,10 @@
 package io.github.htools.hadoop.io.backup;
 
-import io.github.htools.lib.Log;
 import io.github.htools.hadoop.Conf;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.HDFSPath;
+import io.github.htools.lib.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
 

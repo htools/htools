@@ -1,11 +1,12 @@
 package io.github.htools.hadoop.xml;
 
 import io.github.htools.io.Datafile;
-import io.github.htools.lib.Log;
 import io.github.htools.io.struct.StructuredFileRecord;
 import io.github.htools.io.struct.StructuredRecordFile;
 import io.github.htools.io.struct.StructuredRecordFileIterator;
 import io.github.htools.io.struct.StructuredTextXML;
+import io.github.htools.lib.Log;
+
 import java.io.IOException;
 
 /**

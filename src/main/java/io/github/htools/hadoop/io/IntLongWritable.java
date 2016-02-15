@@ -2,14 +2,12 @@ package io.github.htools.hadoop.io;
 
 import io.github.htools.lib.Log;
 import io.github.htools.lib.MathTools;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.WritableComparator;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.WritableComparator;
-import static org.apache.hadoop.io.WritableComparator.readLong;
-import org.apache.hadoop.mapreduce.Partitioner;
 
 /**
  * Pairs an int that indicates the partition number with a of long used for
@@ -36,6 +34,10 @@ public class IntLongWritable extends IntWritable {
         this.value2 = value2;
     }
 
+    public long getValue2() {
+        return value2;
+    }
+    
     @Override
     public void readFields(DataInput in) throws IOException {
         set(in.readInt());

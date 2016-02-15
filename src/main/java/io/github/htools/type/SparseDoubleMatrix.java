@@ -1,7 +1,6 @@
 package io.github.htools.type;
 
 import io.github.htools.lib.Log;
-import io.github.htools.lib.Log;
 
 public class SparseDoubleMatrix {
 

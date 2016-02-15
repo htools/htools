@@ -1,15 +1,13 @@
 package io.github.htools.io;
 
 import io.github.htools.lib.Log;
-import static io.github.htools.lib.PrintTools.sprintf;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.Writer;
+
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
+
+import static io.github.htools.lib.PrintTools.sprintf;
 
 /**
  * An StringFile holds a piece of memory, and comes with a whole set of methods

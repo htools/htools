@@ -7,7 +7,6 @@ import io.github.htools.lib.Log;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.search.ByteSearchSection;
-import io.github.htools.search.ByteSection;
 
 /**
  * Removes HTML tags from the content, leaving the content in between open and

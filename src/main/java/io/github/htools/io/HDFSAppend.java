@@ -1,11 +1,12 @@
 package io.github.htools.io;
 
 import io.github.htools.lib.Log;
-import java.io.IOException;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
+
+import java.io.IOException;
 
 /**
  * This class is intended to remove all the Java fuzz regarding files. There is

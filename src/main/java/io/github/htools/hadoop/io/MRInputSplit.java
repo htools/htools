@@ -3,13 +3,16 @@ package io.github.htools.hadoop.io;
 import io.github.htools.io.buffer.BufferDelayedWriter;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.mapreduce.InputSplit;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapreduce.InputSplit;
+
+import static io.github.htools.lib.PrintTools.sprintf;
 
 /**
  * A custom implementation of Hadoop's InputSplit used by RetrieverMR. 
@@ -103,5 +106,9 @@ public abstract class MRInputSplit<KEY, VALUE> extends InputSplit implements Wri
    public int compareTo(MRInputSplit o) {
       int comp = o.list.size() - list.size();
       return comp != 0 ? comp : 1; // cannot be 0!
+   }
+   
+   public String toString() {
+       return sprintf("InputSplit( %s, %s )", partition, list);
    }
 }

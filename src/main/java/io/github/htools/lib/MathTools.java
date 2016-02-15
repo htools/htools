@@ -1,8 +1,9 @@
 package io.github.htools.lib;
 
-import static io.github.htools.lib.PrintTools.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+
+import static io.github.htools.lib.PrintTools.*;
 
 /**
  *

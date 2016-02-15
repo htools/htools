@@ -2,7 +2,6 @@ package io.github.htools.hadoop.document;
 
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -11,6 +10,8 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.IOException;
 
 /**
  * A document reader read an input file, identifying document markers to store
@@ -104,12 +105,12 @@ public abstract class DocumentAbstractReader extends RecordReader<LongWritable, 
      * @return true if a next document was read
      */
     @Override
-    public boolean nextKeyValue() {
+    public boolean nextKeyValue() throws IOException {
         document = readDocument();
         return document != null;
     }
 
-    public abstract byte[] readDocument();
+    public abstract byte[] readDocument() throws IOException;
     
     @Override
     public final LongWritable getCurrentKey() {

@@ -2,8 +2,8 @@
  */
 package io.github.htools.io;
 
-import io.github.htools.collection.ListIterator;
 import io.github.htools.search.ByteSearch;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -26,8 +26,8 @@ public class EOCException extends DataException {
      *
      * @param   s   the detail message.
      */
-    public EOCException(String s) {
-        super(s);
+    public EOCException() {
+        super("EOF reached");
     }
     
     public EOCException(String s, Object ... p) {

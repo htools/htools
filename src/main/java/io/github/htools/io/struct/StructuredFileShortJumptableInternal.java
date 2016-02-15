@@ -1,9 +1,8 @@
 package io.github.htools.io.struct;
 
-import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
-import java.io.IOException;
+import io.github.htools.io.buffer.BufferReaderWriter;
 
 /**
  * The same as {@link StructuredFileByteJumptableInternal}, but this class uses two bytes for the length

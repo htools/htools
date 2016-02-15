@@ -1,8 +1,8 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteRegex;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
+import io.github.htools.search.ByteRegex;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchSection;
 
@@ -35,6 +35,7 @@ public abstract class SectionMarker {
 
    /**
     * Regex to start section, must be Regex because the SectionMarkers are combined
+     * @return 
     */
    public abstract ByteRegex getStartMarker();
 

@@ -4,6 +4,7 @@ import io.github.htools.io.EOCException;
 import io.github.htools.io.buffer.BufferSerializable;
 import io.github.htools.io.struct.StructureReader;
 import io.github.htools.io.struct.StructureWriter;
+
 import java.util.UUID;
 
 public class Long128 implements Comparable<Long128>, BufferSerializable {

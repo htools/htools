@@ -2,6 +2,7 @@ package io.github.htools.collection;
 
 import io.github.htools.collection.MovingAggregate.Element;
 import io.github.htools.lib.Log;
+
 import java.util.ArrayDeque;
 
 /**

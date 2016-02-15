@@ -3,11 +3,11 @@ package io.github.htools.hadoop.io;
 import io.github.htools.io.buffer.BufferDelayedWriter;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
-import io.github.htools.lib.MathTools;
+import org.apache.hadoop.io.Text;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import org.apache.hadoop.io.Text;
 
 /**
  * Pairs an int that indicates the partition number with a of long used for

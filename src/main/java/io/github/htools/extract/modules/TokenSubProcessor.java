@@ -1,7 +1,5 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.extract.Content;
-import io.github.htools.extract.ExtractChannel;
 import io.github.htools.lib.Log;
 
 

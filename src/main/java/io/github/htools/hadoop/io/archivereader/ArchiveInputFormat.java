@@ -1,15 +1,11 @@
 package io.github.htools.hadoop.io.archivereader;
 
 import io.github.htools.collection.ArrayMap;
-import io.github.htools.hadoop.FileFilter;
 import io.github.htools.extract.Content;
 import io.github.htools.hadoop.Conf;
-import static io.github.htools.lib.ClassTools.*;
-import io.github.htools.lib.Log;
+import io.github.htools.hadoop.FileFilter;
 import io.github.htools.hadoop.io.FileInputFormat;
-import java.lang.reflect.Constructor;
-import java.util.Map;
-import java.util.regex.Pattern;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.InputSplit;
@@ -17,6 +13,12 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.lang.reflect.Constructor;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import static io.github.htools.lib.ClassTools.*;
 
 /**
  * ReaderInputFormat extends FileInputFormat to supply Hadoop with the input to

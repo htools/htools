@@ -2,11 +2,9 @@
  */
 package io.github.htools.lib;
 
-import io.github.htools.lib.ArrayTools;
-import io.github.htools.lib.DoubleTools;
-import io.github.htools.lib.MathTools;
-import static org.junit.Assert.*;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -158,8 +156,10 @@ public class MathToolsTest {
    
    @Test
    public void testWelchDegreesOfFreedom() {
-       double welchDegreesOfFreedom = MathTools.welchDegreesOfFreedom(100, 100, 11, 11);
-       assertEquals(welchDegreesOfFreedom, 22.0, 0.01);
+      double r1 = MathTools.welchDegreesOfFreedom(Math.pow(3.226, 2), Math.pow(2.926, 2), 61, 10);
+      assertEquals(12.9, r1, 0.05);
+      double r2 = MathTools.welchDegreesOfFreedom(10000, 10000, 11, 11);
+      assertEquals(20.0, r2, 0.01);
    }
    @Test
    public void testWelch() {

@@ -2,6 +2,7 @@ package io.github.htools.io.struct;
 
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
+
 import java.io.IOException;
 
 /**

@@ -3,13 +3,14 @@ package io.github.htools.io;
 import io.github.htools.hadoop.Conf;
 import io.github.htools.io.compressed.LZ4FrameInputStream;
 import io.github.htools.lib.Log;
-import java.io.IOException;
-import java.io.InputStream;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.CompressionCodecFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This class is intended to remove all the Java fuzz regarding files. There is

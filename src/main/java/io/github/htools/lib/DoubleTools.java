@@ -1,10 +1,11 @@
 package io.github.htools.lib;
 
-import static io.github.htools.lib.MathTools.welchDegreesOfFreedom;
+import org.apache.commons.math3.distribution.TDistribution;
+
 import java.util.Arrays;
 import java.util.Collection;
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
-import org.apache.commons.math3.distribution.TDistribution;
+
+import static io.github.htools.lib.MathTools.welchDegreesOfFreedom;
 
 /**
  *

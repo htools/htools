@@ -1,10 +1,10 @@
 package io.github.htools.extract.modules;
 
+import io.github.htools.lib.BoolTools;
+import io.github.htools.lib.Log;
 import io.github.htools.search.ByteRegex;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchPosition;
-import io.github.htools.lib.BoolTools;
-import io.github.htools.lib.Log;
 
 /**
  * Matches a sequence of letters/digits in the buffer.
@@ -18,10 +18,10 @@ public class TokenPDF extends TokenChar {
     ByteRegex ftp = new ByteRegex("ftp:");
     ByteRegex https = new ByteRegex("https:");
     ByteRegex www = new ByteRegex("www.");
-    ByteRegex mail = new ByteRegex("\\w+@");
+    ByteRegex mail = new ByteRegex("[\\w_]+@");
     ByteRegex web = ByteRegex.combine(http, ftp, https, www, mail);
     ByteRegex space = new ByteRegex("\\s+");
-    ByteSearch start = ByteSearch.create("\\w");
+    ByteSearch start = ByteSearch.create("[\\w_]");
 
     public TokenPDF(TokenizerRegex tokenizer, String name) throws ClassNotFoundException {
         super(tokenizer, name);

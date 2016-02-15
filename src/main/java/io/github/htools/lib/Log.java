@@ -1,17 +1,20 @@
 package io.github.htools.lib;
 
 import io.github.htools.io.Datafile;
-import static io.github.htools.lib.PrintTools.*;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Date;
+
+import static io.github.htools.lib.PrintTools.log;
+import static io.github.htools.lib.PrintTools.sprintf;
 
 /**
  * Yeah, Yeah, I know, why build your own logger... I suppose I was mostly
@@ -396,19 +399,24 @@ public class Log {
         }
     }
 
-    public void memoryDump(byte[] arg) {
+    public void memoryDump(byte[] arg, int pos, int maxLength) {
+        int end = Math.min(pos + maxLength, arg.length);
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; arg != null && i < arg.length; i += 20) {
+        for (int i = pos; arg != null && i < end; i += 20) {
             sb.append(sprintf("%08d ", i));
-            for (int j = i; j < i + 20 && j < arg.length; j++) {
+            for (int j = i; j < i + 20 && j < end; j++) {
                 sb.append(sprintf("%3d ", arg[j] & 0xFF));
             }
-            for (int j = i; j < i + 20 && j < arg.length; j++) {
+            for (int j = i; j < i + 20 && j < end; j++) {
                 sb.append(sprintf("%s", (arg[j] < 32 || arg[j] > 127) ? "." : (char) arg[j]));
             }
             sb.append("\n");
         }
         print(sb.toString());
+    }
+
+    public void memoryDump(byte[] arg) {
+        memoryDump(arg, 0, arg.length);
     }
 
     /**

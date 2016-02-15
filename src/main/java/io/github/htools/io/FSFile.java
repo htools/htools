@@ -1,20 +1,11 @@
 package io.github.htools.io;
 
 import io.github.htools.io.compressed.LZ4FrameInputStream;
-import static io.github.htools.lib.Const.*;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
-import java.awt.Desktop;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+
+import java.awt.*;
+import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.Scanner;
 import java.util.logging.Level;

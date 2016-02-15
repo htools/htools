@@ -3,35 +3,27 @@ package io.github.htools.hadoop;
 import io.github.htools.fcollection.FHashSet;
 import io.github.htools.fcollection.FHashSetInt;
 import io.github.htools.fcollection.FHashSetLong;
-import io.github.htools.search.ByteRegex;
-import io.github.htools.search.ByteSearchPosition;
-import io.github.htools.io.Datafile;
-import io.github.htools.io.EOCException;
-import io.github.htools.io.FSFileInBuffer;
-import io.github.htools.io.FSPath;
+import io.github.htools.hadoop.io.OutputFormat;
+import io.github.htools.io.*;
 import io.github.htools.lib.ArgsParser;
 import io.github.htools.lib.ArrayTools;
-import io.github.htools.lib.Log;
-import static io.github.htools.lib.PrintTools.sprintf;
-import io.github.htools.hadoop.io.OutputFormat;
-import io.github.htools.io.FSFile;
-import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.ByteTools;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map.Entry;
+import io.github.htools.lib.Log;
+import io.github.htools.search.ByteRegex;
+import io.github.htools.search.ByteSearchPosition;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.util.GenericOptionsParser;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map.Entry;
+
+import static io.github.htools.lib.PrintTools.sprintf;
 
 /**
  * Extension of Hadoop's Conf that can read/write configurations from flat text
@@ -276,7 +268,7 @@ public class Conf extends JobConf {
                         if (df != null) {
                             p = stringregex.matchPos(content, p.end, content.length);
                             pos = p.end;
-                            String file = ByteTools.toString(content, p.start, p.end - p.start).trim();
+                            String file = ByteTools.toString(content, p.start, p.end).trim();
                             Datafile subfile = new Datafile(df.getDir().getFilename(file));
                             subfile.setFileSystem(df.getFileSystem());
                             sb.append(readConfigFile(subfile));
@@ -285,7 +277,7 @@ public class Conf extends JobConf {
                         }
                         continue;
                     default:
-                        sb.append(ByteTools.toString(content, p.start, p.end - p.start));
+                        sb.append(ByteTools.toString(content, p.start, p.end));
                         continue;
                 }
             }
@@ -744,6 +736,16 @@ public class Conf extends JobConf {
         this.set(ConfSetting.MAP_JAVA_OPTS, sprintf("-server -Xmx%dm", mem - 512));
     }
 
+    public void raiseMapMemoryMB(int mem) {
+        if (mem > getMapMemoryMB()) {
+           setMapMemoryMB(mem);
+        }
+    }
+
+    public int getMapMemoryMB() {
+        return getInt(ConfSetting.MAP_MEMORY_MB, 1024);
+    }
+    
     /**
      * Set the output buffer size
      * @param mem 

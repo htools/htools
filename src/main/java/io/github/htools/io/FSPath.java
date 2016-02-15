@@ -1,10 +1,11 @@
 package io.github.htools.io;
 
-import io.github.htools.search.ByteSearch;
 import io.github.htools.collection.ListIterator;
-import static io.github.htools.lib.Const.NULLLONG;
 import io.github.htools.lib.IteratorIterable;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearch;
+import org.apache.hadoop.io.IOUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,7 +13,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.hadoop.io.IOUtils;
+
+import static io.github.htools.lib.Const.NULLLONG;
 
 /**
  * FSPath id a wrapper around File that adds functionality to the use of paths
@@ -250,7 +252,7 @@ public class FSPath extends File implements HPath {
 
     @Override
     public IteratorIterable<DirComponent> wildcardIterator() {
-        return new HPathWildcardIterator(this);
+        return new HPathWildcardIterator(this, FileFilter.acceptAll);
     }
 
     @Override

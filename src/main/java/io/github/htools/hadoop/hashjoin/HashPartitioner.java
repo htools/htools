@@ -1,10 +1,8 @@
 package io.github.htools.hadoop.hashjoin;
 
+import io.github.htools.hadoop.Job;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
-import io.github.htools.hadoop.Job;
-import org.apache.hadoop.io.WritableComparable;
-import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 /**

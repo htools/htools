@@ -1,6 +1,7 @@
 package io.github.htools.type;
 
 import io.github.htools.lib.Log;
+
 import java.util.Collection;
 
 /**

@@ -1,10 +1,11 @@
 package io.github.htools.hadoop.io;
 
-import io.github.htools.lib.Log;
 import io.github.htools.hadoop.InputFormat;
-import java.util.HashMap;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+
+import java.util.HashMap;
 
 /**
  *

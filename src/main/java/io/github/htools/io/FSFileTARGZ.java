@@ -1,13 +1,10 @@
 package io.github.htools.io;
 
 import io.github.htools.lib.Log;
-import java.io.File;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 
 public class FSFileTARGZ extends FSFileGZ {
 

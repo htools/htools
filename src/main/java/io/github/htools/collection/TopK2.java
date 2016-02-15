@@ -1,8 +1,10 @@
 package io.github.htools.collection;
+
+import io.github.htools.lib.Log;
+import io.github.htools.lib.RandomTools;
+
 import java.util.Comparator;
 import java.util.TreeSet;
-import io.github.htools.lib.Log; 
-import io.github.htools.lib.RandomTools;
 
 /**
  *

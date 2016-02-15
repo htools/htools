@@ -1,12 +1,11 @@
 package io.github.htools.extract.modules;
 
+import io.github.htools.extract.Content;
+import io.github.htools.extract.Extractor;
+import io.github.htools.lib.Log;
 import io.github.htools.search.ByteRegex;
 import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.search.ByteSearchSection;
-import io.github.htools.lib.Log;
-import io.github.htools.extract.Content;
-import io.github.htools.extract.Extractor;
-import java.util.ArrayDeque;
 
 /**
  * Remove mediawiki tables's e.g. "{{cite ...}}" and "{| table |}".
@@ -31,7 +30,6 @@ public class MarkWikipediaTable extends SectionMarker {
 
     @Override
     public ByteSearchSection process(Content entity, ByteSearchSection section) {
-        log.info("MarkWikipediaTable");
         if (entity.content[section.innerstart - 1] != '{') {
             ByteSearchPosition end = new ByteSearchPosition(section.haystack, section.innerstart, section.innerend);
             int tableopen = 1;
@@ -53,11 +51,9 @@ public class MarkWikipediaTable extends SectionMarker {
                 }
             }
             if (tableopen == 0 && tableRow.exists(entity.content, section.end, end.start)) {
-                log.info("MarkWikipediaTable end");
                 return entity.addSectionPos(outputsection, entity.content, section.start, section.start, end.start, end.end);
             }
         }
-        log.info("MarkWikipediaTable end");
         return null;
     }
 }

@@ -263,6 +263,20 @@ public enum ArrayTools {;
        return strings.toArray(array);
    }
 
+   public static <K> HashSet<K> toHashSet(K[] array) {
+       HashSet<K> set = new HashSet();
+       for (K k : array)
+           set.add(k);
+       return set;
+   }
+
+   public static HashSet<Integer> toHashSet(int[] array) {
+       HashSet<Integer> set = new HashSet();
+       for (int k : array)
+           set.add(k);
+       return set;
+   }
+
    public static double[] toDoubleArray(Collection<Double> integers) {
       double[] ret = new double[integers.size()];
       Iterator<Double> iterator = integers.iterator();
@@ -593,6 +607,26 @@ public enum ArrayTools {;
          }
       }
       return false;
+   }
+
+   public static <K> boolean containsAll(K[] source, K... objects) {
+      HashSet<K> sourceset = toHashSet(source);
+      for (K k : objects) {
+         if (!sourceset.contains(k)) {
+            return false;
+         }
+      }
+      return true;
+   }
+
+   public static boolean containsAll(int[] source, int... objects) {
+      HashSet<Integer> sourceset = toHashSet(source);
+      for (int k : objects) {
+         if (!sourceset.contains(k)) {
+            return false;
+         }
+      }
+      return true;
    }
 
    public static boolean contains(int needle, int... haystack) {

@@ -6,6 +6,7 @@ import io.github.htools.lib.BoolTools;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
+
 import java.util.ArrayList;
 
 /**
@@ -257,6 +258,18 @@ public class ByteSearchSection extends ByteSearchPosition implements ByteSearchR
         return ByteTools.toBytes(haystack, innerstart, innerend);
     }
 
+    public byte[] toOuterBytes() {
+        return ByteTools.toBytes(haystack, start, end);
+    }
+
+    public byte[] toTrimmedBytes() {
+        return ByteTools.toTrimmed(haystack, innerstart, innerend);
+    }
+
+    public byte[] toFullTrimmedBytes() {
+        return ByteTools.toFullTrimmed(haystack, innerstart, innerend);
+    }
+
     public String toOuterString() {
         return ByteTools.toString(haystack, start, end);
     }
@@ -289,11 +302,6 @@ public class ByteSearchSection extends ByteSearchPosition implements ByteSearchR
             end = this.end - start;
         }
         return ByteTools.toString(haystack, start + pos, start + end);
-    }
-    
-    public void erase() {
-        for (int i = start; i < end; i++)
-            haystack[i] = 0;
     }
 
     public ByteSearchSection trim() {

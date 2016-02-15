@@ -1,22 +1,23 @@
 package io.github.htools.hadoop.io;
 
 import io.github.htools.hadoop.FileFilter;
-import io.github.htools.io.HDFSPath;
-import io.github.htools.lib.Log;
 import io.github.htools.hadoop.Job;
 import io.github.htools.io.DirComponent;
+import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.ClassTools;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import io.github.htools.lib.Log;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.JobContext;
+
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author jeroen
@@ -83,6 +84,7 @@ public abstract class FileInputFormat<K, V>
 
     @Override
     protected boolean isSplitable(JobContext context, Path filename) {
+        //log.info("split %s %b", filename, context.getConfiguration().getBoolean(SPLITABLE, true) && splitableFiles.acceptFile(filename));
         return context.getConfiguration().getBoolean(SPLITABLE, true) && splitableFiles.acceptFile(filename);
     }
 

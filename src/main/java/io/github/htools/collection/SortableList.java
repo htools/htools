@@ -2,6 +2,7 @@ package io.github.htools.collection;
 
 import io.github.htools.lib.Log;
 import io.github.htools.lib.RandomTools;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

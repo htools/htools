@@ -1,11 +1,12 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.search.ByteSearchSection;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.ExtractChannel;
 import io.github.htools.extract.Extractor;
-import static io.github.htools.lib.ByteTools.*;
 import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearchSection;
+
+import static io.github.htools.lib.ByteTools.extract;
 
 /**
  * Extracts the url from a WARC header

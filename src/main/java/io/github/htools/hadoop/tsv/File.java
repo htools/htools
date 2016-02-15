@@ -1,11 +1,12 @@
 package io.github.htools.hadoop.tsv;
 
 import io.github.htools.io.Datafile;
-import io.github.htools.lib.Log;
 import io.github.htools.io.struct.StructuredFileRecord;
 import io.github.htools.io.struct.StructuredRecordFile;
 import io.github.htools.io.struct.StructuredRecordFileIterator;
 import io.github.htools.io.struct.StructuredTextTSV;
+import io.github.htools.lib.Log;
+
 import java.io.IOException;
 /**
  * Supports Hadoop access to file storage in a tab separated values file. The TSV

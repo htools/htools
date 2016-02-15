@@ -3,6 +3,7 @@ package io.github.htools.search;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
+
 import java.util.ArrayList;
 
 /**
@@ -175,10 +176,14 @@ public class ByteSection extends ByteSearch {
       }
       return list;
    }
-   
-   public ArrayList<ByteSearchSection> findAllSections(byte b[]) {
-       return findAllSections(b, 0, b.length);
-   }
+
+    public ArrayList<ByteSearchSection> findAllSections(byte b[]) {
+        return findAllSections(b, 0, b.length);
+    }
+
+    public ArrayList<ByteSearchSection> findAllSections(ByteSearchSection section) {
+        return findAllSections(section.haystack, section.innerstart, section.innerend);
+    }
 
     public String extractMatch(String s) {
         if (s == null) {

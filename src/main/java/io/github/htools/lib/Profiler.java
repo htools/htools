@@ -1,10 +1,11 @@
 package io.github.htools.lib;
 
 import io.github.htools.io.Datafile;
-import static io.github.htools.lib.PrintTools.*;
-import java.io.IOException;
+
 import java.io.PrintStream;
 import java.util.HashMap;
+
+import static io.github.htools.lib.PrintTools.sprintf;
 
 /**
  * Tiny profiler.

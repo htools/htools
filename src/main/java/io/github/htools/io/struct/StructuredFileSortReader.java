@@ -1,8 +1,6 @@
 package io.github.htools.io.struct;
 
-import io.github.htools.io.FileIntegrityException;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 
 /**
  * Internal helper class for the construction of StructureFileSort

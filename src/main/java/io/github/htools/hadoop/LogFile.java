@@ -3,8 +3,9 @@ package io.github.htools.hadoop;
 import io.github.htools.io.Datafile;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
-import java.io.IOException;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+
+import java.io.IOException;
 /**
  *
  * @author jeroen

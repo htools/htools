@@ -1,10 +1,9 @@
 package io.github.htools.lib;
 
-import io.github.htools.lib.ArgsParser;
-import io.github.htools.lib.Log;
 import io.github.htools.lib.ArgsParser.Parameter;
-import static org.junit.Assert.*;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class ArgsParserTest {
     public static Log log = new Log(ArgsParserTest.class);
@@ -95,7 +94,7 @@ public class ArgsParserTest {
     public void booleanFlag() {
         log.info("booleanflag");
         parsedargs = new ArgsParser("-a aap -b noot -c mies".split(" "), "-a first -b second -c [third]");
-        assertEquals(0, parsedargs.getParameter("f").size());
+        assertEquals(false, parsedargs.exists("f"));
         parsedargs = new ArgsParser("-a aap -b noot -c mies --f".split(" "), "-a first -b second -c [third] --f");
         assertEquals("true", parsedargs.get("f"));
         assertEquals(true, parsedargs.getBoolean("f"));

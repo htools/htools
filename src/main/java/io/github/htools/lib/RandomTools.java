@@ -292,6 +292,22 @@ public enum RandomTools {
         }
 
         /**
+         * shifts one stdNormal
+         */
+        public void shiftStdNormal() {
+            if (haveNextNextGaussian) {
+                haveNextNextGaussian = false;
+            } else {
+                double v1, v2, s;
+                do {
+                    v1 = 2 * getDouble() - 1; // between -1 and 1
+                    v2 = 2 * getDouble() - 1; // between -1 and 1
+                    s = v1 * v1 + v2 * v2;
+                } while (s >= 1 || s == 0);
+            }
+        }
+
+        /**
          * @return random gaussian, using Box-Muller
          */
         public double getStdNormal() {

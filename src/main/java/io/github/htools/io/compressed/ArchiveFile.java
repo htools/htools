@@ -1,18 +1,20 @@
 package io.github.htools.io.compressed;
 
 import io.github.htools.io.Datafile;
+import io.github.htools.io.FSPath;
 import io.github.htools.io.HDFSIn;
-import io.github.htools.io.compressed.ArchiveEntry;
-import java.io.IOException;
+import io.github.htools.lib.ArgsParser;
 import io.github.htools.lib.Log;
 import io.github.htools.search.ByteRegex;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchPosition;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.util.Iterator;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
 
 /**
  *
@@ -145,4 +147,25 @@ public abstract class ArchiveFile<E> implements Iterator<ArchiveEntry>, Iterable
     public Iterator<ArchiveEntry> iterator() {
         return this;
     }
+    
+    
+    public static void main(String[] args) throws IOException {
+        ArgsParser ap = new ArgsParser(args, "-i input -o [output]");
+        Datafile in = ap.getDatafile("input");
+        FSPath path = ap.getPath("output");
+        ArchiveFile tz = ArchiveFile.getReader(in);
+        Iterator<ArchiveEntry> iter = tz.iterator();
+        while (iter.hasNext()) {
+            ArchiveEntry next = iter.next();
+            if (next.isDirectory()) {
+                FSPath newdir = path.getSubdir(next.getName());
+                newdir.mkdir();
+            } else {
+               Datafile df = path.getFile(next.getName());
+               df.openWrite();
+               df.writeRaw(next.readAll());
+               df.closeWrite();
+            }
+        }
+    }    
 }

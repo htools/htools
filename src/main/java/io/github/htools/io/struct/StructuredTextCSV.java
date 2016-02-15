@@ -1,12 +1,11 @@
 package io.github.htools.io.struct;
 
+import io.github.htools.io.Datafile;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchSection;
 import io.github.htools.search.ByteSection;
-import io.github.htools.io.Datafile;
-import io.github.htools.lib.Log;
-import java.io.IOException;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 

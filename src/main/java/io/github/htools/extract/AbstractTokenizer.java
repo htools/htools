@@ -5,6 +5,7 @@ import io.github.htools.extract.modules.TokenChar;
 import io.github.htools.extract.modules.TokenizerRegex;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
+
 import java.util.ArrayList;
 /**
  *
@@ -79,11 +80,11 @@ public abstract class AbstractTokenizer extends Extractor {
    public void addEndPipeline(ExtractorProcessor processor) {
        this.addProcess("tokenize", processor);
    }
-   
-   public ArrayList<String> tokenize(byte content[]) {
-       return process(content).get("result").getTerms();
-   }
-   
+
+    public ArrayList<String> tokenize(byte content[]) {
+        return process(content).get("result").getTerms();
+    }
+
    public ArrayList<String> tokenize(String text) {
        return tokenize(ByteTools.toBytes(text));
    }

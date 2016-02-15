@@ -2,11 +2,10 @@ package io.github.htools.extract.modules;
 
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
-import io.github.htools.search.ByteRegex;
+import io.github.htools.lib.Log;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.search.ByteSearchSection;
-import io.github.htools.lib.Log;
 
 /**
  * Remove codes with a decimal dot, e.g. "v1.02", "x.01", "0.05", "0.01a"

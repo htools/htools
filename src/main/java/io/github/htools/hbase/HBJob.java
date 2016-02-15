@@ -4,8 +4,6 @@ import io.github.htools.hadoop.Job;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.ClassTools;
 import io.github.htools.lib.Log;
-import java.io.IOException;
-import java.util.UUID;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.HTable;
@@ -14,6 +12,9 @@ import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat2;
 import org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles;
 import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
+
+import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Extension of Job that sets the configuration to work with HBase.

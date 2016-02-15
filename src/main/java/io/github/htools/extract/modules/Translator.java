@@ -1,13 +1,11 @@
 package io.github.htools.extract.modules;
 
 import io.github.htools.collection.ArrayMap;
-import io.github.htools.search.ByteSearchSection;
-import io.github.htools.lib.Log;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
-import io.github.htools.lib.ArrayTools;
-import io.github.htools.lib.PrintTools;
-import java.util.HashMap;
+import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearchSection;
+
 import java.util.Map;
 
 /**

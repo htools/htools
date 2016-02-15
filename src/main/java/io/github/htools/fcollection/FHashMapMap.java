@@ -1,9 +1,8 @@
 package io.github.htools.fcollection;
 
-import io.github.htools.collection.*;
 import io.github.htools.lib.Log;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import java.util.HashMap;
+
 import java.util.Map;
 
 /**

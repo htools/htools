@@ -1,10 +1,6 @@
-// Generated from ByteRegex.g4 by ANTLR 4.2.2
+// Generated from ByteRegex.g4 by ANTLR 4.3
 
     package io.github.htools.search;
-    import io.github.htools.search.Node.*; 
-    import java.util.ArrayList;
-    import io.github.htools.lib.Log;
-
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -29,6 +25,19 @@ public class ByteRegexBaseListener implements ByteRegexListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFrag(@NotNull ByteRegexParser.FragContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCharacter(@NotNull ByteRegexParser.CharacterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCharacter(@NotNull ByteRegexParser.CharacterContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
@@ -61,19 +70,6 @@ public class ByteRegexBaseListener implements ByteRegexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOperand(@NotNull ByteRegexParser.OperandContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitOperand(@NotNull ByteRegexParser.OperandContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterBracket(@NotNull ByteRegexParser.BracketContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -87,19 +83,6 @@ public class ByteRegexBaseListener implements ByteRegexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCharacter(@NotNull ByteRegexParser.CharacterContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCharacter(@NotNull ByteRegexParser.CharacterContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterStartRule(@NotNull ByteRegexParser.StartRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -107,6 +90,19 @@ public class ByteRegexBaseListener implements ByteRegexListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStartRule(@NotNull ByteRegexParser.StartRuleContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOperand(@NotNull ByteRegexParser.OperandContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOperand(@NotNull ByteRegexParser.OperandContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

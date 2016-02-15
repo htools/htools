@@ -1,18 +1,18 @@
 package io.github.htools.hadoop.io.backup;
 
 import io.github.htools.hadoop.Conf;
-import io.github.htools.lib.Log;
 import io.github.htools.hadoop.Job;
-import io.github.htools.hadoop.io.ListInputFormat;
 import io.github.htools.hadoop.io.FilePairInputFormat;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.ClassTools;
+import io.github.htools.lib.Log;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 
 /**
  * @author jeroen

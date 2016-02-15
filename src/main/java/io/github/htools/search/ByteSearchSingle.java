@@ -1,7 +1,5 @@
 package io.github.htools.search;
 
-import io.github.htools.search.ByteSearchPosition;
-import io.github.htools.lib.Log;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
 

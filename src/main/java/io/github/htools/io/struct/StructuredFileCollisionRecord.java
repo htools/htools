@@ -1,6 +1,6 @@
 package io.github.htools.io.struct;
+
 import io.github.htools.lib.Log;
-import java.io.IOException;
 
 public abstract class StructuredFileCollisionRecord extends StructuredFileSortRecord {
    public static Log log = new Log(StructuredFileCollisionRecord.class);

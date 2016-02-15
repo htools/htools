@@ -3,12 +3,11 @@ package io.github.htools.io.web;
 import io.github.htools.lib.ArrayTools;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.StrTools;
-import java.net.URI;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.ws.rs.core.UriBuilder;
 
 /**
  *

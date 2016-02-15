@@ -1,10 +1,10 @@
 grammar ByteRegex;
 
 @header {
-    package io.github.repir.tools.search;
-    import io.github.repir.tools.search.Node.*; 
+    package io.github.htools.search;
+    import io.github.htools.search.Node.*; 
     import java.util.ArrayList;
-    import io.github.repir.tools.lib.Log;
+    import io.github.htools.lib.Log;
 }
 
 @members {
@@ -208,13 +208,11 @@ character returns [ Node node ]
                       $node.setAllowedRange( 'A', 'Z' );
                       $node.setAllowedRange( 'a', 'z' );
                       $node.setAllowedRange( '0', '9' );
-                      $node.setAllowed( '_' );
                       break;
                    case 'W' :
                       $node.setAllowedRange( 'A', 'Z' );
                       $node.setAllowedRange( 'a', 'z' );
                       $node.setAllowedRange( '0', '9' );
-                      $node.setAllowed( '_' );
                       $node.invertAllowed();
                       break;
                    case 'c' :

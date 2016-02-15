@@ -1,7 +1,7 @@
 package io.github.htools.extract.modules;
 
-import io.github.htools.lib.Log;
 import io.github.htools.lib.BoolTools;
+import io.github.htools.lib.Log;
 
 /**
  * convert all uppercase characters to lowercase. This processor is not context

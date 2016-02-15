@@ -1,10 +1,11 @@
 package io.github.htools.hadoop.io;
 
 import io.github.htools.lib.Log;
+import org.apache.hadoop.io.IntWritable;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import org.apache.hadoop.io.IntWritable;
 
 /**
  * Pairs an int that indicates the partition number with a of long used for

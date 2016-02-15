@@ -1,12 +1,13 @@
 package io.github.htools.io.struct;
 
-import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.io.BytesOut;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.EOCException;
 import io.github.htools.io.HDFSPath;
+import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
 import io.github.htools.search.ByteSearch;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 

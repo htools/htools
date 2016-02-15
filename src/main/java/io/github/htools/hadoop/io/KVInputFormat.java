@@ -2,15 +2,12 @@ package io.github.htools.hadoop.io;
 
 import io.github.htools.hadoop.Job;
 import io.github.htools.lib.Log;
+import org.apache.hadoop.mapreduce.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.hadoop.mapreduce.InputFormat;
-import org.apache.hadoop.mapreduce.InputSplit;
-import org.apache.hadoop.mapreduce.JobContext;
-import org.apache.hadoop.mapreduce.RecordReader;
-import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 /**
  * A custom implementation of Hadoop's InputFormat, that holds the InputSplits

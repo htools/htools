@@ -1,13 +1,15 @@
 package io.github.htools.io;
 
-import java.io.FileWriter;
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
+
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
-import static io.github.htools.lib.PrintTools.*;
+
+import static io.github.htools.lib.PrintTools.sprintf;
 
 public abstract class FileGeneric {
 

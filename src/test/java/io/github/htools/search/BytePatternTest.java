@@ -4,18 +4,14 @@
  */
 package io.github.htools.search;
 
-import io.github.htools.search.ByteSearchSection;
-import io.github.htools.search.ByteSectionScanned;
-import io.github.htools.search.ByteRegex;
-import io.github.htools.search.ByteSearch;
-import io.github.htools.search.ByteSearchPosition;
-import io.github.htools.search.ByteSection;
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
-import java.util.ArrayList;
-import static org.junit.Assert.*;
 import org.junit.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -30,17 +26,21 @@ public class BytePatternTest {
 
    @Test
    public void test1() {
+      log.info("test1");
       ByteSearch skip = ByteSearch.create("----\\s+(By\\s|Special\\sto\\s|A\\sWall\\sStreet\\Journal)");
       ByteSearch p = ByteSearch.create(">").QuoteSafe();
       int pos = p.find(" <test a=\">\" b='>' c=\"\\\">\" d='\\\'>' >".getBytes(), 0, 36);
       assertEquals(35, pos);
+      log.info("end test1");
    }
 
    @Test
    public void test2() {
+      log.info("test2");
       ByteSearch p = ByteSearch.create("Zickel");
       int pos = p.find(" zickel".getBytes(), 0, 7);
       assertEquals(1, pos);
+      log.info("end test2");
    }
 
    public byte[] htmlFragment() {
@@ -56,6 +56,7 @@ public class BytePatternTest {
 
    @Test
    public void test3() {
+      log.info("test3");
       byte text[] = htmlFragment();
       ByteRegex starttag = new ByteRegex("<title");
       ByteSearch endtag = ByteSearch.create(">");
@@ -65,6 +66,7 @@ public class BytePatternTest {
       ByteSearchPosition end = endmarker.findPos(text, endpos, text.length);
       log.info("%d %d %d %d %d", findPos.start, findPos.end, endpos, end.start, end.end);
       assertEquals(154, end.start);
+      log.info("end test3");
    }
 
    public byte[] metaFragment() {
@@ -75,6 +77,7 @@ public class BytePatternTest {
 
    @Test
    public void test4() {
+      log.info("test4");
       BufferReaderWriter reader = new BufferReaderWriter(metaFragment());
       ByteSearch keywords = ByteSearch.create("\\sname\\s*=\\s*(keywords|description|'keywords'|'description'|\"keywords\"|\"description\")");
       ByteSearch starttag = ByteSearch.create("<meta(?=\\s)");
@@ -84,11 +87,13 @@ public class BytePatternTest {
       ByteSearch quote = ByteSearch.create("['\"]");
       ArrayList<String> results = new ArrayList<String>();
       do {
+         log.info("readSection");
          ByteSearchSection section = reader.readSection(metatag);
          log.info("%s", section);
          if (!section.found()) {
             break;
          }
+         log.info("end readSection");
 
          section = new ByteSearchSection(section.haystack, section.start, section.innerstart-1,
          section.innerend, section.end);
@@ -101,39 +106,47 @@ public class BytePatternTest {
          }
       } while (true);
       log.info("%s", results);
+      log.info("end test4");
    }
 
    @Test
    public void test5() {
+      log.info("test5");
       byte text[] = ("  content=\"aap\"").getBytes();
       ByteSearch endtag = ByteSearch.create("\\scontent\\s*=\\s*\\Q");
       ByteSearchPosition end = endtag.findPos(text, 0, text.length);
       log.info("%s %d %d", endtag.getClass().getSimpleName(), end.start, end.end);
       assertEquals(1, end.start);
+      log.info("end test5");
    }
 
    @Test
    public void testFind() {
+      log.info("testFind");
       String text = " WARC-TREC-ID: aap\n ";
       ByteSearch warcIDTag = ByteSearch.create("WARC\\-TREC\\-ID: ");
       ByteSearch eol = ByteSearch.create("\n");
       ByteSection warcID = new ByteSection(warcIDTag, eol);
       String match = warcID.getFirstString(text);
       assertEquals("aap", match);
+      log.info("end testFind");
    }
 
    @Test
    public void testEnd() {
+      log.info("testEnd");
       String text = " WARC-TREC-ID: aap\n ";
       ByteSearch warcIDTag = ByteSearch.create("WARC\\-TREC\\-ID: ");
       ByteSearch eol = ByteSearch.create("\n");
       ByteSection warcID = new ByteSection(warcIDTag, eol);
       String match = warcID.getFirstString(text);
       assertEquals("aap", match);
+      log.info("end testEnd");
    }
 
    @Test
    public void testByteSectionScanned () {
+      log.info("testByteSectionScanned");
       byte [] haystack = " a1b aab abb a11b aaab abbb aabb ".getBytes();
       int end = haystack.length;
       ByteSection s = new ByteSectionScanned("a", "1", "b");
@@ -145,10 +158,12 @@ public class BytePatternTest {
       s = new ByteSection("a", "b");
       findAllSections = s.findAllSections(haystack, 0, end);
       assertEquals( 7, findAllSections.size());
+      log.info("end testByteSectionScanned");
    }
 
    @Test
    public void testConfiguration() {
+      log.info("testConfiguration");
       ByteRegex configuration = new ByteRegex("\\+?\\c\\w*(\\.\\c\\w*)+=\\S*$");
       String command = "param1 2 mapreduce.job.priority=HIGH retriever.strategy=AAP";
       String args[] = command.split(" ");
@@ -156,6 +171,7 @@ public class BytePatternTest {
       assertEquals(true, configuration.startsWith(args[3]));
       assertEquals(false, configuration.startsWith(args[0]));
       assertEquals(false, configuration.startsWith(args[1]));
+      log.info("end testConfiguration");
    }
 
 }

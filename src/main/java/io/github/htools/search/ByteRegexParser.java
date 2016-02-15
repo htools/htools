@@ -1,21 +1,24 @@
-// Generated from ByteRegex.g4 by ANTLR 4.2.2
+// Generated from ByteRegex.g4 by ANTLR 4.3
 
     package io.github.htools.search;
-    import io.github.htools.search.Node.*; 
-    import java.util.ArrayList;
-    import io.github.htools.lib.Log;
 
-import org.antlr.v4.runtime.atn.*;
-import org.antlr.v4.runtime.dfa.DFA;
+import io.github.htools.lib.Log;
+import io.github.htools.search.Node.TYPE;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.ParserATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ByteRegexParser extends Parser {
+	static { RuntimeMetaData.checkVersion("4.3", RuntimeMetaData.VERSION); }
+
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
@@ -61,11 +64,11 @@ public class ByteRegexParser extends Parser {
 	}
 	public static class StartRuleContext extends ParserRuleContext {
 		public FragContext frag;
+		public TerminalNode CASE() { return getToken(ByteRegexParser.CASE, 0); }
 		public FragContext frag() {
 			return getRuleContext(FragContext.class,0);
 		}
 		public TerminalNode EOF() { return getToken(ByteRegexParser.EOF, 0); }
-		public TerminalNode CASE() { return getToken(ByteRegexParser.CASE, 0); }
 		public TerminalNode QUES() { return getToken(ByteRegexParser.QUES, 0); }
 		public StartRuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -133,13 +136,13 @@ public class ByteRegexParser extends Parser {
 	public static class FragContext extends ParserRuleContext {
 		public Fragment fragout;
 		public StringContext string;
+		public StringContext string(int i) {
+			return getRuleContext(StringContext.class,i);
+		}
 		public List<StringContext> string() {
 			return getRuleContexts(StringContext.class);
 		}
 		public List<TerminalNode> OR() { return getTokens(ByteRegexParser.OR); }
-		public StringContext string(int i) {
-			return getRuleContext(StringContext.class,i);
-		}
 		public TerminalNode OR(int i) {
 			return getToken(ByteRegexParser.OR, i);
 		}
@@ -215,11 +218,11 @@ public class ByteRegexParser extends Parser {
 	public static class StringContext extends ParserRuleContext {
 		public Fragment fragout;
 		public OperandContext operand;
-		public OperandContext operand(int i) {
-			return getRuleContext(OperandContext.class,i);
-		}
 		public List<OperandContext> operand() {
 			return getRuleContexts(OperandContext.class);
+		}
+		public OperandContext operand(int i) {
+			return getRuleContext(OperandContext.class,i);
 		}
 		public StringContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -282,14 +285,14 @@ public class ByteRegexParser extends Parser {
 	public static class OperandContext extends ParserRuleContext {
 		public Fragment fragout;
 		public SetContext set;
-		public TerminalNode STAR() { return getToken(ByteRegexParser.STAR, 0); }
-		public TerminalNode QUES(int i) {
-			return getToken(ByteRegexParser.QUES, i);
-		}
-		public List<TerminalNode> QUES() { return getTokens(ByteRegexParser.QUES); }
 		public TerminalNode PLUS() { return getToken(ByteRegexParser.PLUS, 0); }
+		public TerminalNode STAR() { return getToken(ByteRegexParser.STAR, 0); }
 		public SetContext set() {
 			return getRuleContext(SetContext.class,0);
+		}
+		public List<TerminalNode> QUES() { return getTokens(ByteRegexParser.QUES); }
+		public TerminalNode QUES(int i) {
+			return getToken(ByteRegexParser.QUES, i);
 		}
 		public OperandContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -427,13 +430,13 @@ public class ByteRegexParser extends Parser {
 		public FragContext frag() {
 			return getRuleContext(FragContext.class,0);
 		}
-		public TerminalNode BRACKOPEN() { return getToken(ByteRegexParser.BRACKOPEN, 0); }
-		public TerminalNode BRACKCLOSE() { return getToken(ByteRegexParser.BRACKCLOSE, 0); }
-		public TerminalNode LOOKAHEAD() { return getToken(ByteRegexParser.LOOKAHEAD, 0); }
 		public BracketContext bracket() {
 			return getRuleContext(BracketContext.class,0);
 		}
+		public TerminalNode LOOKAHEAD() { return getToken(ByteRegexParser.LOOKAHEAD, 0); }
+		public TerminalNode BRACKCLOSE() { return getToken(ByteRegexParser.BRACKCLOSE, 0); }
 		public TerminalNode LOOKBEHIND() { return getToken(ByteRegexParser.LOOKBEHIND, 0); }
+		public TerminalNode BRACKOPEN() { return getToken(ByteRegexParser.BRACKOPEN, 0); }
 		public SetContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -555,10 +558,11 @@ public class ByteRegexParser extends Parser {
 	public static class BracketContext extends ParserRuleContext {
 		public Node node;
 		public CharacterContext character;
+		public TerminalNode BLOCKOPEN() { return getToken(ByteRegexParser.BLOCKOPEN, 0); }
+		public TerminalNode BLOCKCLOSE() { return getToken(ByteRegexParser.BLOCKCLOSE, 0); }
 		public TerminalNode MINUS(int i) {
 			return getToken(ByteRegexParser.MINUS, i);
 		}
-		public TerminalNode BLOCKCLOSE() { return getToken(ByteRegexParser.BLOCKCLOSE, 0); }
 		public CharacterContext character(int i) {
 			return getRuleContext(CharacterContext.class,i);
 		}
@@ -566,7 +570,6 @@ public class ByteRegexParser extends Parser {
 		public List<CharacterContext> character() {
 			return getRuleContexts(CharacterContext.class);
 		}
-		public TerminalNode BLOCKOPEN() { return getToken(ByteRegexParser.BLOCKOPEN, 0); }
 		public BracketContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -697,10 +700,10 @@ public class ByteRegexParser extends Parser {
 		public Token CHAR;
 		public Token LITERAL;
 		public TerminalNode DOT() { return getToken(ByteRegexParser.DOT, 0); }
-		public TerminalNode START() { return getToken(ByteRegexParser.START, 0); }
-		public TerminalNode LITERAL() { return getToken(ByteRegexParser.LITERAL, 0); }
-		public TerminalNode CHAR() { return getToken(ByteRegexParser.CHAR, 0); }
 		public TerminalNode END() { return getToken(ByteRegexParser.END, 0); }
+		public TerminalNode START() { return getToken(ByteRegexParser.START, 0); }
+		public TerminalNode CHAR() { return getToken(ByteRegexParser.CHAR, 0); }
+		public TerminalNode LITERAL() { return getToken(ByteRegexParser.LITERAL, 0); }
 		public CharacterContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -774,13 +777,11 @@ public class ByteRegexParser extends Parser {
 				                      _localctx.node.setAllowedRange( 'A', 'Z' );
 				                      _localctx.node.setAllowedRange( 'a', 'z' );
 				                      _localctx.node.setAllowedRange( '0', '9' );
-				                      _localctx.node.setAllowed( '_' );
 				                      break;
 				                   case 'W' :
 				                      _localctx.node.setAllowedRange( 'A', 'Z' );
 				                      _localctx.node.setAllowedRange( 'a', 'z' );
 				                      _localctx.node.setAllowedRange( '0', '9' );
-				                      _localctx.node.setAllowed( '_' );
 				                      _localctx.node.invertAllowed();
 				                      break;
 				                   case 'c' :

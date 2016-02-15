@@ -3,7 +3,7 @@ package io.github.htools.io.struct;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.FileIntegrityException;
 import io.github.htools.lib.Log;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.TreeSet;
 

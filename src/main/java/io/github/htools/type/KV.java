@@ -1,6 +1,7 @@
 package io.github.htools.type;
 
 import io.github.htools.lib.MathTools;
+
 import java.util.Map;
 
 public class KV<K, V> implements Map.Entry<K, V>, Comparable<KV<K, V>> {

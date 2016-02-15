@@ -6,13 +6,14 @@ import io.github.htools.hadoop.io.backup.PathModifier;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.HDFSPath;
 import io.github.htools.lib.Log;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.JobContext;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.apache.hadoop.mapreduce.InputSplit;
-import org.apache.hadoop.mapreduce.JobContext;
 
 public class FilePairInputFormat extends KVInputFormat<String, String> {
 
@@ -33,6 +34,10 @@ public class FilePairInputFormat extends KVInputFormat<String, String> {
         }
     }
 
+    public static void addPaths(Job job, Datafile df, Datafile df2) throws IOException {
+        add(job, "" + FilePairInputFormat.size(), df.getCanonicalPath(), df2.getCanonicalPath());
+    }
+
     public static void addDatafiles(Job job, PathModifier modifier, Collection<Datafile> path) throws IOException {
         modifier.setConf(job.getConfiguration());
         HashMapList<String, String> distributeFiles = HDFSPath.distributeDatafiles(job.getFileSystem(), path);
@@ -45,30 +50,35 @@ public class FilePairInputFormat extends KVInputFormat<String, String> {
 
     @Override
     public List<InputSplit> getSplits(JobContext context) throws IOException, InterruptedException {
-        ArrayList<InputSplit> splits = new ArrayList();
-        for (Map.Entry<Object, KVInputSplit> s : map.entrySet()) {
-            int splitsneeded = (s.getValue().size() / 49) + 1;
-            if (splitsneeded == 1) {
-                s.getValue().hosts = new String[]{(String) s.getKey()};
-                splits.add(s.getValue());
-            } else {
-                ArrayList<KVInputSplit<String, String>> newsplits = new ArrayList();
-                for (int i = 0; i < splitsneeded; i++) {
-                    KVInputSplit<String, String> newsplit = createSplit();
-                    newsplit.hosts = new String[]{(String) s.getKey()};
-                    newsplits.add(newsplit);
-                    splits.add(newsplit);
-                }
-                for (int i = 0; i < s.getValue().size(); i++) {
-                    Map.Entry<String, String> pair = s.getValue().get(i);
-                    newsplits.get(i % splitsneeded).add(pair.getKey(), pair.getValue());
+        if (cansplit) {
+            ArrayList<InputSplit> splits = new ArrayList();
+            for (Map.Entry<Object, KVInputSplit> s : map.entrySet()) {
+                int splitsneeded = (s.getValue().size() / 49) + 1;
+                if (splitsneeded == 1) {
+                    s.getValue().hosts = new String[]{(String) s.getKey()};
+                    splits.add(s.getValue());
+                } else {
+                    ArrayList<KVInputSplit<String, String>> newsplits = new ArrayList();
+                    for (int i = 0; i < splitsneeded; i++) {
+                        KVInputSplit<String, String> newsplit = createSplit();
+                        newsplit.hosts = new String[]{(String) s.getKey()};
+                        newsplits.add(newsplit);
+                        splits.add(newsplit);
+                    }
+                    for (int i = 0; i < s.getValue().size(); i++) {
+                        Map.Entry<String, String> pair = s.getValue().get(i);
+                        newsplits.get(i % splitsneeded).add(pair.getKey(), pair.getValue());
+                    }
                 }
             }
+            return splits;
+        } else {
+            return super.getSplits(context);
         }
-        return splits;
+
     }
 
-    private static void add(Job job, String host, Object key, Object value) {
+    private static void add(Job job, String host, String key, String value) {
         KVInputSplit currentsplit = getSplit(host);
         if (currentsplit == null) {
             currentsplit = getInputFormat(job).createSplit();

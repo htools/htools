@@ -2,6 +2,7 @@ package io.github.htools.collection;
 
 import io.github.htools.lib.CollectionTools;
 import io.github.htools.lib.Log;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,6 +24,11 @@ public class HashMapInt<K> extends HashMap<K, Integer> {
    
     public HashMapInt(Map<K, Integer> map) {
         super(map);
+    }
+    
+   public HashMapInt(Collection<K> keys) {
+        super(keys.size());
+        this.addAll(keys);
     }
     
     public Map<Integer, K> invert() {

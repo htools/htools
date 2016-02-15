@@ -1,12 +1,9 @@
 package io.github.htools.collection;
-import io.github.htools.collection.QueueIterator;
+
 import io.github.htools.lib.Log;
 import io.github.htools.lib.RandomTools;
-import java.util.Arrays; 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.PriorityQueue;
+
+import java.util.*;
 
 /**
  * This collection uses a PriorityQueue to retrieve the first ordered item. Different

@@ -1,13 +1,14 @@
 package io.github.htools.search;
 
-import io.github.htools.search.Node.TYPE;
 import io.github.htools.lib.Log;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
+import io.github.htools.lib.PrintTools;
+import io.github.htools.search.Node.TYPE;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
-import io.github.htools.lib.PrintTools;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 /**
  * A fast regular expression matcher for byte arrays and buffered byte streams.

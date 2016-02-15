@@ -1,10 +1,9 @@
 package io.github.htools.io;
 
 import io.github.htools.hadoop.Conf;
-import io.github.htools.lib.ArgsParser;
 import io.github.htools.lib.Log;
+
 import java.io.IOException;
-import org.apache.hadoop.conf.Configuration;
 
 public class HDFSMove {
 

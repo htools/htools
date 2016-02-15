@@ -1,12 +1,11 @@
 package io.github.htools.type;
 
-import java.util.Comparator;
+import io.github.htools.lib.Log;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import io.github.htools.lib.Log;
-import io.github.htools.lib.Log;
 
 public class SparseDoubleArray {
 

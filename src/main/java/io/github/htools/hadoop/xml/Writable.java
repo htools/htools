@@ -2,7 +2,7 @@ package io.github.htools.hadoop.xml;
 
 import io.github.htools.io.buffer.BufferDelayedWriter;
 import io.github.htools.io.buffer.BufferReaderWriter;
-import io.github.htools.hadoop.io.buffered.DelayedWritable;
+
 import java.io.DataInput;
 import java.io.IOException;
 

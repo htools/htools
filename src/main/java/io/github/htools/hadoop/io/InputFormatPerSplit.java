@@ -2,6 +2,7 @@ package io.github.htools.hadoop.io;
 
 import io.github.htools.hadoop.Job;
 import io.github.htools.lib.Log;
+
 import java.util.Collection;
 
 /**

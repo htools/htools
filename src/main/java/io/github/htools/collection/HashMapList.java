@@ -1,6 +1,7 @@
 package io.github.htools.collection;
 
 import io.github.htools.lib.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,10 @@ public class HashMapList<K, V> extends HashMap<K, ArrayList<V>> {
    
    public HashMapList( ) {
       super();
+   }
+   
+   public HashMapList( Map<K, ArrayList<V>> map) {
+      super(map);
    }
    
    public HashMapList( int size ) {

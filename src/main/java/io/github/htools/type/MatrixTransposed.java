@@ -1,7 +1,5 @@
 package io.github.htools.type;
 
-import java.util.Iterator;
-import io.github.htools.lib.Log;
 import io.github.htools.lib.Log;
 
 /**

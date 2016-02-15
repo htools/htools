@@ -2,9 +2,9 @@ package io.github.htools.collection;
 
 import io.github.htools.lib.Log;
 import io.github.htools.lib.MapTools;
-import io.github.htools.type.KV;
 import io.github.htools.type.KV3;
 import io.github.htools.type.Tuple2;
+
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;

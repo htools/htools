@@ -3,13 +3,14 @@ package io.github.htools.hadoop.io;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.struct.StructuredRecordFile;
 import io.github.htools.lib.ClassTools;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.IOException;
+import java.lang.reflect.Constructor;
 /**
  *
  * @author jeroen

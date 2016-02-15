@@ -2,15 +2,9 @@ package io.github.htools.io;
 
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
+
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 
 /**
  * This class is intended to remove all the Java fuzz regarding files. There is

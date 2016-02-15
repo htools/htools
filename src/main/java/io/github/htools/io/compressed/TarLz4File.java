@@ -1,10 +1,11 @@
 package io.github.htools.io.compressed;
 
-import java.io.IOException;
 import io.github.htools.lib.Log;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  *

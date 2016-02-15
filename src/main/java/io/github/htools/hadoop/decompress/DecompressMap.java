@@ -1,11 +1,12 @@
 package io.github.htools.hadoop.decompress;
 
 import io.github.htools.lib.Log;
-import java.io.IOException;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+
+import java.io.IOException;
 
 /**
  * Filter clicked urls using a list of domains

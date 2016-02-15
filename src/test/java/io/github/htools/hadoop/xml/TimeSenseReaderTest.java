@@ -1,9 +1,9 @@
 package io.github.htools.hadoop.xml;
 
-import io.github.htools.search.ByteSearchSection;
 import io.github.htools.io.Datafile;
-import io.github.htools.lib.Log;
 import io.github.htools.io.struct.StructuredTextTSV;
+import io.github.htools.lib.Log;
+import io.github.htools.search.ByteSearchSection;
 import org.junit.Before;
 import org.junit.Test;
 

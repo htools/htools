@@ -1,8 +1,10 @@
 package io.github.htools.lib;
 
-import static io.github.htools.lib.MathTools.welchDegreesOfFreedom;
-import java.util.Collection;
 import org.apache.commons.math3.distribution.TDistribution;
+
+import java.util.Collection;
+
+import static io.github.htools.lib.MathTools.welchDegreesOfFreedom;
 
 /**
  *

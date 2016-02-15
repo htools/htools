@@ -1,12 +1,8 @@
 package io.github.htools.collection;
 
 import io.github.htools.lib.Log;
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 /**
  * A map that is fast to create and iterate, having no index.

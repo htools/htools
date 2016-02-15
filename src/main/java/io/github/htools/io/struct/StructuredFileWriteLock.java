@@ -3,8 +3,9 @@ package io.github.htools.io.struct;
 import io.github.htools.io.Datafile;
 import io.github.htools.io.FileIntegrityException;
 import io.github.htools.lib.Log;
-import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
+
+import java.io.IOException;
 
 /**
  * Implementation for a file with relatively small headers, to be loaded into

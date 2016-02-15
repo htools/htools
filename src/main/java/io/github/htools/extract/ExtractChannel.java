@@ -4,6 +4,7 @@ import io.github.htools.io.EOCException;
 import io.github.htools.io.struct.StructureReader;
 import io.github.htools.io.struct.StructureWriter;
 import io.github.htools.lib.Log;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 

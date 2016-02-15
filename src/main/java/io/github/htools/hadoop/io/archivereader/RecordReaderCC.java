@@ -1,17 +1,18 @@
 package io.github.htools.hadoop.io.archivereader;
 
 import io.github.htools.extract.Content;
+import io.github.htools.io.EOCException;
+import io.github.htools.lib.Log;
 import io.github.htools.search.ByteSearch;
 import io.github.htools.search.ByteSearchPosition;
 import io.github.htools.search.ByteSearchSection;
 import io.github.htools.search.ByteSection;
-import io.github.htools.io.EOCException;
-import io.github.htools.lib.Log;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
  * An implementation of EntityReader that reads the CommonCrawl WARC files,

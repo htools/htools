@@ -2,6 +2,8 @@ package io.github.htools.io;
 
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
+import org.apache.hadoop.io.IOUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +43,7 @@ public class ISDataIn implements DataIn {
         if (!buffer.hasMore()) {
             log.fatal("Trying to read past Ceiling (offset %d pos %d end %d ceiling %d)", buffer.offset, buffer.bufferpos, buffer.end, buffer.ceiling);
         }
+
         int newread, maxread = buffer.readSpace();
         int read = readBytes(buffer.offset + buffer.end, buffer.buffer, buffer.end, maxread);
         //log.info("fillBuffer off %d end %d maxread %d read %d", buffer.offset, buffer.end, maxread, read);
@@ -49,7 +52,7 @@ public class ISDataIn implements DataIn {
         } else {
             buffer.hasmore = false;
             //log.info("EOF reached");
-            throw new EOCException("EOF reached");
+            throw new EOCException();
         }
     }
 
@@ -68,15 +71,13 @@ public class ISDataIn implements DataIn {
         int nRead;
         byte[] data = new byte[1000000];
 
-        while ((nRead = getInputStream().read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
+        IOUtils.copyBytes(getInputStream(), buffer, 4096, true);
 
-        buffer.flush();
+        //buffer.flush();
 
         byte[] toByteArray = buffer.toByteArray();
-        buffer.close();
-        getInputStream().close();
+//        buffer.close();
+//        getInputStream().close();
         return toByteArray;
     }
 
@@ -98,7 +99,7 @@ public class ISDataIn implements DataIn {
             }
         }
     }
-    
+
     protected void resetOffset() {
         this.offset = 0;
     }
@@ -136,11 +137,12 @@ public class ISDataIn implements DataIn {
                 inputstream.close();
             } catch (IOException ex) {
                 log.exception(ex);
+            } finally {
+                inputstream = null;
             }
-            inputstream = null;
         }
     }
-    
+
     @Override
     public InputStream getInputStream() {
         return inputstream;
@@ -148,6 +150,6 @@ public class ISDataIn implements DataIn {
 
     @Override
     public boolean isCompressed() {
-       return isCompressed;
+        return isCompressed;
     }
 }

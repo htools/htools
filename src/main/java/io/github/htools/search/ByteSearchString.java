@@ -2,6 +2,7 @@ package io.github.htools.search;
 
 import io.github.htools.lib.Log;
 import io.github.htools.lib.PrintTools;
+
 import java.util.ArrayList;
 
 /**
@@ -109,28 +110,13 @@ public class ByteSearchString extends ByteSearch {
 
     @Override
     public boolean match(byte[] haystack, int position, int end) {
-        lastend = position;
-        for (int match = 0; lastend < end; lastend++) {
-            if (haystack[lastend] != 0) { // skip \0 bytes
-                if (pattern[match][haystack[lastend] & 0xFF]) {
-                    if (++match == pattern.length) {
-                        lastend++;
-                        return true;
-                    }
-                } else {
-                    return false;
-                }
-            }
-        }
-        return false;
+        return matchPos(haystack, position, end).found();
     }
 
-    /**
-     * Is NOT Thread safe
-     */
     @Override
     public int matchEnd(byte[] haystack, int position, int end) {
-        return match(haystack, position, end) ? lastend : Integer.MIN_VALUE;
+        ByteSearchPosition pos = matchPos(haystack, position, end);
+        return pos.found() ? pos.end : Integer.MIN_VALUE;
     }
 
     /**
@@ -149,16 +135,21 @@ public class ByteSearchString extends ByteSearch {
         }
     }
 
-    /**
-     * NOT Thread safe
-     */
     @Override
     public ByteSearchPosition matchPos(byte[] haystack, int position, int end) {
-        if (!match(haystack, position, end)) {
-            return new ByteSearchPosition(haystack, laststart, Integer.MIN_VALUE, true);
-        } else {
-            return new ByteSearchPosition(haystack, laststart, lastend, false);
+        int lastend = position;
+        for (int match = 0; lastend < end; lastend++) {
+            if (haystack[lastend] != 0) { // skip \0 bytes
+                if (pattern[match][haystack[lastend] & 0xFF]) {
+                    if (++match == pattern.length) {
+                        return new ByteSearchPosition(haystack, position, ++lastend, true);
+                    }
+                } else {
+                    return new ByteSearchPosition(haystack, position, Integer.MIN_VALUE, false);
+                }
+            }
         }
+        return new ByteSearchPosition(haystack, position, lastend, false);
     }
 
     public static void main(String[] args) {

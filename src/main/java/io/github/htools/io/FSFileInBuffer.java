@@ -2,7 +2,7 @@ package io.github.htools.io;
 
 import io.github.htools.io.buffer.BufferReaderWriter;
 import io.github.htools.lib.Log;
-import java.io.BufferedInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -75,7 +75,7 @@ public class FSFileInBuffer extends FSFile implements DataIn {
       } else {
          buffer.hasmore = false;
          //log.info("EOF reached");
-         throw new EOCException("EOF reached");
+         throw new EOCException();
       }
    }
 

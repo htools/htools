@@ -3,14 +3,10 @@ package io.github.htools.extract.modules;
 import io.github.htools.collection.ArrayMap;
 import io.github.htools.extract.Content;
 import io.github.htools.extract.Extractor;
-import io.github.htools.lib.ArrayTools;
 import io.github.htools.lib.ByteTools;
 import io.github.htools.lib.Log;
-import io.github.htools.lib.PrintTools;
 import io.github.htools.lib.StrTools;
 import io.github.htools.search.ByteSearchSection;
-import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Converts unicode characters with diacritics to their corresponding

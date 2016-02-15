@@ -1,8 +1,9 @@
 package io.github.htools.lib;
 
-import static io.github.htools.lib.Const.*;
 import java.io.PrintStream;
 import java.util.Formatter;
+
+import static io.github.htools.lib.Const.NULLINT;
 
 /**
  * Supports making C-like printf() statements, using a format string that 

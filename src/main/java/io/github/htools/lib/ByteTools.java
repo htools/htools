@@ -23,29 +23,35 @@ public enum ByteTools {
      */
     public static String toString(byte array[], int start, int end) {
        try {
-           return new String(array, start, end - start, "UTF-8");
+           byte[] not0 = toBytesShallow(array, start, end);
+           return new String(not0, "UTF-8");
        } catch (UnsupportedEncodingException ex) {
            log.fatalexception(ex, "toString()");
            return null;
        }
     }
 
-    /**
-     * @param array
-     * @param start
-     * @param end
-     * @return the content in the array between start and end, omitting any zero
-     * bytes.
-     */
-    public static byte[] toBytes(byte array[], int start, int end) {
+    private static int countnot0(byte array[], int start, int end) {
         int realchars = 0;
         for (int p = start; p < end; p++) {
             if (array[p] != 0) {
                 realchars++;
             }
         }
-        byte[] c = new byte[realchars];
-        if (realchars > 0) {
+        return realchars;
+    }
+
+    /**
+     * @param array
+     * @param start
+     * @param end
+     * @return the a copy of the array between start and end, omitting any zero
+     * bytes.
+     */
+    public static byte[] toBytes(byte array[], int start, int end) {
+        int bytes = countnot0(array, start, end);
+        byte[] c = new byte[bytes];
+        if (bytes > 0) {
             for (int cnr = 0, p = start; p < end; p++) {
                 if (array[p] != 0) {
                     c[cnr++] = array[p];
@@ -53,6 +59,27 @@ public enum ByteTools {
             }
         }
         return c;
+    }
+
+    /**
+     * @param array
+     * @param start
+     * @param end
+     * @return the a copy of the array between start and end, omitting any zero
+     * bytes.
+     */
+    public static byte[] toBytesShallow(byte array[], int start, int end) {
+        int realchars = countnot0(array, start, end);
+        if (realchars > 0 || start != 0 || end != array.length) {
+            byte[] c = new byte[realchars];
+            for (int cnr = 0, p = start; p < end; p++) {
+                if (array[p] != 0) {
+                    c[cnr++] = array[p];
+                }
+            }
+            return c;
+        }
+        return array;
     }
 
     public static String toTrimmedString(byte b[], int pos, int end) {
@@ -68,12 +95,7 @@ public enum ByteTools {
         byte c[];
         for (; pos < end && whitespacezero[b[pos] & 0xFF]; pos++);
         for (; end > pos && whitespacezero[b[end - 1] & 0xFF]; end--);
-        int realchars = 0;
-        for (int p = pos; p < end; p++) {
-            if (b[p] != 0) {
-                realchars++;
-            }
-        }
+        int realchars = countnot0(b, pos, end);
         if (realchars > 0) {
             c = new byte[realchars];
             for (int cnr = 0, p = pos; p < end; p++) {
@@ -99,6 +121,10 @@ public enum ByteTools {
            ex.printStackTrace();
            return null;
        }
+    }
+
+    public static String toFullTrimmedString(byte b[]) {
+       return toFullTrimmedString(b, 0, b.length);
     }
 
     /**
@@ -137,6 +163,10 @@ public enum ByteTools {
         return EMPTYARRAY;
     }
 
+    public static byte[] toFullTrimmed(byte[] content) {
+        return toFullTrimmed(content, 0, content.length);
+    }
+    
     public static String toString(byte b[]) {
         return toString(b, 0, b.length);
     }

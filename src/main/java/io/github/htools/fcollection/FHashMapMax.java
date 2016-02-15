@@ -1,10 +1,8 @@
 package io.github.htools.fcollection;
 
-import io.github.htools.collection.*;
 import io.github.htools.lib.Log;
 import io.github.htools.type.Tuple2;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import java.util.HashMap;
 
 /**
  * A HashMap with a Double value, that supports adding values to existing keys

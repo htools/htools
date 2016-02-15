@@ -1,11 +1,8 @@
 package io.github.htools.hadoop;
 
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.TaskAttemptID;
-import org.apache.hadoop.mapreduce.TaskType;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.mapreduce.MRJobConfig;
+import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
@@ -71,7 +68,7 @@ public enum ContextTools {
         return Conf.getFileSystem(context.getConfiguration());
     }
 
-    public static FileSplit getInputFileSplit(org.apache.hadoop.mapreduce.Mapper.Context context) {
+    public static FileSplit getInputFileSplit(Mapper.Context context) {
         return ((FileSplit) context.getInputSplit());
     }
 }
